@@ -46,7 +46,7 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="border-b sticky hidden md:flex flex-row justify-between overflow-hidden bg-black">
+      <div className="border-b sticky top-0 hidden md:flex flex-row justify-between overflow-hidden bg-black z-20">
         <Link href="/">
           <div className="relative h-20 w-[180px]">
             <Image
@@ -58,7 +58,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="items-center flex gap-[1.5rem] mr-[10rem] uppercase font-gamay font-bold tracking-wide">
+        <div className="items-center flex gap-[1.5rem] mr-[10rem] uppercase font-bold tracking-wider">
           {navLinks.map((link) => {
             const isActive = pathname && pathname.startsWith(link.href);
             return (
