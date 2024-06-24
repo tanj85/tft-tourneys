@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+:root {
+    background-color: #000000;
+    color: white;
+    scroll-behavior: smo;
+}
