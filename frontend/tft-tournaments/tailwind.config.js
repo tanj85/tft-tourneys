@@ -9,6 +9,9 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontFamily: {
+      greycliff: ["greycliff-cf", "sans-serif"],
+    },
     extend: {},
   },
   plugins: [],
