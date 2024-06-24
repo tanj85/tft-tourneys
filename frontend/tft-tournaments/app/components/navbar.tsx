@@ -46,19 +46,19 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="sticky hidden md:flex flex-row justify-between overflow-hidden bg-slate-500">
+      <div className="border-b sticky hidden md:flex flex-row justify-between overflow-hidden bg-black">
         <Link href="/">
-          <div className="relative h-20 w-20">
+          <div className="relative h-20 w-[180px]">
             <Image
-              src="/tft-logo.png"
+              src="/tft-logo-full.png"
               fill={true}
               alt="logo"
-              className=" p-1"
+              className="p-3 ml-2"
             />
           </div>
         </Link>
 
-        <div className="items-center px-[8rem] grid grid-flow-col gap-[2.5rem] text-center uppercase font-gamay font-bold tracking-wide">
+        <div className="items-center flex gap-[1.5rem] mr-[10rem] uppercase font-gamay font-bold tracking-wide">
           {navLinks.map((link) => {
             const isActive = pathname && pathname.startsWith(link.href);
             return (
@@ -88,7 +88,7 @@ const Navbar = () => {
       <div
         className={
           menuOpen
-            ? "fixed left-0 top-0 w-full h-screen bg-slate-500 flex flex-col justify-start z-10"
+            ? "fixed left-0 top-0 w-full h-screen bg-black flex flex-col justify-start z-10"
             : "hidden"
         }
       >
@@ -109,14 +109,14 @@ const Navbar = () => {
       </div>
 
       {/* mobile navbar */}
-      <div className="sticky md:hidden flex justify-between overflow-hidden bg-slate-500">
+      <div className="sticky md:hidden flex justify-between overflow-hidden bg-black border-b">
         <Link href="/">
-          <div className="relative h-20 w-20">
+          <div className="relative h-20 w-[85px]">
             <Image
-              src="/tft-logo.png"
+              src="/tft-logo-small.png"
               fill={true}
               alt="logo"
-              className=" p-1"
+              className="p-3 ml-2"
             />
           </div>
         </Link>
