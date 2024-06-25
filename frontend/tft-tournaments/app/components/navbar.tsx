@@ -68,8 +68,8 @@ const Navbar = () => {
                   key={link.name}
                   className={
                     isActive
-                      ? "font-bold bg-slate-400 rounded-md h-7 p-5 items-center flex"
-                      : "bg-opacity-0 transition-all ease-in-out duration:300 delay-100 hover:bg-slate-400 rounded-md h-7 p-5 items-center flex"
+                      ? "font-bold border rounded-md h-7 p-5 items-center flex"
+                      : "bg-opacity-0 transition-all ease-in-out duration:300 delay-100 hover:border rounded-md h-7 p-5 items-center flex"
                   }
                 >
                   {link.name}
