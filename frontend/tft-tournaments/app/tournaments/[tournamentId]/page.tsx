@@ -1,3 +1,4 @@
+import TourneyNav from "@/app/components/tourneynav";
 import { tournamentsExample } from "@/app/data/data";
 
 export default function TournamentPage({ params }: any) {
@@ -10,5 +11,10 @@ export default function TournamentPage({ params }: any) {
   const idToFind = params.tournamentId;
   const matchingTourney = findMapByID(idToFind);
 
-  return <div className="text-4xl m-4 font-bold">{matchingTourney?.name}</div>;
+  return (
+    <>
+      <div className="text-4xl m-4 font-bold">{matchingTourney?.name}</div>
+      <TourneyNav />
+    </>
+  );
 }
