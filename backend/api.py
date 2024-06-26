@@ -37,11 +37,12 @@ def init_tournmanets_cache():
         tourney = {
             "id": id,
             "name": row[0],
+            "standings": {},
             "days": [],
             "tier": row[1],
             "region": row[2],
-            # "start_date": row[3],
-            # "end_date": row[4],
+            "start_date": str(row[3]),
+            "end_date": str(row[4]),
             "num_participants": row[5],
             "link": row[6],
             "patch": row[7],
@@ -68,7 +69,13 @@ def init_tournmanets_cache():
             lobbies.append({})
         player_name = row[1]
         placement = row[2]
-        lobbies[lobby_id - 1][player_name] = 9 - placement
+        lobbies[lobby_id - 1][player_name] = placement
+
+        standings = tourneys[tourney_id]["standings"]
+        if player_name not in standings:
+            standings[player_name] = 9 - placement
+        else:
+            standings[player_name] += 9 - placement
 
 
 class AllTournaments(Resource):
