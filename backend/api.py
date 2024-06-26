@@ -73,10 +73,10 @@ def init_tournmanets_cache():
 
 class AllTournaments(Resource):
     def get(self):
-        d = {}
+        lis = []
         for id in tourneys:
-            d[tourneys[id]["name"]] = tourneys[id]["id"]
-        return d
+            lis.append({"name": tourneys[id]["name"], "id": tourneys[id]["id"]})
+        return lis
 
 
 class Tournaments(Resource):
