@@ -1,155 +1,93 @@
+import os
+
 from flask import Flask, request
 from flask_restful import Resource, Api
 import psycopg2
-from psycopg2 import sql
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 api = Api(app)
 
-DB_HOST = "68.183.150.147"
-DB_NAME = "tftourneys"
-DB_USER = "postgres"
-DB_PASS = "tft!"
+
+def get_db_connection():
+    connection = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+    )
+    return connection
 
 
-class HelloWorld(Resource):
-    def get(self):
-        return {"hello": "world"}
+conn = get_db_connection()
+cur = conn.cursor()
 
 
-class Test(Resource):
-    def get(self):
-        return {"jdfkla": "djklafjad", "dfjkla": 5}
+tourneys = {}
 
 
-class Tournament(Resource):
-    # want an input of a tournment name
-    # returns list of rounds
+def init_tournmanets_cache():
+    cur.execute("SELECT * FROM tbl_tournament_info")
+    rows = cur.fetchall()
+    for row in rows:
+        id = row[8]
 
-    # each game is a list of lobbies
-    # each lobbies is a map of 8 players along to their score
-    def get(self):
-        pass
+        tourney = {
+            "id": id,
+            "name": row[0],
+            "days": [],
+            "tier": row[1],
+            "region": row[2],
+            # "start_date": row[3],
+            # "end_date": row[4],
+            "num_participants": row[5],
+            "link": row[6],
+            "patch": row[7],
+        }
 
+        tourneys[id] = tourney
 
-# https://docs.google.com/spreadsheets/d/e/2PACX-1vQjodoBBeSzVtRFp6-nRsQYkShZjJamVwCDrwXDzK8BA1nrOa594V0zRyvP2HDOdST-NyrIsNVbLy1K/pubhtml#
-game1 = {
-    "lobbies": [
-        {
-            "So bio#eprod": 1,
-            "prestivent#eprod": 8,
-            "seihunkim": 7,
-            "ISG FRITZ#eprod": 6,
-            "wilf#eprod": 4,
-            "Sealkun Mbappe#eprod": 2,
-            "Liquid ego#eprod": 5,
-            "Ayy Rick#eprod": 3,
-        },
-        {
-            "thybeaster#eprod": 2,
-            "Cambulee#eprod": 5,
-            "LilTop#eprod": 3,
-            "Lab018biribiri#eprod": 1,
-            "Altenahue TFT#eprod": 7,
-            "CookiesOP#eprod": 6,
-            "Ciulla#eprod": 4,
-            "GK Bapzera#eprod": 8,
-        },
-    ]
-}
+    cur.execute("SELECT * FROM tbl_placement_data")
+    rows = cur.fetchall()
+    for row in rows:
+        tourney_id = row[3]
+        day_num = row[4]
+        while len(tourneys[tourney_id]["days"]) < day_num:
+            tourneys[tourney_id]["days"].append({"games": []})
 
-game2 = {
-    "lobbies": [
-        {
-            "So bio#eprod": 8,
-            "prestivent#eprod": 7,
-            "seihunkim": 5,
-            "ISG FRITZ#eprod": 4,
-            "wilf#eprod": 3,
-            "Sealkun Mbappe#eprod": 1,
-            "Liquid ego#eprod": 2,
-            "Ayy Rick#eprod": 6,
-        },
-        {
-            "thybeaster#eprod": 4,
-            "Cambulee#eprod": 2,
-            "LilTop#eprod": 1,
-            "Lab018biribiri#eprod": 7,
-            "Altenahue TFT#eprod": 6,
-            "CookiesOP#eprod": 3,
-            "Ciulla#eprod": 5,
-            "GK Bapzera#eprod": 8,
-        },
-    ]
-}
+        game_num = row[6]
+        games = tourneys[tourney_id]["days"][day_num - 1]["games"]
+        while len(games) < game_num:
+            games.append({"lobbies": []})
 
-
-class ExampleGame(Resource):
-    def get(self):
-        return game1
-
-
-standings1 = [
-    {
-        "placement": 1,
-        "player": "socks#eprod",
-        "region": "NA",
-        "games points": [8, 3, 7, 6, 6, 7, 5],
-        "total": 42,
-        "cumulative total": 98,
-        "top 4+1": 7,
-        "placement counts": [1, 2, 2, 1, 0, 1, 0, 8],
-        "eod placement": 5,
-        "game placements": [8, 3, 7, 6, 6, 7],
-    },
-    {
-        "placement": 2,
-        "player": "prestivent#eprod",
-        "region": "NA",
-        "games points": [8, 7, 6, 8, 2, 4, 6],
-        "total": 41,
-        "cumulative total": 105,
-        "top 4+1": 7,
-        "placement counts": [7, 2, 1, 2, 0, 1, 0, 1, 0],
-        "eod placement": 6,
-        "game placements": [8, 7, 6, 8, 2, 4],
-    },
-]
-
-event_info = {}
-
-tournament1 = {
-    "id": "1",
-    "name": "2024 Americas TFT Inkborn Fables Tactician's Cup III",
-    "days": [{"games": [game1, game2], "standings": standings1}],
-    "event info": event_info,
-}
-
-tournament2 = {
-    "id": "2",
-    "name": "2024 Americas TFT Inkborn Fables Tactician's Cup I",
-    "games": {},
-}
-
-tournaments_cache = {"1": tournament1}
+        lobby_id = row[5]
+        lobbies = games[game_num - 1]["lobbies"]
+        while len(lobbies) < lobby_id:
+            lobbies.append({})
+        player_name = row[1]
+        placement = row[2]
+        lobbies[lobby_id - 1][player_name] = 9 - placement
 
 
 class AllTournaments(Resource):
-
     def get(self):
-        return {
-            "2024 Americas TFT Inkborn Fables Tactician's Cup III": "1",
-            "2024 Americas TFT Inkborn Fables Tactician's Cup I": "2",
-        }
+        d = {}
+        for id in tourneys:
+            d[tourneys[id]["name"]] = tourneys[id]["id"]
+        return d
 
 
 class Tournaments(Resource):
 
     def get(self, id):
-
-        if id in tournaments_cache:
-
-            return tournaments_cache[id]
+        try:
+            int_id = int(id)
+            if int_id in tourneys:
+                return tourneys[int_id]
+        except:
+            pass
 
 
 player1 = {
@@ -181,12 +119,13 @@ class Player(Resource):
             return player_cache[name]
 
 
-api.add_resource(HelloWorld, "/")
-api.add_resource(Test, "/test")
-api.add_resource(ExampleGame, "/examplegame/")
 api.add_resource(Tournaments, "/tournaments/<string:id>")
 api.add_resource(AllTournaments, "/tournaments/")
 api.add_resource(Player, "/player/<string:name>/<string:tag>")
 
+
 if __name__ == "__main__":
+    init_tournmanets_cache()
     app.run(debug=True)
+    cur.close()
+    conn.close()
