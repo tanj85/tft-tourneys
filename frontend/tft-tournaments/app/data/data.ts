@@ -84,3 +84,45 @@ export const tournamentsExample = [
     ],
   },
 ];
+
+export const getTourneys = async () => {
+  const result = await fetch("http://127.0.0.1:5000/tournaments/", {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
+  if (!result.ok) {
+    throw new Error("failed to fetch data ):");
+  }
+  return result.json();
+};
+
+export const getTourneyData = async () => {
+  // Get the list of tournaments
+  const tourneys = await getTourneys();
+
+  // Create an array of fetch promises for each tournament
+  const fetchPromises = tourneys.map((tourney: any) => {
+    return fetch(`http://127.0.0.1:5000/tournaments/${tourney.id}`, {
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    }).then((result) => {
+      if (!result.ok) {
+        throw new Error("failed to fetch data ):");
+      }
+      return result.json();
+    });
+  });
+
+  // Wait for all fetch promises to resolve
+  const results = await Promise.all(fetchPromises);
+
+  return results;
+};
