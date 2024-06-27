@@ -3,6 +3,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 import psycopg2
 from psycopg2.extensions import connection
+from Levenshtein import distance
 
 import database
 
@@ -44,7 +45,6 @@ class Tournaments(Resource):
 
 class AllPlayers(Resource):
     def get(self):
-        print(type(players.keys()))
         return list(players.keys())
 
 
@@ -77,10 +77,38 @@ class Player(Resource):
             return players[name]
 
 
+# returns true if s1 is a prefix of s2
+def is_prefix(s1, s2):
+    if len(s1) > len(s2):
+        return False
+
+    return s1 == s2[: len(s1)]
+
+
+def remove_tag(name):
+    for i in range(len(name) - 1, -1, -1):
+        if name[i] == "#":
+            return name[:i]
+
+
+class Search(Resource):
+    def get(self, search_name):
+        names = list(players.keys())
+        names.sort(key=lambda name: distance(remove_tag(name), search_name))
+        names = filter(
+            lambda name: is_prefix(search_name, name)
+            or distance(remove_tag(name), search_name) <= 3,
+            names,
+        )
+        names = list(names)
+        return names
+
+
 api.add_resource(Tournaments, "/tournaments/<string:id>")
 api.add_resource(AllTournaments, "/tournaments/")
 api.add_resource(Player, "/players/<string:name>/<string:tag>"),
 api.add_resource(AllPlayers, "/players/")
+api.add_resource(Search, "/search/<string:search_name>/")
 
 
 if __name__ == "__main__":
