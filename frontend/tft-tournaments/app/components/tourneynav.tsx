@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const tourneyTabs = ["Info", "Games", "Standings"];
 
-const TourneyNav = () => {
+const TourneyNav = ({ days, tier, region, num_participants, patch }: any) => {
   const [activeTab, setActiveTab] = useState(tourneyTabs[0]);
 
   const handleTabClick = (tab: any) => {
@@ -33,7 +33,11 @@ const TourneyNav = () => {
               INFO
             </div>
             <div className="flex flex-col space-y-4">
-              <div> Tournament Info - date</div>
+              <div> Tournament Info</div>
+              <div> Region: {region} </div>
+              <div> Number of Competitors: {num_participants} </div>
+              <div> Tier: {tier} </div>
+              <div> Patch: {patch} </div>
             </div>
           </>
         )}
