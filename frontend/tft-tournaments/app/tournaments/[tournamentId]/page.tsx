@@ -15,7 +15,13 @@ export default async function TournamentPage({ params }: any) {
   return (
     <>
       <div className="text-4xl m-4 font-bold">{specificTourney.name}</div>
-      <TourneyNav />
+      <TourneyNav
+        days={specificTourney.days}
+        tier={specificTourney.tier}
+        region={specificTourney.region}
+        num_participants={specificTourney.num_participants}
+        patch={specificTourney.patch}
+      />
       <div></div>
     </>
   );

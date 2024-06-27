@@ -7,6 +7,8 @@ const TournamentTabs = async () => {
   const tourneyData = await getTourneyData();
   console.log(tourneys);
 
+  // set, tier,
+
   return (
     <div className="font-bold flex w-full bg-white hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300">
       {tourneys.map((tourney: any) => (
