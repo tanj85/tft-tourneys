@@ -18,11 +18,6 @@ const TourneyNav = ({
   const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
     new Map()
   );
-  //   const [daysOpen, setDaysOpen] = useState<number | null>(null);
-
-  //   const handleDropdown = (index: number) => {
-  //     setDaysOpen(daysOpen === index ? null : index);
-  //   };
 
   const handleTabClick = (tab: any) => {
     setActiveTab(tab);
@@ -61,12 +56,14 @@ const TourneyNav = ({
             <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-20 text-black text-7xl uppercase font-bold">
               INFO
             </div>
-            <div className="flex flex-col space-y-4">
-              <div> Tournament Info</div>
+            <div className="flex flex-col space-y-4 bg-white text-black p-4">
+              {/* <div> Tournament Info</div> */}
               <div> Region: {region} </div>
               <div> Number of Competitors: {num_participants} </div>
               <div> Tier: {tier} </div>
               <div> Patch: {patch} </div>
+              <div> Start Date: {start_date} </div>
+              <div> End Date: {end_date} </div>
             </div>
           </>
         )}
@@ -82,7 +79,7 @@ const TourneyNav = ({
                 <div key={index}>
                   <div
                     // onClick={() => handleDropdown(index)}
-                    className="sticky top-[4rem] bg-gray-500 p-4 text-center uppercase font-bold text-xl"
+                    className="sticky top-[9.8rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
                   >
                     Day {index + 1}
                   </div>
@@ -95,7 +92,7 @@ const TourneyNav = ({
                     <div>
                       {day.games.map((game: any, gameIndex: number) => (
                         <div key={gameIndex} className="my-4">
-                          <h2 className="sticky top-[9.8rem] text-lg z-10 bg-black font-bold border p-4 uppercase rounded-t-md">
+                          <h2 className="sticky top-[12.6rem] text-lg z-9 bg-black font-bold border p-3 uppercase rounded-t-md">
                             Game {gameIndex + 1}
                           </h2>
 
@@ -148,7 +145,7 @@ const TourneyNav = ({
                               </div>
                             </ul>
                           ) : (
-                            <div className="p-4 border rounded mb-4 italic">
+                            <div className="p-4 border rounded-b mb-4 italic">
                               No lobbies
                             </div>
                           )}
@@ -156,7 +153,7 @@ const TourneyNav = ({
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 border rounded mb-4 italic">
+                    <div className="p-4 border rounded-b mb-4 italic">
                       No games
                     </div>
                   )}
@@ -172,7 +169,7 @@ const TourneyNav = ({
             <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-20 text-black text-7xl uppercase font-bold">
               STANDINGS
             </div>
-            <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md">
+            <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500">
               <div className="col-span-3 md:col-span-1">PLAYER</div>
               <div className="text-center">POINTS</div>
             </div>
