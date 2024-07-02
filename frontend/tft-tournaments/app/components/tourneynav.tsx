@@ -41,7 +41,7 @@ const TourneyNav = ({
 
   return (
     <div>
-      <div className="sticky top-[5rem] border border-black border-b flex space-x-4 bg-white text-black p-4">
+      <div className="z-20 sticky top-[5rem] border border-black border-b flex space-x-4 bg-white text-black p-4">
         {tourneyTabs.map((tab) => (
           <button
             key={tab}
@@ -95,18 +95,18 @@ const TourneyNav = ({
                     <div>
                       {day.games.map((game: any, gameIndex: number) => (
                         <div key={gameIndex} className="my-4">
-                          <h2 className="font-bold border p-4 uppercase rounded-t-md">
+                          <h2 className="sticky top-[9.8rem] text-lg z-10 bg-black font-bold border p-4 uppercase rounded-t-md">
                             Game {gameIndex + 1}
                           </h2>
 
                           {/* Each game */}
                           {game.lobbies.length > 0 ? (
                             <ul>
-                              <div className="grid grid-cols-4 bg-white text-black p-4">
+                              <div className="grid md:grid-cols-4 bg-gray-100 border text-black p-4">
                                 {game.lobbies.map(
                                   (lobby: any, lobbyIndex: number) => (
                                     <div key={lobbyIndex}>
-                                      <div className="grid grid-cols-3 p-2 font-bold border-b border-black uppercase">
+                                      <div className="grid grid-cols-3 p-2 font-bold border-b border-black uppercase bg-gray-300 rounded-t-md">
                                         <div className="col-span-2">
                                           Lobby {lobbyIndex + 1}
                                         </div>
@@ -116,7 +116,10 @@ const TourneyNav = ({
                                       </div>
 
                                       {/* Each lobby */}
-                                      <li key={lobbyIndex} className="">
+                                      <li
+                                        key={lobbyIndex}
+                                        className="bg-white mb-3"
+                                      >
                                         {Object.entries(lobby)
                                           .sort(
                                             (
@@ -145,13 +148,17 @@ const TourneyNav = ({
                               </div>
                             </ul>
                           ) : (
-                            <div>No Lobbies</div>
+                            <div className="p-4 border rounded mb-4 italic">
+                              No lobbies
+                            </div>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div>No Games</div>
+                    <div className="p-4 border rounded mb-4 italic">
+                      No games
+                    </div>
                   )}
                 </div>
               ))}
