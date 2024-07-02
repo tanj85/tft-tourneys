@@ -38,7 +38,16 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
         <meta name="msapplication-TileColor" content="#da532c" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ff9c40" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="TFTourneys" />
+        <meta name="twitter:title" content="TFTourneys" />
+        <meta
+          name="twitter:description"
+          content="STFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors."
+        />
+        <meta name="twitter:image" content="/tft-banner.png" />
       </head>
       <body className="">
         <div className="font-soleil">
