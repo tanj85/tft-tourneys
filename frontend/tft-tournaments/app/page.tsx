@@ -24,14 +24,20 @@ export default function Home() {
       {/* section 1 */}
       <div className="h-[40rem] mt-20">
         <div className="flex flex-col md:flex-row">
-          <Image
-            src="/section-1-img.png"
-            height={400}
-            width={400}
-            alt="logo"
-            className="m-[8rem] flex hidden md:block"
-          />
-
+          <div
+            data-aos-delay="50"
+            data-aos="fade-down-left"
+            data-aos-duration="1000"
+            data-aos-offset="200"
+          >
+            <Image
+              src="/section-1-img.png"
+              height={400}
+              width={400}
+              alt="logo"
+              className="m-[8rem] flex hidden md:block"
+            />
+          </div>
           {/* mobile version of image */}
           <div
             data-aos-delay="50"
@@ -144,7 +150,12 @@ export default function Home() {
                 up against their competitors.
               </div>
             </div>
-            <div className="md:block hidden relative h-[25rem] w-[47rem]">
+            <div
+              className="md:block hidden relative h-[25rem] w-[47rem]"
+              data-aos-delay="50"
+              data-aos="fade-down-right"
+              data-aos-duration="1000"
+            >
               <Image
                 src="/section-2-img.gif"
                 unoptimized={true}
