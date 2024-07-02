@@ -9,8 +9,10 @@ export default async function TournamentPage({ params }: any) {
 
   const tourneyId = Number(params.tournamentId);
   const specificTourney = getTourneyById(tourneyData, tourneyId);
+  console.log(specificTourney.days);
+  console.log(specificTourney.days[2]);
 
-  // console.log(specificTourney);
+  //  console.log(specificTourney);
 
   return (
     <>
@@ -21,6 +23,9 @@ export default async function TournamentPage({ params }: any) {
         region={specificTourney.region}
         num_participants={specificTourney.num_participants}
         patch={specificTourney.patch}
+        standings={specificTourney.standings}
+        start_date={specificTourney.start_date}
+        end_date={specificTourney.end_date}
       />
       <div></div>
     </>

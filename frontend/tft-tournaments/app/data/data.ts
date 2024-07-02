@@ -86,7 +86,7 @@ export const tournamentsExample = [
 ];
 
 export const getTourneys = async () => {
-  const result = await fetch("http://127.0.0.1:5000/tournaments/", {
+  const result = await fetch("http://68.183.150.147:5000/tournaments/", {
     method: "GET",
     headers: {
       "Cache-Control": "no-cache",
@@ -106,7 +106,7 @@ export const getTourneyData = async () => {
 
   // Create an array of fetch promises for each tournament
   const fetchPromises = tourneys.map((tourney: any) => {
-    return fetch(`http://127.0.0.1:5000/tournaments/${tourney.id}`, {
+    return fetch(`http://68.183.150.147:5000/tournaments/${tourney.id}`, {
       method: "GET",
       headers: {
         "Cache-Control": "no-cache",
