@@ -166,7 +166,7 @@ const TourneyNav = ({
               STANDINGS
             </div>
             <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md">
-              <div className="col-span-3">PLAYER</div>
+              <div className="col-span-3 md:col-span-1">PLAYER</div>
               <div className="text-center">POINTS</div>
             </div>
             <div className="border flex flex-col bg-white text-black">
@@ -175,7 +175,9 @@ const TourneyNav = ({
                   key={player}
                   className="grid grid-cols-4 md:grid-cols-2 p-4 hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300"
                 >
-                  <span className="font-bold col-span-3">{player}</span>
+                  <span className="font-bold col-span-3 md:col-span-1">
+                    {player}
+                  </span>
                   <span className="text-center">{points}</span>
                 </div>
               ))}

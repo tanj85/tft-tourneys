@@ -10,7 +10,7 @@ const TournamentTabs = async () => {
     <>
       <div className="flex flex-col">
         <div className="grid grid-cols-5 px-6 gap-8 border text-center p-4 font-bold">
-          <div className="md:cols-span-1 col-span-2 text-left">NAME</div>
+          <div className="md:col-span-1 col-span-2 text-left">NAME</div>
           <div>TIER</div>
           <div>REGION</div>
           <div className="hidden md:block">PARTICIPANTS</div>
@@ -21,7 +21,7 @@ const TournamentTabs = async () => {
             <Link href={`/tournaments/${tourney.id}`} key={tourney.id}>
               <div className="p-4 rounded-md mx-2 text-black">
                 <div className="grid grid-cols-5 gap-8 text-center items-center hover:text-gray-500">
-                  <div className="md:cols-span-1 col-span-2 text-left font-bold text-balance">
+                  <div className="md:col-span-1 col-span-2 text-left font-bold text-balance">
                     {tourney.name}
                   </div>
                   <div>{tourney.tier}</div>
