@@ -9,8 +9,8 @@ export default async function TournamentPage({ params }: any) {
 
   const tourneyId = Number(params.tournamentId);
   const specificTourney = getTourneyById(tourneyData, tourneyId);
-  console.log(specificTourney.days);
-  console.log(specificTourney.days[2]);
+  // console.log(specificTourney.days);
+  // console.log(specificTourney.days[2]);
 
   //  console.log(specificTourney);
 
