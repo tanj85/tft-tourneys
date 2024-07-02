@@ -27,7 +27,7 @@ const TourneyNav = ({
     setTourneyDays(days);
     const standingsMap = new Map(Object.entries(standings));
     setTourneyStandings(standingsMap);
-  }, []);
+  }, [days, standings]);
 
   // access entries
   const standingsEntries = Array.from(tourneyStandings.entries());
@@ -96,7 +96,7 @@ const TourneyNav = ({
                                       </div>
                                       <li key={lobbyIndex} className="">
                                         {Object.entries(lobby).map(
-                                          ([player, points]) => (
+                                          ([player, points]: [any, any]) => (
                                             <li key={player} className="py-1">
                                               {player}: {points}
                                             </li>
@@ -135,7 +135,10 @@ const TourneyNav = ({
             </div>
             <div className="border flex flex-col bg-white text-black">
               {standingsEntries.map(([player, points]) => (
-                <div className="grid grid-cols-2 p-4 hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300">
+                <div
+                  key={player}
+                  className="grid grid-cols-2 p-4 hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300"
+                >
                   <span className="font-bold">{player}</span> {points}
                 </div>
               ))}
