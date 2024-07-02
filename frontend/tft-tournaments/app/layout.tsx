@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/navbar";
 
 import type { Viewport } from "next";
+import Script from "next/script";
 
 export const viewport: Viewport = {
   themeColor: "#ff9c4",
@@ -84,8 +85,8 @@ export default function RootLayout({
           <Navbar />
           {children}
         </div>
-        <script src="https://unpkg.com/aos@next/dist/aos.js" async />
-        <script>AOS.init();</script>
+        {/* <Script src="https://unpkg.com/aos@next/dist/aos.js" />
+        <Script>AOS.init();</Script> */}
       </body>
     </html>
   );
