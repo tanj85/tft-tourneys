@@ -6,7 +6,7 @@ export default function Home() {
       {/* hero */}
       <div className="relative w-full h-[40rem]">
         <div className="flex items-center justify-center bg-fixed bg-pengu bg-center bg-cover md:bg-cover h-[40rem] w-full">
-          <div className="z-10 uppercase font-bold text-5xl text-center md:text-left md:text-8xl mix-blend-exclusion">
+          <div className="z-10 uppercase font-bold text-5xl text-center md:text-8xl mix-blend-exclusion">
             Welcome to TFTourneys
           </div>
           <div className="absolute inset-0 bg-black opacity-60 mix-blend-multiply"></div>
@@ -14,7 +14,7 @@ export default function Home() {
       </div>
 
       {/* section 1 */}
-      <div className="h-[43rem]">
+      <div className="h-[40rem] mt-20">
         <div className="flex flex-col md:flex-row">
           <Image
             src="/section-1-img.png"
@@ -46,7 +46,7 @@ export default function Home() {
       </div>
 
       {/* section 2 */}
-      <div className="h-[40rem]">
+      {/* <div className="h-[40rem]">
         <div className="flex md:flex-row flex-col items-center">
           <div className="mx-10 md:mx-24">
             <div className="relative h-[10rem] w-[20rem] md:h-[30rem] md:mr-[4rem]">
@@ -55,7 +55,7 @@ export default function Home() {
                 unoptimized={true}
                 fill={true}
                 alt="section2"
-                className="mt-20 md:hidden"
+                className="md:hidden"
               />
             </div>
             <h1 className="mt-28 md:-mt-[29rem] mb-3 text-3xl md:text-5xl font-greycliff font-bold">
@@ -76,6 +76,43 @@ export default function Home() {
               alt="section2"
               className="hidden md:block"
             />
+          </div>
+        </div>
+      </div> */}
+
+      {/* section 2 */}
+      <div className="h-[40rem] md:mt-20">
+        <div className="flex flex-col md:flex-row">
+          {/* mobile version of image */}
+          <div className="flex flex-col items-center">
+            <div className="md:hidden relative h-[10rem] w-[20rem]">
+              <Image
+                src="/section-2-img.gif"
+                unoptimized={true}
+                fill={true}
+                alt="section2"
+                className=""
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center mx-10 md:mx-24 mt-10">
+            <div className="flex-row">
+              <h1 className="mb-3 text-3xl md:text-5xl font-greycliff font-bold">
+                FOLLOW YOUR FAVORITE PLAYERS
+              </h1>
+              Track the best of the best and see how their performances line up
+              against their competitors.
+            </div>
+            <div className="md:block hidden relative h-[25rem] w-[47rem]">
+              <Image
+                src="/section-2-img.gif"
+                unoptimized={true}
+                fill={true}
+                alt="section2"
+                className=""
+              />
+            </div>
           </div>
         </div>
       </div>
