@@ -93,14 +93,14 @@ const Navbar = () => {
               src="/tft-logo-small.png"
               fill={true}
               alt="logo"
-              className="p-3 ml-2"
+              className="p-3 ml-4 md:ml-2"
             />
           </div>
         </Link>
 
         <AiOutlineMenu
           onClick={handleMenu}
-          className="h-20 w-[25px] mr-6 cursor-pointer"
+          className="h-20 w-[25px] md:mr-6 mr-8 cursor-pointer"
         />
       </div>
     </>
