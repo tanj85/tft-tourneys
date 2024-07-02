@@ -48,6 +48,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/cdd6oyg.css" />
+        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
         {/* <title>TFTourneys</title>
         <link
           rel="apple-touch-icon"
@@ -83,6 +84,8 @@ export default function RootLayout({
           <Navbar />
           {children}
         </div>
+        <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+        <script>AOS.init();</script>
       </body>
     </html>
   );
