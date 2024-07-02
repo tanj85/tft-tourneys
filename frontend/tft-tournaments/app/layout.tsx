@@ -5,7 +5,7 @@ import Navbar from "./components/navbar";
 export const metadata: Metadata = {
   title: "TFTourneys",
   description:
-    "TFTourneys is dedicated to all things related to TFT Esports! Follow LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors.",
+    "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors.",
 };
 
 export default function RootLayout({
@@ -41,7 +41,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className="">
-        <div className="font-soleil overflow-hidden">
+        <div className="font-soleil">
           <Navbar />
           {children}
         </div>

@@ -37,15 +37,9 @@ export default function Home() {
               <h1 className="mb-3 text-3xl md:text-5xl font-greycliff font-bold">
                 EXPLORE COMPETITIVE TFT
               </h1>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati
-              quam asperiores, laborum porro fuga repellat illum animi nobis
-              voluptatibus voluptates quidem maxime eum unde vel officia dicta
-              iste! Deserunt, maiores et. Eius illum, quidem modi quibusdam
-              voluptatibus provident doloribus, ex impedit alias, nihil
-              excepturi. Fugit incidunt optio architecto! Voluptatibus fugit
-              incidunt rem a magni illo consequatur doloribus natus laudantium
-              minus. Officiis dolorum et qui eum officia ad illo voluptate
-              quibusdam?
+              TFTourneys is dedicated to all things related to TFT Esports!
+              Follow LIVE and upcoming tournaments or explore the results of
+              past tournaments.
             </div>
           </div>
         </div>
@@ -54,31 +48,30 @@ export default function Home() {
       {/* section 2 */}
       <div className="h-[40rem]">
         <div className="flex md:flex-row flex-col items-center">
-          <div className="flex items-center mx-10 md:mx-24">
-            <div className="flex-row">
-              <div className="relative h-[10rem] w-[20rem] md:h-[30rem] md:w-[400rem] md:mr-[4rem]">
-                <Image
-                  src="/section-2-img.gif"
-                  unoptimized={true}
-                  fill={true}
-                  alt="section2"
-                  className="mt-20 md:hidden"
-                />
+          <div className="mx-10 md:mx-24">
+            <div className="relative h-[10rem] w-[20rem] md:h-[30rem] md:mr-[4rem]">
+              <Image
+                src="/section-2-img.gif"
+                unoptimized={true}
+                fill={true}
+                alt="section2"
+                className="mt-20 md:hidden"
+              />
+            </div>
+            <h1 className="mt-28 md:-mt-[29rem] mb-3 text-3xl md:text-5xl font-greycliff font-bold">
+              FOLLOW YOUR FAVORITE PLAYERS
+            </h1>
+            <div>
+              <div className="w-[40rem]">
+                Follow your favorite players and see how their performances line
+                up against their competitors.
               </div>
-              <h1 className="mt-28 mb-3 text-3xl md:text-5xl font-greycliff font-bold">
-                FOLLOW YOUR FAVORITE PLAYERS
-              </h1>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati
-              quam asperiores, laborum porro fuga repellat illum animi nobis
-              voluptatibus voluptates quidem maxime eum unde vel officia dicta
-              iste! Deserunt, maiores et. Eius illum, quidem modi quibusdam
-              voluptatibus provident doloribus, ex impedit alias, nihil
-              excepturi.
             </div>
           </div>
-          <div className="relative h-[30rem] w-[400rem] mr-[4rem]">
+          <div className="relative h-[20rem] w-[38rem] mr-[4rem]">
             <Image
               src="/section-2-img.gif"
+              unoptimized={true}
               fill={true}
               alt="section2"
               className="hidden md:block"
