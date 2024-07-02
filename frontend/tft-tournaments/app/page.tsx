@@ -13,7 +13,7 @@ export default function Home() {
           <div
             className="z-10 uppercase font-bold text-5xl text-center md:text-8xl mix-blend-exclusion"
             data-aos="fade-in"
-            data-aos-duration="500"
+            // data-aos-duration="500"
           >
             Welcome to TFTourneys
           </div>
@@ -25,10 +25,10 @@ export default function Home() {
       <div className="h-[40rem] mt-20">
         <div className="flex flex-col md:flex-row">
           <div
-            data-aos-delay="50"
-            data-aos="fade-down-left"
-            data-aos-duration="1000"
-            data-aos-offset="200"
+          // data-aos-delay="50"
+          // data-aos="fade-down-left"
+          // data-aos-duration="1000"
+          // data-aos-offset="200"
           >
             <Image
               src="/section-1-img.png"
@@ -40,10 +40,10 @@ export default function Home() {
           </div>
           {/* mobile version of image */}
           <div
-            data-aos-delay="50"
-            data-aos="fade-down-left"
-            data-aos-duration="1000"
-            data-aos-offset="200"
+          // data-aos-delay="50"
+          // data-aos="fade-down-left"
+          // data-aos-duration="1000"
+          // data-aos-offset="200"
           >
             <Image
               src="/section-1-img.png"
@@ -57,15 +57,15 @@ export default function Home() {
             <div className="flex-row">
               <h1
                 className="mb-3 text-3xl md:text-5xl font-greycliff font-bold"
-                data-aos="zoom-in-right"
-                data-aos-duration="1000"
+                // data-aos="zoom-in-right"
+                // data-aos-duration="1000"
               >
                 EXPLORE COMPETITIVE TFT
               </h1>
               <div
-                data-aos="zoom-in-right"
-                data-aos-duration="1000"
-                data-aos-delay="100"
+              // data-aos="zoom-in-right"
+              // data-aos-duration="1000"
+              // data-aos-delay="100"
               >
                 TFTourneys is dedicated to all things related to TFT Esports!
                 Follow LIVE and upcoming tournaments or explore the results of
@@ -117,9 +117,9 @@ export default function Home() {
           {/* mobile version of image */}
           <div
             className="flex flex-col items-center"
-            data-aos-delay="50"
-            data-aos="fade-down-right"
-            data-aos-duration="1000"
+            // data-aos-delay="50"
+            // data-aos="fade-down-right"
+            // data-aos-duration="1000"
           >
             <div className="md:hidden relative h-[10rem] w-[20rem]">
               <Image
@@ -136,15 +136,15 @@ export default function Home() {
             <div className="flex-row">
               <h1
                 className="mb-3 text-3xl md:text-5xl font-greycliff font-bold"
-                data-aos="zoom-in-left"
-                data-aos-duration="1000"
+                // data-aos="zoom-in-left"
+                // data-aos-duration="1000"
               >
                 FOLLOW YOUR FAVORITE PLAYERS
               </h1>
               <div
-                data-aos="zoom-in-left"
-                data-aos-duration="1000"
-                data-aos-delay="100"
+              // data-aos="zoom-in-left"
+              // data-aos-duration="1000"
+              // data-aos-delay="100"
               >
                 Track the best of the best and see how their performances line
                 up against their competitors.
@@ -152,9 +152,9 @@ export default function Home() {
             </div>
             <div
               className="md:block hidden relative h-[25rem] w-[47rem]"
-              data-aos-delay="50"
-              data-aos="fade-down-right"
-              data-aos-duration="1000"
+              // data-aos-delay="50"
+              // data-aos="fade-down-right"
+              // data-aos-duration="1000"
             >
               <Image
                 src="/section-2-img.gif"
