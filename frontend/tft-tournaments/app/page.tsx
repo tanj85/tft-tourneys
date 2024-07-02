@@ -12,7 +12,7 @@ export default function Home() {
         <div className="flex items-center justify-center bg-fixed bg-pengu bg-center bg-cover md:bg-cover h-[45rem] w-full">
           <div
             className="z-10 uppercase font-bold text-5xl text-center md:text-8xl mix-blend-exclusion"
-            data-aos="fade-in"
+            // data-aos="fade-in"
             // data-aos-duration="500"
           >
             Welcome to TFTourneys
