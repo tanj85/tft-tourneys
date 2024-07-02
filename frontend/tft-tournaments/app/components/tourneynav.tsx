@@ -82,7 +82,7 @@ const TourneyNav = ({
                 <div key={index}>
                   <div
                     // onClick={() => handleDropdown(index)}
-                    className="bg-gray-500 p-4 text-center uppercase font-bold text-xl"
+                    className="sticky top-[4rem] bg-gray-500 p-4 text-center uppercase font-bold text-xl"
                   >
                     Day {index + 1}
                   </div>
