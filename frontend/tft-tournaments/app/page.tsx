@@ -5,8 +5,8 @@ export default function Home() {
     <>
       {/* hero */}
       <div className="relative w-full h-[40rem]">
-        <div className="flex items-center justify-center bg-fixed bg-pengu bg-cover h-[40rem] w-full">
-          <div className="z-10 uppercase font-bold text-8xl mix-blend-exclusion">
+        <div className="flex items-center justify-center bg-fixed bg-pengu bg-center bg-cover md:bg-cover h-[40rem] w-full">
+          <div className="z-10 uppercase font-bold text-5xl text-center md:text-left md:text-8xl mix-blend-exclusion">
             Welcome to TFTourneys
           </div>
           <div className="absolute inset-0 bg-black opacity-60 mix-blend-multiply"></div>
@@ -15,17 +15,26 @@ export default function Home() {
 
       {/* section 1 */}
       <div className="h-[43rem]">
-        <div className="flex flex-row">
+        <div className="flex flex-col md:flex-row">
           <Image
             src="/section-1-img.png"
             height={400}
             width={400}
             alt="logo"
-            className="m-[8rem] flex"
+            className="m-[8rem] flex hidden md:block"
           />
-          <div className="flex items-center mx-24">
+
+          {/* mobile version of image */}
+          <Image
+            src="/section-1-img.png"
+            height={200}
+            width={200}
+            alt="logo"
+            className="ml-[8rem] mt-[3rem] md:hidden "
+          />
+          <div className="flex items-center mx-10 md:mx-24">
             <div className="flex-row">
-              <h1 className="mb-3 text-5xl font-greycliff font-bold">
+              <h1 className="mb-3 text-3xl md:text-5xl font-greycliff font-bold">
                 EXPLORE COMPETITIVE TFT
               </h1>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati
@@ -44,10 +53,19 @@ export default function Home() {
 
       {/* section 2 */}
       <div className="h-[40rem]">
-        <div className="flex flex-row">
-          <div className="flex items-center mx-24">
+        <div className="flex md:flex-row flex-col items-center">
+          <div className="flex items-center mx-10 md:mx-24">
             <div className="flex-row">
-              <h1 className="mb-3 text-5xl font-greycliff font-bold">
+              <div className="relative h-[10rem] w-[20rem] md:h-[30rem] md:w-[400rem] md:mr-[4rem]">
+                <Image
+                  src="/section-2-img.gif"
+                  unoptimized={true}
+                  fill={true}
+                  alt="section2"
+                  className="mt-20 md:hidden"
+                />
+              </div>
+              <h1 className="mt-28 mb-3 text-3xl md:text-5xl font-greycliff font-bold">
                 FOLLOW YOUR FAVORITE PLAYERS
               </h1>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati
@@ -63,7 +81,7 @@ export default function Home() {
               src="/section-2-img.gif"
               fill={true}
               alt="section2"
-              className=""
+              className="hidden md:block"
             />
           </div>
         </div>
