@@ -18,11 +18,6 @@ const TourneyNav = ({
   const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
     new Map()
   );
-  //   const [daysOpen, setDaysOpen] = useState<number | null>(null);
-
-  //   const handleDropdown = (index: number) => {
-  //     setDaysOpen(daysOpen === index ? null : index);
-  //   };
 
   const handleTabClick = (tab: any) => {
     setActiveTab(tab);
@@ -41,7 +36,7 @@ const TourneyNav = ({
 
   return (
     <div>
-      <div className="sticky top-[5rem] border border-black border-b flex space-x-4 bg-white text-black p-4">
+      <div className="z-20 sticky top-[5rem] border border-black border-b flex space-x-4 bg-white text-black p-4">
         {tourneyTabs.map((tab) => (
           <button
             key={tab}
@@ -61,12 +56,14 @@ const TourneyNav = ({
             <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-20 text-black text-7xl uppercase font-bold">
               INFO
             </div>
-            <div className="flex flex-col space-y-4">
-              <div> Tournament Info</div>
+            <div className="flex flex-col space-y-4 bg-white text-black p-4">
+              {/* <div> Tournament Info</div> */}
               <div> Region: {region} </div>
               <div> Number of Competitors: {num_participants} </div>
               <div> Tier: {tier} </div>
               <div> Patch: {patch} </div>
+              <div> Start Date: {start_date} </div>
+              <div> End Date: {end_date} </div>
             </div>
           </>
         )}
@@ -82,7 +79,7 @@ const TourneyNav = ({
                 <div key={index}>
                   <div
                     // onClick={() => handleDropdown(index)}
-                    className="bg-gray-500 p-4 text-center uppercase font-bold text-xl"
+                    className="sticky top-[9.8rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
                   >
                     Day {index + 1}
                   </div>
@@ -95,18 +92,18 @@ const TourneyNav = ({
                     <div>
                       {day.games.map((game: any, gameIndex: number) => (
                         <div key={gameIndex} className="my-4">
-                          <h2 className="font-bold border p-4 uppercase rounded-t-md">
+                          <h2 className="sticky top-[12.6rem] text-lg z-9 bg-black font-bold border p-3 uppercase rounded-t-md">
                             Game {gameIndex + 1}
                           </h2>
 
                           {/* Each game */}
                           {game.lobbies.length > 0 ? (
                             <ul>
-                              <div className="grid grid-cols-4 bg-white text-black p-4">
+                              <div className="grid md:grid-cols-4 bg-gray-100 border text-black p-4">
                                 {game.lobbies.map(
                                   (lobby: any, lobbyIndex: number) => (
                                     <div key={lobbyIndex}>
-                                      <div className="grid grid-cols-3 p-2 font-bold border-b border-black uppercase">
+                                      <div className="grid grid-cols-3 p-2 font-bold border-b border-black uppercase bg-gray-300 rounded-t-md">
                                         <div className="col-span-2">
                                           Lobby {lobbyIndex + 1}
                                         </div>
@@ -116,7 +113,10 @@ const TourneyNav = ({
                                       </div>
 
                                       {/* Each lobby */}
-                                      <li key={lobbyIndex} className="">
+                                      <li
+                                        key={lobbyIndex}
+                                        className="bg-white mb-3"
+                                      >
                                         {Object.entries(lobby)
                                           .sort(
                                             (
@@ -145,13 +145,17 @@ const TourneyNav = ({
                               </div>
                             </ul>
                           ) : (
-                            <div>No Lobbies</div>
+                            <div className="p-4 border rounded-b mb-4 italic">
+                              No lobbies
+                            </div>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div>No Games</div>
+                    <div className="p-4 border rounded-b mb-4 italic">
+                      No games
+                    </div>
                   )}
                 </div>
               ))}
@@ -165,7 +169,7 @@ const TourneyNav = ({
             <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-20 text-black text-7xl uppercase font-bold">
               STANDINGS
             </div>
-            <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md">
+            <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500">
               <div className="col-span-3 md:col-span-1">PLAYER</div>
               <div className="text-center">POINTS</div>
             </div>
