@@ -43,9 +43,7 @@ def parse_tournament_info(conn: connection, cur: cursor, tourneys) -> None:
         tourneys[id] = tourney
 
 
-def parse_placement_data(
-    conn: connection, cur: cursor, tourneys, players, curr_game_id: Optional[int]
-):
+def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
     cur.execute("SELECT * FROM tbl_placement_data")
     rows = cur.fetchall()
     for row in rows:
@@ -83,18 +81,26 @@ def parse_placement_data(
         players[name]["tournament history"] = list(players[name]["tournament history"])
 
 
-def parse_database(conn: connection, curr_game_id: Optional[int]):
+def parse_database(conn: connection):
     cur = conn.cursor()
 
     tourneys = {}
     players = {}
 
     parse_tournament_info(conn, cur, tourneys)
-    parse_placement_data(conn, cur, tourneys, players, curr_game_id)
+    parse_placement_data(conn, cur, tourneys, players)
 
     cur.close()
 
     return tourneys, players
+
+
+def update_tourney(conn: connection, tourneys, tourney_id: int):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM tbl_placement_data WHERE tournament_id=" + str(tourney_id)
+    )
+    rows = cur.fetchall()
 
 
 def close_connection(conn: connection) -> None:

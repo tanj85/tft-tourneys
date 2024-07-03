@@ -1,8 +1,8 @@
-import os
-from flask import Flask, request
+import time
+import threading
+from typing import Optional
+from flask import Flask
 from flask_restful import Resource, Api
-import psycopg2
-from psycopg2.extensions import connection
 from Levenshtein import distance
 
 import database
@@ -10,7 +10,7 @@ import database
 app = Flask(__name__)
 api = Api(app)
 
-CURRENT_GAME_ID = 67173566
+CURR_TOURNEY_ID = 67173566
 
 
 # api request for list of all tournaments names and ids
@@ -36,6 +36,8 @@ class Tournaments(Resource):
 
     def get(self, id):
         try:
+            if id.lower() == "current" and CURR_TOURNEY_ID:
+                return tourneys[CURR_TOURNEY_ID]
             int_id = int(id)
             if int_id in tourneys:
                 return tourneys[int_id]
@@ -46,27 +48,6 @@ class Tournaments(Resource):
 class AllPlayers(Resource):
     def get(self):
         return list(players.keys())
-
-
-player1 = {
-    "name": "Sio bio#eprod",
-    "live standings": {
-        "current tournament": "2024 Americas TFT Inkborn Fables Tactician's Cup III",
-        "current game": "lobby6",
-        "current placement overall": 6,
-        "game placements": {
-            "game1": 4,
-            "game2": 6,
-        },
-        "total points": 54,
-    },
-    "tournament history": [
-        "2024 Americas TFT Inkborn Fables Tactician's Cup III",
-        "2024 Americas TFT Inkborn Fables Tactician's Cup I",
-    ],
-}
-
-player_cache = {"Sio bio#eprod": player1}
 
 
 # api request for individual player, when given a name
@@ -96,8 +77,8 @@ class Search(Resource):
         names = list(players.keys())
         names.sort(key=lambda name: distance(remove_tag(name), search_name))
         names = filter(
-            lambda name: is_prefix(search_name, name)
-            or distance(remove_tag(name), search_name) <= 3,
+            lambda name: is_prefix(search_name.lower(), name.lower())
+            or distance(remove_tag(name).lower(), search_name.lower()) <= 3,
             names,
         )
         names = list(names)
@@ -111,9 +92,31 @@ api.add_resource(AllPlayers, "/players/")
 api.add_resource(Search, "/search/<string:search_name>/")
 
 
+def periodic_task(conn):
+    global tourneys, players
+    while True:
+        tourneys, players = database.parse_database(conn)
+        print("refreshed")
+
+        if not CURR_TOURNEY_ID:
+            time.sleep(3000)
+        else:
+            time.sleep(60)
+
+        # if not CURR_TOURNEY_ID:
+        #     print("no tournament happening right now!")
+        # else:
+        #     database.update_tourney(conn, tourneys, CURR_TOURNEY_ID)
+
+
 if __name__ == "__main__":
     global tourneys, players
     conn = database.get_db_connection()
-    tourneys, players = database.parse_database(conn, CURRENT_GAME_ID)
-    database.close_connection(conn)
+    tourneys, players = database.parse_database(conn)
+
+    task_thread = threading.Thread(target=periodic_task, args=[conn])
+    task_thread.daemon = True
+    task_thread.start()
+
     app.run(debug=True)
+    database.close_connection(conn)
