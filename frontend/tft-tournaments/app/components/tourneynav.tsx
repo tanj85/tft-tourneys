@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 const tourneyTabs = ["Info", "Games", "Standings"];
 
 const TourneyNav = ({
+  id,
   days,
   tier,
   region,
@@ -13,7 +14,7 @@ const TourneyNav = ({
   start_date,
   end_date,
 }: any) => {
-  const [activeTab, setActiveTab] = useState(tourneyTabs[0]);
+  const [activeTab, setActiveTab] = useState(sessionStorage.getItem('activeTab') || tourneyTabs[0]);
   const [tourneyDays, setTourneyDays] = useState<any[]>([]);
   const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
     new Map()
@@ -21,6 +22,8 @@ const TourneyNav = ({
 
   const handleTabClick = (tab: any) => {
     setActiveTab(tab);
+    sessionStorage.setItem('activeTab', tab); // Save the current tab to sessionStorage
+    sessionStorage.setItem('currentTourney', tab);
   };
 
   useEffect(() => {
@@ -29,10 +32,8 @@ const TourneyNav = ({
     setTourneyStandings(standingsMap);
   }, [days, standings]);
 
-  // access entries
   const standingsEntries = Array.from(tourneyStandings.entries());
-  // sort the entries by value (descending order)
-  standingsEntries.sort((a, b) => b[1] - a[1]);
+  standingsEntries.sort((a, b) => b[1] - a[1]); // sort the entries by value (descending order)
 
   return (
     <div>
