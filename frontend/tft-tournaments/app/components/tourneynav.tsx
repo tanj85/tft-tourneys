@@ -79,7 +79,7 @@ const TourneyNav = ({
                 <div key={index}>
                   <div
                     // onClick={() => handleDropdown(index)}
-                    className="sticky top-[9.8rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
+                    className="sticky top-[9.74rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
                   >
                     Day {index + 1}
                   </div>
@@ -125,19 +125,23 @@ const TourneyNav = ({
                                             ) => pointsB - pointsA
                                           )
                                           .map(
-                                            ([player, points]: [any, any]) => (
-                                              <li key={player} className="py-1">
+                                            ([player, points]: [any, any]) => {
+                                              // Remove "#eprod" from the end of the player string if it exists
+                                              const formattedPlayer = player.endsWith("#eprod")
+                                              ? player.slice(0, -6)
+                                              : player;
+                                              return (<li key={player} className="py-1">
                                                 <div className="grid grid-cols-3 break-words p-2">
                                                   <span className="col-span-2">
-                                                    {player}
+                                                    {formattedPlayer}
                                                   </span>
                                                   <span className="text-center">
                                                     {points}
                                                   </span>
                                                 </div>
                                               </li>
-                                            )
-                                          )}
+                                            );
+                                          })}
                                       </li>
                                     </div>
                                   )
@@ -166,25 +170,32 @@ const TourneyNav = ({
         {/* STANDINGS SECTION */}
         {activeTab === "Standings" && (
           <>
-            <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-20 text-black text-7xl uppercase font-bold">
+            <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-10 text-black text-7xl uppercase font-bold z-10">
               STANDINGS
             </div>
-            <div className="sticky top-[9.8rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500">
+            <div className="sticky top-[9.74rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500 z-20">
               <div className="col-span-3 md:col-span-1">PLAYER</div>
               <div className="text-center">POINTS</div>
             </div>
-            <div className="border flex flex-col bg-white text-black">
-              {standingsEntries.map(([player, points]) => (
-                <div
-                  key={player}
-                  className="grid grid-cols-4 md:grid-cols-2 p-4 hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300"
-                >
-                  <span className="font-bold col-span-3 md:col-span-1">
-                    {player}
-                  </span>
-                  <span className="text-center">{points}</span>
-                </div>
-              ))}
+            <div className="relative z-10 overflow-hidden" style={{ paddingTop: '50px' }}> 
+              <div className="border flex flex-col bg-white text-black" style={{ marginTop: '-50px' }}> 
+                {standingsEntries.map(([player, points]) => {
+                  const formattedPlayer = player.endsWith("#eprod")
+                    ? player.slice(0, -6)
+                    : player;
+                  return (
+                    <div
+                      key={player}
+                      className="grid grid-cols-4 md:grid-cols-2 p-4 hover:text-gray-500 hover:bg-gray-300 transition-colors duration-300"
+                    >
+                      <span className="font-bold col-span-3 md:col-span-1">
+                        {formattedPlayer}
+                      </span>
+                      <span className="text-center">{points}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
