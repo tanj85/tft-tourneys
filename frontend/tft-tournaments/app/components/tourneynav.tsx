@@ -99,7 +99,7 @@ const TourneyNav = ({
                           {/* Each game */}
                           {game.lobbies.length > 0 ? (
                             <ul>
-                              <div className="grid md:grid-cols-4 bg-gray-100 border text-black p-4">
+                              <div className="grid md:grid-cols-4 bg-gray-100 border text-black p-4 gap-4">
                                 {game.lobbies.map(
                                   (lobby: any, lobbyIndex: number) => (
                                     <div key={lobbyIndex}>
@@ -130,8 +130,8 @@ const TourneyNav = ({
                                               const formattedPlayer = player.endsWith("#eprod")
                                               ? player.slice(0, -6)
                                               : player;
-                                              return (<li key={player} className="py-1">
-                                                <div className="grid grid-cols-3 break-words p-2">
+                                              return (<li key={player} className="pt-2">
+                                                <div className="grid grid-cols-3 break-words p-2 border-b">
                                                   <span className="col-span-2">
                                                     {formattedPlayer}
                                                   </span>
