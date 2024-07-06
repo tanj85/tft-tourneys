@@ -14,7 +14,7 @@ const TourneyNav = ({
   start_date,
   end_date,
 }: any) => {
-  const [activeTab, setActiveTab] = useState(sessionStorage.getItem('activeTab') || tourneyTabs[0]);
+  const [activeTab, setActiveTab] = useState(id == sessionStorage.getItem('currentTourney') ? sessionStorage.getItem('activeTab') || tourneyTabs[0] : tourneyTabs[0]);
   const [tourneyDays, setTourneyDays] = useState<any[]>([]);
   const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
     new Map()
@@ -23,13 +23,13 @@ const TourneyNav = ({
   const handleTabClick = (tab: any) => {
     setActiveTab(tab);
     sessionStorage.setItem('activeTab', tab); // Save the current tab to sessionStorage
-    sessionStorage.setItem('currentTourney', tab);
   };
 
   useEffect(() => {
     setTourneyDays(days);
     const standingsMap = new Map(Object.entries(standings));
     setTourneyStandings(standingsMap);
+    sessionStorage.setItem('currentTourney', id);
   }, [days, standings]);
 
   const standingsEntries = Array.from(tourneyStandings.entries());
@@ -109,7 +109,7 @@ const TourneyNav = ({
                                           Lobby {lobbyIndex + 1}
                                         </div>
                                         <div className="text-gray-500 text-center">
-                                          pts
+                                          place
                                         </div>
                                       </div>
 
@@ -123,7 +123,7 @@ const TourneyNav = ({
                                             (
                                               [, pointsA]: [string, any],
                                               [, pointsB]: [string, any]
-                                            ) => pointsB - pointsA
+                                            ) => pointsA - pointsB
                                           )
                                           .map(
                                             ([player, points]: [any, any]) => {
