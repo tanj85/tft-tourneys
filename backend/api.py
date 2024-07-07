@@ -26,6 +26,8 @@ class AllTournaments(Resource):
                     "region": tourneys[id]["region"],
                     "num_participants": tourneys[id]["num_participants"],
                     "patch": tourneys[id]["patch"],
+                    "start_date": tourneys[id]["start_date"],
+                    "end_date": tourneys[id]["end_date"]
                 }
             )
         return lis
