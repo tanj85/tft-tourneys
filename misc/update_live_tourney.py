@@ -28,7 +28,6 @@ def main():
     args = parser.parse_args()
 
     if args.set_live:
-        return
         set_live_flag()
     else:
         update_live()
