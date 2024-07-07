@@ -1,5 +1,5 @@
 {
-  description "python environment for tftourneys backend";
+  description = "python environment for tftourneys backend";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
