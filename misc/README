@@ -1,0 +1,2 @@
+yeah so put all the info in the tourney_info.csv, then run the hash_tournaments.py and itll generate id automagically
+run scrape_tourney function within scrape_tourney to do the filling of the other table
