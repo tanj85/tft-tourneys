@@ -1,5 +1,89 @@
 import Heading from "../components/heading";
+import Image from "next/image";
 
 export default function About() {
-  return <Heading>About</Heading>;
+  return (
+    <>
+      {/* background image section */}
+
+      <div className="absolute -z-20 h-[20rem] w-full">
+        <Image
+          src="/about_banner.jpg"
+          fill={true}
+          alt="logo"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-darkest-blue opacity-90 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-yellow to-pris-yellow opacity-50 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-pris-pink via-pris-blue to-pris-purple opacity-70 mix-blend-multiply"></div>
+        <div className="absolute top-[10rem] h-[10rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
+      </div>
+
+      <Heading>About</Heading>
+
+      {/* content */}
+      <div className="flex flex-col gap-10 items-center justify-center">
+        <div className="w-[80%] text-not-white text-lg">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
+          nam saepe possimus ut quaerat rerum repellat voluptatibus modi, neque
+          aut dignissimos placeat quo deserunt iste numquam! Tempora suscipit
+          maiores necessitatibus quis distinctio autem aspernatur? Magnam enim
+          eveniet soluta doloremque inventore et dolore numquam veritatis,
+          atque, incidunt animi assumenda, libero ea!
+        </div>
+
+        <div className="-mt-[10rem] -ml-[8rem]">
+          <Heading>Meet the Team</Heading>
+        </div>
+
+        <div className="flex">
+          <div className="flex flex-col items-center">
+            <Image
+              src="/standin_pfp.png"
+              height={300}
+              width={300}
+              alt="logo"
+              className=""
+            />
+            <div className="text-2xl font-bold">Jeffrey</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <Image
+              src="/standin_pfp.png"
+              height={300}
+              width={300}
+              alt="logo"
+              className=""
+            />
+            <div className="text-2xl font-bold">Tean</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <Image
+              src="/standin_pfp.png"
+              height={300}
+              width={300}
+              alt="logo"
+              className=""
+            />
+            <div className="text-2xl font-bold">Rachel</div>
+          </div>
+        </div>
+        <div className="w-[80%] text-not-white text-lg">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
+          nam saepe possimus ut quaerat rerum repellat voluptatibus modi, neque
+          aut dignissimos placeat quo deserunt iste numquam! Tempora suscipit
+          maiores necessitatibus quis distinctio autem aspernatur? Magnam enim
+          eveniet soluta doloremque inventore et dolore numquam veritatis,
+          atque, incidunt animi assumenda, libero ea!
+        </div>
+      </div>
+      <div className="flex h-[100vh] w-[100vw] flex-col items-center justify-center">
+        <div className="card-wrapper h-[5rem] w-[6rem]">
+          <div className="card-content flex items-center justify-center text-xl">
+            <div className="max-w-[60%] text-center">Rachel</div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }

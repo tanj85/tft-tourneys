@@ -3,6 +3,16 @@
 @tailwind utilities;
 @import url("https://use.typekit.net/cdd6oyg.css");
 
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
 :root {
   background-color: #0b0c15;
   color: white;
@@ -31,4 +41,53 @@
   );
   background-size: 300% 300%;
   background-clip: text;
+}
+
+/* Act as a border */
+.card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  --tw-gradient-from: #805008 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(51 65 85 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #805008 var(--tw-gradient-to-position);
+}
+/* Gradient */
+.card-wrapper::before {
+  background: conic-gradient(
+    rgba(240, 205, 125, 0.4) 0deg,
+    rgba(240, 205, 125, 0.4) 0deg,
+    transparent 80deg
+  );
+  position: absolute;
+  left: -25%;
+  top: -25%;
+  height: 150%;
+  width: 150%;
+}
+@keyframes border-spin {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+.card-wrapper::before {
+  animation: border-spin 7s linear infinite;
+  --tw-content: "";
+  content: var(--tw-content);
+}
+/* Body */
+.card-content {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  height: calc(100% - 2px);
+  width: calc(100% - 2px);
+  border-radius: 1rem;
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  --tw-gradient-from: #191f30 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(30 41 59 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  --tw-gradient-to: #0e111c var(--tw-gradient-to-position);
 }

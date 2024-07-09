@@ -21,10 +21,17 @@ export default function Home() {
         </div>
       </div> */}
       <div className="h-[45rem] ">
-        <div className="flex justify-center items-center">
-          <div className="text-7xl font-bold w-[30rem]">
+        {/* blobs */}
+        <div className="relative w-full max-w-lg">
+          <div className="absolute top-[6rem] left-[5rem] w-[25rem] h-[25rem] bg-pris-blue rounded-full mix-blend-overlay filter blur-2xl animate-blob opacity-80"></div>
+          <div className="absolute top-[6rem] -right-[15rem] w-[25rem] h-[25rem] bg-pris-light-pink rounded-full mix-blend-overlay filter blur-2xl animate-blob animation-delay-2000 opacity-90"></div>
+          <div className="absolute top-[14rem] left-[12rem] w-[25rem] h-[25rem] bg-pris-yellow rounded-full mix-blend-overlay filter blur-2xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="mt-4 md:text-left text-center flex justify-center items-center flex-wrap mx-auto">
+          <div className="text-5xl md:text-7xl font-bold w-[30rem] z-0">
             <div className="-mr-8 mb-2">Welcome to</div>
-            <div className="text-8xl -mr-8">
+            <div className="text-6xl md:text-8xl -mr-8">
               <div className="animate-gradient gradient-text text-transparent">
                 TFTourneys
               </div>
@@ -35,7 +42,7 @@ export default function Home() {
             height={400}
             width={400}
             alt="logo"
-            className="m-[8rem] flex hidden md:block"
+            className="m-[8rem] z-0"
           />
         </div>
       </div>

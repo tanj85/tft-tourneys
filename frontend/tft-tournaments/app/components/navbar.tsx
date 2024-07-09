@@ -35,7 +35,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="items-center flex gap-[1.5rem] mr-[10rem] uppercase font-bold tracking-wider">
+        <div className="items-center flex gap-[1.5rem] mr-[10rem] tracking-wider">
           {navLinks.map((link) => {
             const isActive = pathname && pathname.startsWith(link.href);
             return (
@@ -45,8 +45,8 @@ const Navbar = () => {
                   key={link.name}
                   className={
                     isActive
-                      ? "font-bold border rounded-md h-7 p-5 items-center flex"
-                      : "bg-opacity-0 transition-all ease-in-out duration:300 delay-100 hover:border rounded-md h-7 p-5 items-center flex"
+                      ? "h-7 mx-5 py-4 items-center flex gradient-text animate-gradient text-transparent items-center"
+                      : "bg-opacity-0 transition-all ease-in-out duration:300 delay-100 h-7 mx-5 py-4 items-center flex gradient-text animate-gradient hover:text-transparent"
                   }
                 >
                   {link.name}
@@ -55,10 +55,7 @@ const Navbar = () => {
             );
           })}
         </div>
-        {/* <FaSearch className="h-20 w-7 ml-20 mr-10" /> */}
-        <Link href="/profile">
-          {/* <IoPerson className="h-20 w-8 mr-14" /> */}
-        </Link>
+        <Link href="/profile"></Link>
       </div>
 
       {/* mobile version menu */}
