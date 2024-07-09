@@ -16,7 +16,20 @@ CURR_TOURNEY_ID = 67173566
 # api request for list of all tournaments names and ids
 class AllTournaments(Resource):
     def get(self):
-        return list(tourneys.values())
+        lis = []
+        for id in tourneys:
+            lis.append(
+                {
+                    "name": tourneys[id]["name"],
+                    "id": tourneys[id]["id"],
+                    "tier": tourneys[id]["tier"],
+                    "region": tourneys[id]["region"],
+                    "patch": tourneys[id]["patch"],
+                    "start_date": tourneys[id]["start_date"],
+                    "end_date": tourneys[id]["end_date"]
+                }
+            )
+        return lis
 
 # api request for an individual tournament, when given an id
 class Tournaments(Resource):
