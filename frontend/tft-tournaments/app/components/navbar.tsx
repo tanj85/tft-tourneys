@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="font-greycliff sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
+      <div className="font-greycliff backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
         <Link href="/">
           <div className="relative h-20 w-[240px]">
             <Image
@@ -65,7 +65,7 @@ const Navbar = () => {
       <div
         className={
           menuOpen
-            ? "z-30 fixed left-0 top-0 w-full h-screen flex flex-col justify-start"
+            ? "z-30 fixed bg-darkest-blue left-0 top-0 w-full h-screen flex flex-col justify-start"
             : "hidden"
         }
       >
@@ -86,7 +86,7 @@ const Navbar = () => {
       </div>
 
       {/* mobile navbar */}
-      <div className="sticky top-0 md:hidden flex justify-between overflow-hidden z-30">
+      <div className="sticky top-0 md:hidden backdrop-blur bg-darkest-blue bg-opacity-80 flex justify-between overflow-hidden z-30">
         <Link href="/">
           <div className="relative h-20 w-[79px]">
             <Image

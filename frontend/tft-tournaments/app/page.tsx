@@ -21,7 +21,23 @@ export default function Home() {
         </div>
       </div> */}
       <div className="h-[45rem] ">
-
+        <div className="flex justify-center items-center">
+          <div className="text-7xl font-bold w-[30rem]">
+            <div className="-mr-8 mb-2">Welcome to</div>
+            <div className="text-8xl -mr-8">
+              <div className="animate-gradient gradient-text text-transparent">
+                TFTourneys
+              </div>
+            </div>
+          </div>
+          <Image
+            src="/section-1-img.png"
+            height={400}
+            width={400}
+            alt="logo"
+            className="m-[8rem] flex hidden md:block"
+          />
+        </div>
       </div>
 
       {/* section 1 */}

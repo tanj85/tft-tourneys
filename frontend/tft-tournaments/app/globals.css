@@ -4,7 +4,31 @@
 @import url("https://use.typekit.net/cdd6oyg.css");
 
 :root {
-  background-color: #0B0C15;
+  background-color: #0b0c15;
   color: white;
   scroll-behavior: smo;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    to right,
+    #dd88ff,
+    #988bfa,
+    #b1dfff,
+    #f8d283,
+    #f1c2ff,
+    #c58ce6,
+    #f1c2ff,
+    #f8d283,
+    #b1dfff,
+    #988bfa,
+    #dd88ff,
+    #988bfa,
+    #b1dfff,
+    #f8d283,
+    #f1c2ff,
+    #dd88ff
+  );
+  background-size: 300% 300%;
+  background-clip: text;
 }
