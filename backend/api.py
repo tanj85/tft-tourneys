@@ -16,22 +16,7 @@ CURR_TOURNEY_ID = 67173566
 # api request for list of all tournaments names and ids
 class AllTournaments(Resource):
     def get(self):
-        lis = []
-        for id in tourneys:
-            lis.append(
-                {
-                    "name": tourneys[id]["name"],
-                    "id": tourneys[id]["id"],
-                    "tier": tourneys[id]["tier"],
-                    "region": tourneys[id]["region"],
-                    "num_participants": tourneys[id]["num_participants"],
-                    "patch": tourneys[id]["patch"],
-                    "start_date": tourneys[id]["start_date"],
-                    "end_date": tourneys[id]["end_date"]
-                }
-            )
-        return lis
-
+        return list(tourneys.values())
 
 # api request for an individual tournament, when given an id
 class Tournaments(Resource):
@@ -120,5 +105,5 @@ if __name__ == "__main__":
     task_thread.daemon = True
     task_thread.start()
 
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
     database.close_connection(conn)

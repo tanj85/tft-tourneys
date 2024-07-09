@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extensions import connection, cursor
 from dotenv import load_dotenv
 from typing import Dict, List, Optional
+from datetime import date, datetime
 
 load_dotenv()
 
@@ -17,40 +18,99 @@ def get_db_connection() -> connection:
     )
     return connection
 
-
-def parse_tournament_info(conn: connection, cur: cursor, tourneys) -> None:
+def query_sql(conn: connection, query: str):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM tbl_tournament_info")
+    cur.execute(query)
+    output = cur.fetchall()
+    cur.close()
+    return output
 
-    rows = cur.fetchall()
+def parse_tournament_info(conn: connection) -> None:
+    rows = query_sql(conn, "SELECT * FROM tbl_tournament_info")
+    tourneys = {}
     for row in rows:
-        id = row[8]
+        if row[8] not in tourneys:
+            tourney = {
+                "name": row[0],
+                "tier": row[1],
+                "region": row[2],
+                "start_date": str(row[3]),
+                "end_date": str(row[4]),
+                "link": row[6],
+                "patch": row[7],
+                "id": row[8],
+                "days": [],  # todo: want standings in days
+            }
+            tourneys[row[8]] = tourney
 
-        tourney = {
-            "id": id,
-            "name": row[0],
+        while (len(tourney["days"]) < row[9]):
+            tourney["days"].append(None)
+
+        tourney["days"][row[9] - 1] = {
             "standings": {},
-            "days": [],
-            "tier": row[1],
-            "region": row[2],
-            "start_date": str(row[3]),
-            "end_date": str(row[4]),
             "num_participants": row[5],
-            "link": row[6],
-            "patch": row[7],
+            "day": row[9],
+            "sheet_index": row[10],
+            "games": []
         }
 
-        tourneys[id] = tourney
+    return tourneys
+
+
+def expand(lis, num):
+    while len(lis) < num:
+        lis.append(None)
+        
+def parse_tournament_info_new(conn: connection):
+    tourneys = {}
+
+    columns = query_sql(conn, """
+                    SELECT column_name, data_type
+                    FROM information_schema.columns
+                    WHERE table_name = 'tbl_tournament_info'
+                      AND table_schema = 'public'
+                """)
+    column_names = [col[0] for col in columns]
+
+    rows = query_sql(conn, "SELECT * FROM tbl_tournament_info")
+
+#     tournament_level = ["tourney_name", "tier" ,"region", "start_date", "end_date", "patch", "id"]
+ #    day_level = ["num_participants", "link"]
+    seen_tourneys = set()
+    for row in rows:
+        seen = False
+        day = {}
+        for col_name, col_value in zip(column_names, row):
+            if col_value != "integer":
+                col_value = str(col_value)
+            day[col_name] = col_value
+        
+        
+        id = tourney["id"]
+
+        if id not in seen_tourneys:
+            tourney = {}
+            for col_name in col_names:
+                tourney[col_name] = []
+        seen_tourneys.add(id)
+        for col_name in col_names:
+            expand(tourney[col_name]["day"])
+            tourney[col_name][day] = day[col_name]
+
+    for id in tourneys:
+        for col_name in col_names:
+            if len(tourneys["id"]) <= 1:
+                break
+            
+    return tourneys                
+        
 
 
 def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
-    cur.execute("SELECT * FROM tbl_placement_data")
-    rows = cur.fetchall()
+    rows = query_sql(conn, "SELECT * FROM tbl_placement_data")
     for row in rows:
         tourney_id = row[3]
         day_num = row[4]
-        while len(tourneys[tourney_id]["days"]) < day_num:
-            tourneys[tourney_id]["days"].append({"games": []})
 
         game_num = row[6]
         games = tourneys[tourney_id]["days"][day_num - 1]["games"]
@@ -65,7 +125,7 @@ def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
         placement = row[2]
         lobbies[lobby_id - 1][player_name] = placement
 
-        standings = tourneys[tourney_id]["standings"]
+        standings = tourneys[tourney_id]["days"][day_num - 1]["standings"]
         if player_name not in standings:
             standings[player_name] = 0
         standings[player_name] += 9 - placement
@@ -84,10 +144,9 @@ def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
 def parse_database(conn: connection):
     cur = conn.cursor()
 
-    tourneys = {}
     players = {}
 
-    parse_tournament_info(conn, cur, tourneys)
+    tourneys = parse_tournament_info(conn)
     parse_placement_data(conn, cur, tourneys, players)
 
     cur.close()
