@@ -18,6 +18,9 @@ class AllTournaments(Resource):
     def get(self):
         lis = []
         for id in tourneys:
+            days = tourneys[id]["days"]
+            num_participants = max([days[i]["num_participants"] for i in range(len(days)) if days[i]])
+
             lis.append(
                 {
                     "name": tourneys[id]["name"],
@@ -26,7 +29,8 @@ class AllTournaments(Resource):
                     "region": tourneys[id]["region"],
                     "patch": tourneys[id]["patch"],
                     "start_date": tourneys[id]["start_date"],
-                    "end_date": tourneys[id]["end_date"]
+                    "end_date": tourneys[id]["end_date"],
+                    "num_participants": num_participants
                 }
             )
         return lis
