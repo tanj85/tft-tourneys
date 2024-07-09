@@ -80,7 +80,7 @@ const TourneyNav = ({
                 <div key={index}>
                   <div
                     // onClick={() => handleDropdown(index)}
-                    className="sticky top-[9.74rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
+                    className="sticky top-[9.68rem] z-10 bg-gray-500 p-2 text-center uppercase font-bold text-xl border"
                   >
                     Day {index + 1}
                   </div>
@@ -93,7 +93,7 @@ const TourneyNav = ({
                     <div>
                       {day.games.map((game: any, gameIndex: number) => (
                         <div key={gameIndex} className="my-4">
-                          <h2 className="sticky top-[12.6rem] text-lg z-9 bg-black font-bold border p-3 uppercase rounded-t-md">
+                          <h2 className="sticky top-[12.55rem] text-lg z-9 bg-black font-bold border p-3 uppercase rounded-t-md">
                             Game {gameIndex + 1}
                           </h2>
 
@@ -174,7 +174,7 @@ const TourneyNav = ({
             <div className="hidden md:block absolute justify-end right-0 mr-40 -mt-10 text-black text-7xl uppercase font-bold z-10">
               STANDINGS
             </div>
-            <div className="sticky top-[9.74rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500 z-20">
+            <div className="sticky top-[9.68rem] bg-black text-lg border p-4 grid grid-cols-4 md:grid-cols-2 font-bold rounded-t-md bg-gray-500 z-20">
               <div className="col-span-3 md:col-span-1">PLAYER</div>
               <div className="text-center">POINTS</div>
             </div>

@@ -18,7 +18,7 @@ const TournamentTabs = async () => {
         </div>
         <div className="flex flex-col w-full bg-white ">
           {tourneys.map((tourney: any) => (
-            <div className="hover:bg-gray-300 transition-colors duration-300 border-b border-gray-300">
+            <div key={tourney.id} className="hover:bg-gray-300 transition-colors duration-300 border-b border-gray-300">
             <Link href={`/tournaments/${tourney.id}`} key={tourney.id}>
               <div className="p-4 rounded-md mx-2 text-black">
                 <div className="grid grid-cols-5 gap-8 text-center items-center hover:text-gray-500">

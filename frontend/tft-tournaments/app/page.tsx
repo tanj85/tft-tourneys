@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       {/* hero */}
-      <div className="relative w-full h-[45rem]">
+      {/* <div className="relative w-full h-[45rem]">
         <div className="flex items-center justify-center bg-fixed bg-pengu bg-center bg-cover md:bg-cover h-[45rem] w-full">
           <div
             className="z-10 uppercase font-bold text-5xl text-center md:text-8xl mix-blend-exclusion"
@@ -19,6 +19,9 @@ export default function Home() {
           </div>
           <div className="absolute inset-0 bg-black opacity-60 mix-blend-multiply"></div>
         </div>
+      </div> */}
+      <div className="h-[45rem] ">
+
       </div>
 
       {/* section 1 */}

@@ -23,11 +23,11 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="font-greycliff border-b sticky top-0 hidden md:flex flex-row justify-between overflow-hidden bg-black z-20">
+      <div className="font-greycliff sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
         <Link href="/">
-          <div className="relative h-20 w-[180px]">
+          <div className="relative h-20 w-[240px]">
             <Image
-              src="/tft-logo-full.png"
+              src="/new_full_logo.png"
               fill={true}
               alt="logo"
               className="p-3 ml-2"
@@ -65,7 +65,7 @@ const Navbar = () => {
       <div
         className={
           menuOpen
-            ? "z-30 fixed left-0 top-0 w-full h-screen bg-black flex flex-col justify-start"
+            ? "z-30 fixed left-0 top-0 w-full h-screen flex flex-col justify-start"
             : "hidden"
         }
       >
@@ -86,11 +86,11 @@ const Navbar = () => {
       </div>
 
       {/* mobile navbar */}
-      <div className="sticky top-0 md:hidden flex justify-between overflow-hidden bg-black border-b z-30">
+      <div className="sticky top-0 md:hidden flex justify-between overflow-hidden z-30">
         <Link href="/">
-          <div className="relative h-20 w-[85px]">
+          <div className="relative h-20 w-[79px]">
             <Image
-              src="/tft-logo-small.png"
+              src="/new_small_logo.png"
               fill={true}
               alt="logo"
               className="p-3 ml-2"
