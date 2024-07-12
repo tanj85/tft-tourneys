@@ -1,6 +1,10 @@
-import requests
+import unittest
+import json
+from api import app
 
-BASE = "http://127.0.0.1:5000/"
+class TestTournaments(unittest.TestCase):
+    def test_hello(self):
+        self.assertEqual(True, True)
 
-response = requests.get(BASE + "test")
-print(response.json())
+if __name__ == "__main__":
+    unittest.main()
