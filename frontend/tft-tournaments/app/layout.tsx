@@ -81,7 +81,7 @@ export default function RootLayout({
         <meta name="twitter:image" content="/tft-banner.png" /> */}
       </head>
       <body className="">
-        <div className="font-soleil">
+        <div className="font-soleil overflow-x-clip">
           <Navbar />
           {children}
         </div>

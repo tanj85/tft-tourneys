@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="font-greycliff backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
+      <div className="backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
         <Link href="/">
           <div className="relative h-20 w-[240px]">
             <Image
@@ -62,17 +62,17 @@ const Navbar = () => {
       <div
         className={
           menuOpen
-            ? "z-30 fixed bg-darkest-blue left-0 top-0 w-full h-screen flex flex-col justify-start"
+            ? "z-50 fixed bg-darkest-blue left-0 top-0 w-full h-screen flex flex-col justify-start"
             : "hidden"
         }
       >
-        <div className="flex justify-end mr-6 p-3">
+        <div className="flex justify-end mr-6">
           <AiOutlineClose
             onClick={handleMenu}
-            className="z-30 h-20 w-[25px] cursor-pointer"
+            className="z-50 h-20 w-[25px] cursor-pointer"
           />
         </div>
-        <ul className="flex flex-col justify-center items-center mt-28 uppercase font-bold tracking-wide">
+        <ul className="flex flex-col items-center mt-48 font-bold tracking-wide text-lg">
           <li onClick={handleMenu} className="py-3">
             <Link href="/tournaments">Tournaments</Link>
           </li>

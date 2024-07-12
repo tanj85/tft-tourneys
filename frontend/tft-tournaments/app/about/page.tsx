@@ -1,3 +1,4 @@
+import Button from "../components/button";
 import Heading from "../components/heading";
 import Image from "next/image";
 
@@ -5,8 +6,23 @@ export default function About() {
   return (
     <>
       {/* background image section */}
+      <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
+      <div className="animate-fade absolute top-0 -z-20 h-[37rem] w-full">
+        <Image
+          src="/inkborn_banner.jpg"
+          fill={true}
+          alt="logo"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-darkest-blue opacity-90 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-blue to-pris-yellow opacity-70 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-blue to-pris-yellow opacity-70 mix-blend-multiply"></div>
+        <div className="absolute top-[10rem] h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
+      </div>
 
-      <div className="absolute -z-20 h-[20rem] w-full">
+      {/* background image section
+      <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
+      <div className="animate-fade absolute top-0 -z-20 h-[37rem] w-full">
         <Image
           src="/about_banner.jpg"
           fill={true}
@@ -16,23 +32,13 @@ export default function About() {
         <div className="absolute inset-0 bg-gradient-to-t from-darkest-blue opacity-90 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-yellow to-pris-yellow opacity-50 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-pink via-pris-blue to-pris-purple opacity-70 mix-blend-multiply"></div>
-        <div className="absolute top-[10rem] h-[10rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
-      </div>
-
-      <Heading>About</Heading>
+        <div className="absolute top-[10rem] h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
+      </div> */}
 
       {/* content */}
-      <div className="flex flex-col gap-10 items-center justify-center">
-        <div className="w-[80%] text-not-white text-lg">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
-          nam saepe possimus ut quaerat rerum repellat voluptatibus modi, neque
-          aut dignissimos placeat quo deserunt iste numquam! Tempora suscipit
-          maiores necessitatibus quis distinctio autem aspernatur? Magnam enim
-          eveniet soluta doloremque inventore et dolore numquam veritatis,
-          atque, incidunt animi assumenda, libero ea!
-        </div>
 
-        <div className="-mt-[10rem] -ml-[8rem]">
+      <div className="flex flex-col gap-10 items-center justify-center">
+        <div className="-ml-[8rem]">
           <Heading>Meet the Team</Heading>
         </div>
 
@@ -45,7 +51,7 @@ export default function About() {
               alt="logo"
               className=""
             />
-            <div className="text-2xl font-bold">Jeffrey</div>
+            <div className=" font-bold">Jeffrey</div>
           </div>
           <div className="flex flex-col items-center">
             <Image
@@ -55,7 +61,7 @@ export default function About() {
               alt="logo"
               className=""
             />
-            <div className="text-2xl font-bold">Tean</div>
+            <div className="font-bold">Tean</div>
           </div>
           <div className="flex flex-col items-center">
             <Image
@@ -65,10 +71,10 @@ export default function About() {
               alt="logo"
               className=""
             />
-            <div className="text-2xl font-bold">Rachel</div>
+            <div className=" font-bold">Rachel</div>
           </div>
         </div>
-        <div className="w-[80%] text-not-white text-lg">
+        <div className="w-[80%] text-not-white">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
           nam saepe possimus ut quaerat rerum repellat voluptatibus modi, neque
           aut dignissimos placeat quo deserunt iste numquam! Tempora suscipit
@@ -77,13 +83,15 @@ export default function About() {
           atque, incidunt animi assumenda, libero ea!
         </div>
       </div>
-      <div className="flex h-[100vh] w-[100vw] flex-col items-center justify-center">
+
+      {/* testing */}
+      {/* <div className="flex h-[100vh] w-[100vw] flex-col items-center justify-center">
         <div className="card-wrapper h-[5rem] w-[6rem]">
           <div className="card-content flex items-center justify-center text-xl">
             <div className="max-w-[60%] text-center">Rachel</div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
