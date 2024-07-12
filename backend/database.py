@@ -7,7 +7,6 @@ from datetime import date, datetime
 
 load_dotenv()
 
-
 # returns a connection to the database
 def get_db_connection() -> connection:
     connection = psycopg2.connect(
@@ -113,6 +112,7 @@ def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
         day_num = row[4]
 
         game_num = row[6]
+        print(tourneys[tourney_id]["days"][day_num - 1])
         games = tourneys[tourney_id]["days"][day_num - 1]["games"]
         while len(games) < game_num:
             games.append({"lobbies": []})
@@ -154,6 +154,28 @@ def parse_database(conn: connection):
     return tourneys, players
 
 
+
+def print_tournament_info_schema(conn: connection, name):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name = """ + name + ";")
+
+    # Fetch all results
+    columns = cur.fetchall()
+    print("\nColumns in your_table_name:")
+    for column in columns:
+        print(f"{column[0]}: {column[1]}")
+
+    cur.close()
+def print_first_row(conn: connection, name):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + name)
+    rows = cur.fetchall()
+    print(rows[0])
+    cur.close()
+
 def update_tourney(conn: connection, tourneys, tourney_id: int):
     cur = conn.cursor()
     cur.execute(
@@ -164,3 +186,10 @@ def update_tourney(conn: connection, tourneys, tourney_id: int):
 
 def close_connection(conn: connection) -> None:
     conn.close()
+
+if __name__ == "__main__":
+    conn = get_db_connection()
+    print_tournament_info_schema(conn, "'tbl_tournament_info'")
+    print_tournament_info_schema(conn, "'tbl_placement_data'")
+    print_first_row(conn, "tbl_tournament_info")
+    print_first_row(conn, "tbl_placement_data")
