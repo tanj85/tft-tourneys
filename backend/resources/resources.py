@@ -4,18 +4,21 @@ from psycopg2.extensions import connection, cursor
 
 import database
 
+
+
+
 class Tourneys(Resource):
     tourneys = None
+    tourney_fields = ["tourney_name", "id", "start_date", "end_date", "num_participants", "patch", "link", "tier", "region"]
+    day_fields = ["day", "sheet_index"]
 
     # initialize
     def __init__(self):
         conn = database.get_db_connection()
         # rows = database.query_sql(conn, "SELECT * FROM tbl_tournament_info")
         tourneys = {}
-        tourney_fields = ["tourney_name", "id", "start_date", "end_date", "num_participants", "patch", "link", "tier", "region"]
-        day_fields = ["day", "sheet_index"]
         tournament_info = {}
-        for field in tourney_fields + day_fields:
+        for field in Tourneys.tourney_fields + Tourneys.day_fields:
             tournament_info[field] = database.query_sql(conn, "SELECT " + field + " FROM tbl_tournament_info")
             tournament_info[field] = [x[0] for x in tournament_info[field]]
         
@@ -23,7 +26,7 @@ class Tourneys(Resource):
             id = tournament_info["id"][i]
             if id not in tourneys:
                 tourney = {}
-                for field in tourney_fields:
+                for field in Tourneys.tourney_fields:
                     entry = tournament_info[field][i]
                     if type(entry) != "int":
                         entry = str(entry)
@@ -35,7 +38,7 @@ class Tourneys(Resource):
             while (len(tourney["days"]) < day):
                 tourney["days"].append({"standings": {}, "games": []})
 
-            for field in day_fields:
+            for field in Tourneys.day_fields:
                 tourney["days"][day - 1][field] = tournament_info[field][i]
 
         # intialize standings for each game, changes modifies tourneys
@@ -57,7 +60,12 @@ class Tourneys(Resource):
                 print("what")
                 continue
 
-            games = tourneys[tourney_id]["days"][day_num - 1]["games"]
+            tourney = tourneys[tourney_id]
+            while len(tourney["days"]) < day_num:
+                tourney["days"].append({"standings": {}, "games": []})
+
+            games = tourney["days"][day_num - 1]["games"]
+
             while len(games) < game_num:
                 games.append({"lobbies": []})
             lobbies = games[game_num - 1]["lobbies"]
@@ -81,18 +89,14 @@ class Tourneys(Resource):
         parser.add_argument("id", type=int)
         args = parser.parse_args()
         if not args["id"]:
-            return self.get_tournament_list()
+            return Tourneys.get_tournament_list()
         else:
             return self.get_tournament_info(args["id"])
        
     
 
-    def get_tournament_list(self):
-        lis = []
-        include_fields = ["tourney_name", "id", "tier", "region", "patch", "start_date", "end_date", "num_participants"]
-        for id in self.tourneys:
-            lis.append({field: self.tourneys[id][field] for field in include_fields})
-        return lis
+    def get_tournament_list():
+        return [{field: Tourneys.tourneys[id][field] for field in Tourneys.tourney_fields} for id in Tourneys.tourneys]
 
     def get_tournament_info(self, id: int):
         tourneys = Tourneys.tourneys
@@ -138,7 +142,6 @@ class Players(Resource):
         conn.close()
 
 
-
     def get(self):
         if Players.players is None:
             return None, 501
@@ -147,16 +150,17 @@ class Players(Resource):
         parser.add_argument("name", type=str)
         parser.add_argument("tag", type=str)
         args = parser.parse_args()
+        print(args)
 
-        if args["name"] and args["tag"]:
+        if args["name"] is not None and args["tag"] is not None:
             return self.get_player_info(args["name"], args["tag"])
 
         return list(self.players.keys())
 
     def get_player_info(self, name, tag):
         players = Players.players
-        name = name.lower()
         name += "#" + tag
+        name = name.lower()
         if name in players:
             return players[name]
 
