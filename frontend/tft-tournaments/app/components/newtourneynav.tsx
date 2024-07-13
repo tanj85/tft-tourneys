@@ -4,6 +4,8 @@ import SectionLabel from "./sectionlabel";
 import GamesForDay from "./games";
 import Image from "next/image";
 import { formatDate } from "../data/utils";
+import Button from "./button";
+import StandingsForDay from "./standings";
 
 interface Standings {
   [key: string]: number;
@@ -54,6 +56,7 @@ const NewTourneyNav = ({ tournament }: any) => {
   const standings = tournament.standings;
   // const [activeDay, setActiveDay] = useState(dayTabs[0]);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
+  // const [activeStandingsDay, setActiveStandingsDay] = useState(0);
   const [activeTab, setActiveTab] = useState(tourneyTabs[0]);
   // id == sessionStorage.getItem("currentTourney")
   //   ? sessionStorage.getItem("activeTab") || tourneyTabs[0]
@@ -69,9 +72,12 @@ const NewTourneyNav = ({ tournament }: any) => {
   };
 
   const handleDaysClick = (index: any) => {
-    // setActiveDay(dayTabs[index]);
     setActiveDayIndex(index);
   };
+
+  // const handleStandingsDaysClick = (index: any) => {
+  //   setActiveStandingsDay(index);
+  // };
 
   useEffect(() => {
     setTourneyDays(days);
@@ -183,19 +189,39 @@ const NewTourneyNav = ({ tournament }: any) => {
       {/* STANDINGS SECTION */}
       <div
         id="standings"
-        className="hidden h-full md:block grow h-[84vh] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
+        className="hidden h-full md:block grow max-w-[25rem] h-[84vh] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
       >
-        <div className="mt-1 flex gap-2 divide-x divide-idle-purple-b border-b border-idle-purple-b">
-          <SectionLabel
-            sourceImage="/crown.png"
-            text="Standings"
-            props="mb-1"
-          />
+        <div className="flex items-center gap-2 border-b border-idle-purple-b">
+          <SectionLabel sourceImage="/crown.png" text="Standings" props="" />
+          <div
+            id="artificial-border"
+            className="w-[1px] h-6 bg-idle-purple-b"
+          ></div>
+          <div id="standings-days-buttons" className="flex items-center -ml-2">
+            {tourneyDays.map((day, index) => (
+              <>
+                <button
+                  key={index}
+                  className={`hover:bg-active-purple px-3 py-[.1rem] my-1 mx-1 rounded ${activeDayIndex === index ? "text-white bg-active-purple" : "text-not-white"}`}
+                  onClick={() => handleDaysClick(index)}
+                >
+                  Day {index + 1}
+                </button>
+                <div
+                  id="artificial-border"
+                  className="w-[1px] h-6 bg-idle-purple-b"
+                ></div>
+              </>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-row items-center justify-center">
+        {/* WIP */}
+        {/* <div className="flex flex-row items-center justify-center">
           <Image src="/poro.png" width={100} height={100} alt="icon" />
           <div className="text-not-white italic text-center">WIP</div>
-        </div>
+        </div> */}
+
+        <StandingsForDay tournament={tournament} dayIndex={activeDayIndex} />
       </div>
       {/* END STANDINGS SECTION */}
     </div>

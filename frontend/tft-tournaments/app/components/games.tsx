@@ -61,7 +61,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
       <div className="flex flex-row items-center">
         <Image src="/sad_emote.png" width={100} height={100} alt="icon" />
         <div className="text-not-white italic text-center">
-          No games found for Day {dayIndex + 1}
+          No games found for Day {dayIndex + 1}!
         </div>
       </div>
     );

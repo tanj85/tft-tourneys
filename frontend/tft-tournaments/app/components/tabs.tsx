@@ -27,7 +27,7 @@ const TournamentTabs = async () => {
                 <div className="p-4 rounded-md mx-2">
                   <div className="grid grid-cols-5 gap-8 text-center items-center">
                     <div className="md:col-span-1 col-span-2 text-left font-bold text-balance">
-                      {tourney.name}
+                      {tourney.tourney_name}
                     </div>
                     <div>{tourney.tier}</div>
                     <div>{tourney.region}</div>

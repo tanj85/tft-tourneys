@@ -59,6 +59,8 @@ module.exports = {
         "active-purple": "#2D314E",
         "active-purple-b": "#656C9D",
         "lightest-purple": "#383C5E",
+        white: "#e6e9f0",
+        whitish: "#afadc9",
       },
     },
   },
