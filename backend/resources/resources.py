@@ -86,7 +86,7 @@ class Tourneys(Resource):
         if Tourneys.tourneys is None:
             return None, 500
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=int)
+        parser.add_argument("id", type=int, location="args")
         args = parser.parse_args()
         if not args["id"]:
             return Tourneys.get_tournament_list()
@@ -147,8 +147,8 @@ class Players(Resource):
             return None, 501
 
         parser = reqparse.RequestParser()
-        parser.add_argument("name", type=str)
-        parser.add_argument("tag", type=str)
+        parser.add_argument("name", type=str, location="args")
+        parser.add_argument("tag", type=str, location="args")
         args = parser.parse_args()
         print(args)
 
