@@ -127,15 +127,17 @@ class Players(Resource):
         for i in range(len(placement_data["player_name"])):
             player_name = placement_data["player_name"][i]
             tourney_id = placement_data["tournament_id"][i]
+            tourney_name = Tourneys.tourneys[tourney_id]["tourney_name"]
             if player_name.lower() not in players:
                 players[player_name.lower()] = {
                     "name": player_name,
                     "live": {},
-                    "tournament history": set(),
+                    "tournament history": {},
                 }
-            players[player_name.lower()]["tournament history"].add(Tourneys.tourneys[tourney_id]["tourney_name"])
-        for name in players.keys():
-            players[name]["tournament history"] = list(players[name]["tournament history"])
+        #     players[player_name.lower()]["tournament history"].add(Tourneys.tourneys[tourney_id]["tourney_name"])
+        # for name in players.keys():
+        #     players[name]["tournament history"] = list(players[name]["tournament history"])
+            players[player_name.lower()]["tournament history"][tourney_name] = tourney_id
 
         Players.players = players
 
