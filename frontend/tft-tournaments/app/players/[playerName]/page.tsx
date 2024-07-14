@@ -1,19 +1,24 @@
-import { getTourneyData } from "@/app/data/data";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import NewTourneyNav from "@/app/components/newtourneynav";
+import { useEffect, useState } from "react";
+import { getPlayerData } from "@/app/data/data";
 
-export default async function TournamentPage({ params }: any) {
-  const tourneyData = await getTourneyData();
-  const getTourneyById = (tourneyData: any, id: number) => {
-    return tourneyData.find((tourney: any) => tourney.id === id);
-  };
+export default async function PlayerPage({ params }: any) {
+  // const [playerInfo, setPlayerInfo] = useState("");
+  const playerName = params.playerName;
+  // console.log(params.playerName);
+  // const playerLink: string = playerName.replace(/\s+/g, "+").toLowerCase();
+  const playerLink: string = playerName.replace(/_/g, "+").toLowerCase();
+  const playerData = await getPlayerData(playerLink);
+  // console.log(playerData);
+  // const pathname = usePathname();
 
-  const tourneyId = Number(params.tournamentId);
-  const specificTourney = getTourneyById(tourneyData, tourneyId);
-  // console.log(specificTourney.days);
-  // console.log(specificTourney.days[2]);
+  // console.log(pathname);
 
-  // console.log(specificTourney);
+  // useEffect(() => {
+  //   setPlayerInfo(player);
+  // });
 
   return (
     <>
@@ -21,7 +26,7 @@ export default async function TournamentPage({ params }: any) {
         <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
         <div className="animate-fade absolute top-0 -z-20 h-[37rem] w-full">
           <Image
-            src="/dragonlands_banner.jpg"
+            src="/player_bg.jpeg"
             fill={true}
             alt="logo"
             className="object-cover"
@@ -31,9 +36,7 @@ export default async function TournamentPage({ params }: any) {
           <div className="absolute inset-0 bg-gradient-to-r from-pris-pink via-pris-blue to-pris-purple opacity-50 mix-blend-multiply"></div>
           <div className="absolute bottom-0 h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-20%"></div>
         </div>
-
-        <NewTourneyNav tournament={specificTourney} />
-        {/* <NewTourneyNav /> */}
+        {playerData.name}
         <div></div>
       </div>
     </>

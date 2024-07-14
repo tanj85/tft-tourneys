@@ -58,8 +58,9 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
 
   return (
     <div className="h-[89%] max-w-[25rem]">
-      <div className="bg-opacity-60 overflow-auto overscroll-none break-all h-full bg-lightest-purple m-4 rounded border-active-purple-b border">
+      <div className="bg-opacity-60 overflow-auto overscroll-none break-all max-h-[34rem] bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
         {/* {JSON.stringify(standings)} */}
+
         {sortedStandings.map(([player, points]: any, index) => (
           <div
             key={index}

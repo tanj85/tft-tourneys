@@ -85,6 +85,41 @@ export const tournamentsExample = [
   },
 ];
 
+export const getPlayers = async () => {
+  const res = await fetch("http://127.0.0.1:5000/players/", {
+    next: { revalidate: 300 },
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
+  if (!res.ok) {
+    throw new Error("failed to fetch data ):");
+  }
+  return res.json();
+};
+
+export const getPlayerData = async (player: string) => {
+  const res = await fetch(
+    `http://127.0.0.1:5000/players/?name=${player}&tag=eprod`,
+    {
+      next: { revalidate: 300 },
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error("failed to fetch player data");
+  }
+  return res.json();
+};
+
 export const getTourneys = async () => {
   const result = await fetch("http://127.0.0.1:5000/tournaments/", {
     next: { revalidate: 300 },
@@ -96,7 +131,7 @@ export const getTourneys = async () => {
     },
   });
   if (!result.ok) {
-    throw new Error("failed to fetch data ):");
+    throw new Error("failed to fetch tourneys data");
   }
   return result.json();
 };
@@ -116,7 +151,7 @@ export const getTourneyData = async () => {
       },
     }).then((result) => {
       if (!result.ok) {
-        throw new Error("failed to fetch data ):");
+        throw new Error("failed to fetch specific tourney data");
       }
       return result.json();
     });

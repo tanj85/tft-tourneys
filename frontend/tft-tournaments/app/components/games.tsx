@@ -69,7 +69,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
 
   return (
     <div>
-      <div className="flex gap-2 mt-2 ml-2">
+      <div className="text-sm gap-1 justify-center lg:justify-start flex-wrap lg:text-base flex lg:gap-2 mt-2 mx-2 -mb-1">
         {games.map((game: Game, index: number) => (
           <>
             <div>
@@ -84,7 +84,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
         ))}
       </div>
       {/* EACH GAME'S DATA */}
-      <div className="h-[27rem] overflow-auto overscroll-none mt-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
+      <div className="max-h-[33rem] sm:min-w-[21rem] overflow-auto overscroll-none mt-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
         <div className="flex justify-center mb-2 relative">
           Game {activeGameIndex + 1}
           <div className="absolute left-0 bottom-0 text-not-white italic text-sm">
