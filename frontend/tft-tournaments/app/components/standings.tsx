@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function StandingsForDay({ tournament, dayIndex }: any) {
   interface Standings {
@@ -61,24 +62,35 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
       <div className="bg-opacity-60 overflow-auto overscroll-none break-all max-h-[34rem] bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
         {/* {JSON.stringify(standings)} */}
 
-        {sortedStandings.map(([player, points]: any, index) => (
-          <div
-            key={index}
-            className={`flex justify-between p-2 border-b border-lightest-purple ${index % 2 === 0 ? `bg-idle-purple-b bg-opacity-60 ${index === 0 ? "text-pris-yellow" : ""} ${index === 2 ? "text-pris-light-pink" : ""}` : `${index === 1 ? "text-pris-blue" : " text-whitish"}`}`}
-          >
-            {/* <div className="">{index}</div> */}
-            <div className="flex">
-              <div className="w-10 text-center text-not-white">{index + 1}</div>
-              <div id="border" className="w-[1px] h-6 bg-active-purple-b"></div>
+        {sortedStandings.map(([player, points]: any, index) => {
+          const formattedPlayer = player.endsWith("#eprod")
+            ? player.slice(0, -6)
+            : player;
+          const playerLink: string = formattedPlayer
+            .replace(/\s+/g, "_")
+            .toLowerCase();
+          return (
+            <div
+              key={index}
+              className={`flex justify-between p-2 border-b border-lightest-purple ${index % 2 === 0 ? `bg-idle-purple-b bg-opacity-60 ${index === 0 ? "text-pris-yellow" : ""} ${index === 2 ? "text-pris-light-pink" : ""}` : `${index === 1 ? "text-pris-blue" : " text-whitish"}`}`}
+            >
+              {/* <div className="">{index}</div> */}
+              <div className="flex">
+                <div className="w-10 text-center text-not-white">
+                  {index + 1}
+                </div>
+                <div
+                  id="border"
+                  className="w-[1px] h-6 bg-active-purple-b"
+                ></div>
+              </div>
+              <Link href={`/players/${playerLink}`}>{formattedPlayer}</Link>
+              <div className="text-not-white">
+                {points} <span className="text-xs">pts</span>
+              </div>
             </div>
-            <div className="">
-              {player.endsWith("#eprod") ? player.slice(0, -6) : player}
-            </div>
-            <div className="text-not-white">
-              {points} <span className="text-xs">pts</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

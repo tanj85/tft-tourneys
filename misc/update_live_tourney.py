@@ -17,7 +17,6 @@ def set_live_flag():
 
 def update_live():
     scrape_tourney.scrape_tourney(live_tourney_id)
-    set_live_flag()
     # Reschedule the update_live function to be called after 300 seconds (5 minutes)
     print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     threading.Timer(300, update_live).start()

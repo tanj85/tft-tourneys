@@ -9,6 +9,34 @@ def hash_tournament_name(tournament_name, seed=0):
     eight_digit_hash = int(hash_object.hexdigest(), 16) % 100000000
     return int(eight_digit_hash)
 
+def get_tournament_id_dict(csv_file):
+
+    try:
+        existing_data = pd.read_csv(csv_file)
+    except FileNotFoundError:
+        print("No file found")
+        return
+    
+    return dict(zip(existing_data['tourney_name'], existing_data['id']))
+    
+    
+
+def append_unique_to_csv(strings, csv_file):
+    # Load existing data if the CSV file exists, otherwise create an empty DataFrame
+    try:
+        existing_data = pd.read_csv(csv_file)
+    except FileNotFoundError:
+        existing_data = pd.DataFrame(columns=['tourney_name'])
+    
+    unique_strings = set(strings) - set(existing_data['tourney_name'])
+    
+    new_data = pd.DataFrame(list(unique_strings), columns=['tourney_name'])
+    
+    updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+    
+    updated_data.to_csv(csv_file, index=False)
+    print(f"Added {len(new_data)} new entries to the CSV.")
+
 def process_csv(file_path, output_path=None):
     # Read the CSV file
     df = pd.read_csv(file_path)
@@ -50,6 +78,8 @@ def process_csv(file_path, output_path=None):
     return df
 
 # Example usage:
-csv_path = '/root/tft-tourneys/misc/tourney_info.csv'
-result_df = process_csv(csv_path)
-print(result_df)
+
+if __name__ == '__main__':
+    csv_path = '/root/tft-tourneys/misc/tourney_info.csv'
+    result_df = process_csv(csv_path)
+    print(result_df)
