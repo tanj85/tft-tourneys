@@ -4,8 +4,17 @@ import { formatDate } from "../data/utils";
 import { getTourneyData, getTourneys } from "../data/data";
 
 const TournamentTabs = async () => {
-  const tourneys = await getTourneys();
+  const tourneys: any[] = await getTourneys({
+    sortParams: ['region', '-start_date'], // Assuming 'start_date' was meant instead of 'date'
+    tier: '',
+    region: 'Americas',
+    dateLowerBound: '2024-06-01',
+    dateUpperBound: '',
+    nameSearchQuery: ''
+  });
+
   // console.log(tourneys);
+  
 
   return (
     <>
@@ -23,11 +32,16 @@ const TournamentTabs = async () => {
               key={tourney.id}
               className="hover:border-slate-600 bg-darker-gray transition-colors duration-300 border border-gray-800 rounded hover:border-l-4 hover:border-l-pris-pink"
             >
-              <Link href={`/tournaments/${tourney.id}`} key={tourney.id}>
+              <Link 
+                href={tourney.has_detail ? `/tournaments/${tourney.id}` : `${tourney.liquipedia_link}`} 
+                key={tourney.id}
+                target={tourney.has_detail ? "_self" : "_blank"} 
+                rel={tourney.has_detail ? "" : "noopener noreferrer"}
+              >
                 <div className="p-4 rounded-md mx-2">
                   <div className="grid grid-cols-5 gap-8 text-center items-center">
                     <div className="md:col-span-1 col-span-2 text-left font-bold text-balance">
-                      {tourney.tourney_name}
+                      {tourney.tournament_name}
                     </div>
                     <div>{tourney.tier}</div>
                     <div>{tourney.region}</div>

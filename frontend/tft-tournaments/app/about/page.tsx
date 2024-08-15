@@ -75,12 +75,7 @@ export default function About() {
           </div>
         </div>
         <div className="w-[80%] text-not-white">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
-          nam saepe possimus ut quaerat rerum repellat voluptatibus modi, neque
-          aut dignissimos placeat quo deserunt iste numquam! Tempora suscipit
-          maiores necessitatibus quis distinctio autem aspernatur? Magnam enim
-          eveniet soluta doloremque inventore et dolore numquam veritatis,
-          atque, incidunt animi assumenda, libero ea!
+        TFTourneys was created under Riot Games&apos; &quot;Legal Jibber Jabber&quot; policy using assets owned by Riot Games.  Riot Games does not endorse or sponsor this project.
         </div>
       </div>
 

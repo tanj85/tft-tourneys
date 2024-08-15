@@ -1,6 +1,7 @@
 import os
 import psycopg2
 from psycopg2.extensions import connection, cursor
+from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from typing import Dict, List, Optional
 from datetime import date, datetime
@@ -17,7 +18,14 @@ def get_db_connection() -> connection:
     )
     return connection
 
-def query_sql(conn: connection, query: str):
+def query_sql(conn: connection, query: str, ret_dict=False):
+
+    if ret_dict:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(query)
+            output = cur.fetchall()
+        return output
+
     cur = conn.cursor()
     cur.execute(query)
     output = cur.fetchall()

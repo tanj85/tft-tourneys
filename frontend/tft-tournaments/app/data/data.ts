@@ -120,9 +120,42 @@ export const getPlayerData = async (player: string) => {
   return res.json();
 };
 
-export const getTourneys = async () => {
-  const result = await fetch("http://127.0.0.1:5000/tournaments/", {
-    next: { revalidate: 300 },
+interface GetTourneysParams {
+  sortParams?: string[];
+  tier?: string;
+  region?: string;
+  dateLowerBound?: string;
+  dateUpperBound?: string;
+  nameSearchQuery?: string;
+}
+
+export const getTourneys = async ({
+  sortParams = [],
+  tier = '',
+  region = '',
+  dateLowerBound = '',
+  dateUpperBound = '',
+  nameSearchQuery = ''
+}: GetTourneysParams = {}): Promise<any[]> => {
+  // Construct the query string based on input parameters
+  let queryParams = new URLSearchParams();
+
+  // Add sort parameters if any
+  sortParams.forEach(param => {
+    queryParams.append('sort', param);
+  });
+
+  // Add other filters
+  if (tier) queryParams.set('tier', tier);
+  if (region) queryParams.set('region', region);
+  if (dateLowerBound) queryParams.set('date_lower_bound', dateLowerBound);
+  if (dateUpperBound) queryParams.set('date_upper_bound', dateUpperBound);
+  if (nameSearchQuery) queryParams.set('name_search_query', nameSearchQuery);
+
+  // Construct the final URL
+  const url = `http://127.0.0.1:5000/tournaments/?${queryParams.toString()}`;
+
+  const result = await fetch(url, {
     method: "GET",
     headers: {
       "Cache-Control": "no-cache",
@@ -130,9 +163,11 @@ export const getTourneys = async () => {
       Expires: "0",
     },
   });
+
   if (!result.ok) {
-    throw new Error("failed to fetch tourneys data");
+    throw new Error("Failed to fetch tourneys data");
   }
+
   return result.json();
 };
 
