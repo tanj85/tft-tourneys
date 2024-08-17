@@ -40,34 +40,43 @@ interface Tournament {
 }
 
 // const dayTabs = ["Day 1", "Day 2", "Day 3"];
-const tourneyTabs = ["Overview", "Results", "Standings"];
+var tourneyTabs = ["Overview", "Results", "Standings"];
 
 const NewTourneyNav = ({ tournament }: any) => {
-  const id = tournament.id;
-  const name = tournament.name;
+  const id = tournament.tournament_id;
+  const name = tournament.tournament_name;
   const region = tournament.region;
   const start = tournament.start_date;
   const end = tournament.end_date;
   const patch = tournament.patch;
   const days = tournament.days;
   const tier = tournament.tier;
+  const overview_info = tournament.overview_info !== undefined ? tournament.overview_info : ""
   // const participants = tournament.num_participants;
+
+  if (!overview_info){
+    tourneyTabs = tourneyTabs.filter(item => item !== "Overview");
+  }
 
   const standings = tournament.standings;
   // const [activeDay, setActiveDay] = useState(dayTabs[0]);
-  const [activeDayIndex, setActiveDayIndex] = useState(
-    id == sessionStorage.getItem("currentTourney")
-      ? sessionStorage.getItem("activeDay") || 0
-      : 0
-  );
-  // const [activeStandingsDay, setActiveStandingsDay] = useState(0);
-  // const [activeTab, setActiveTab] = useState(tourneyTabs[0]);
 
-  const [activeTab, setActiveTab] = useState(
-    id == sessionStorage.getItem("currentTourney")
-      ? sessionStorage.getItem("activeTab") || tourneyTabs[0]
-      : tourneyTabs[0]
-  );
+  const [activeTab, setActiveTab] = useState("Results");
+  const [activeDayIndex, setActiveDayIndex] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Now safe to use sessionStorage
+      const storedTourney = sessionStorage.getItem("currentTourney");
+      const storedActiveTab = sessionStorage.getItem("activeTab") || "Results";
+      const storedActiveDay = parseInt(sessionStorage.getItem("activeDay") || "0");
+
+      if (id == storedTourney) {
+        setActiveTab(storedActiveTab);
+        setActiveDayIndex(storedActiveDay);
+      }
+    }
+  }, [id]);
 
   const [tourneyDays, setTourneyDays] = useState<any[]>([]);
   const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
@@ -95,7 +104,7 @@ const NewTourneyNav = ({ tournament }: any) => {
       setTourneyStandings(standingsMap);
     }
     sessionStorage.setItem("currentTourney", id);
-  }, [days, standings]);
+  }, [days, standings, id]);
 
   const standingsEntries = Array.from(tourneyStandings.entries());
   standingsEntries.sort((a, b) => b[1] - a[1]); // sort the entries by value (descending order)
@@ -111,17 +120,17 @@ const NewTourneyNav = ({ tournament }: any) => {
           <div className="text-3xl text-balance lg:text-4xl font-bold">
             {name}
           </div>
-          {/* <div
+          <div
             id="info"
-            className="hidden lg:block lg:flex mt-2 justify-between"
+            className="hidden lg:block lg:flex mt-2 gap-4"
           >
-            <div> {region} </div>
-            <div> {tier} Tier </div>
-            <div> Patch {patch} </div>
+            <div> Region: {region}</div>
+            <div> Tier: {tier} </div>
+            <div> Patch: {patch} </div>
             <div>
-              {formatDate(start)} - {formatDate(end)}
+              Date: {formatDate(start)} - {formatDate(end)}
             </div>
-          </div> */}
+          </div>
         </div>
         {/* END INFO & NAME SECTION */}
 

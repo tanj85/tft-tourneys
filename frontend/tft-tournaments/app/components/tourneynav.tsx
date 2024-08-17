@@ -36,7 +36,7 @@ const TourneyNav = ({
       setTourneyStandings(standingsMap);
     }
     sessionStorage.setItem("currentTourney", id);
-  }, [days, standings]);
+  }, [days, standings, id]);
 
   const standingsEntries = Array.from(tourneyStandings.entries());
   standingsEntries.sort((a, b) => b[1] - a[1]); // sort the entries by value (descending order)

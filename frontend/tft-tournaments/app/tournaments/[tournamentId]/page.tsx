@@ -1,15 +1,16 @@
-import { getTourneyData } from "@/app/data/data";
+import { getOneTourneyData, getTourneyData } from "@/app/data/data";
 import Image from "next/image";
 import NewTourneyNav from "@/app/components/newtourneynav";
 
 export default async function TournamentPage({ params }: any) {
-  const tourneyData = await getTourneyData();
-  const getTourneyById = (tourneyData: any, id: number) => {
-    return tourneyData.find((tourney: any) => tourney.id === id);
-  };
+  const specificTourney = await getOneTourneyData(Number(params.tournamentId));
+  // const tourneyData = await getTourneyData();
+  // const getTourneyById = (tourneyData: any, id: number) => {
+  //   return tourneyData.find((tourney: any) => tourney.id === id);
+  // };
 
-  const tourneyId = Number(params.tournamentId);
-  const specificTourney = getTourneyById(tourneyData, tourneyId);
+  // const tourneyId = Number(params.tournamentId);
+  // const specificTourney = getTourneyById(tourneyData, tourneyId);
   // console.log(specificTourney.days);
   // console.log(specificTourney.days[2]);
 

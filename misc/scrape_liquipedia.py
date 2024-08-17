@@ -11,7 +11,7 @@ import copy
 
 user = 'postgres'
 password = 'tft!'
-host = '68.183.150.147'
+host = '127.0.0.1'
 port = '5432'
 dbname = 'tftourneys'
 table_name = 'tbl_liquipedia_tournaments'
@@ -221,6 +221,26 @@ def add_tournament(
         )
     """)
 
+    sql_query_2 = text(f"""
+        UPDATE {table_name}
+        SET
+            tournament_name = COALESCE(:tournament_name, tournament_name),
+            start_date = COALESCE(:start_date, start_date),
+            end_date = COALESCE(:end_date, end_date),
+            prize_pool = COALESCE(:prize_pool, prize_pool),
+            region = COALESCE(:region, region),
+            num_participants = COALESCE(:num_participants, num_participants),
+            tier = COALESCE(:tier, tier),
+            patch = COALESCE(:patch, patch),
+            game_mode = COALESCE(:game_mode, game_mode),
+            event_type = COALESCE(:event_type, event_type),
+            format = COALESCE(:format, format),
+            liquipedia_link = COALESCE(:liquipedia_link, liquipedia_link),
+            set = COALESCE(:set, set)
+        WHERE
+            tournament_id = :tournament_id;
+        """)
+
     # Use a dictionary to pass parameters safely to avoid SQL injection
     parameters = {
         "tournament_id": tournament_id,
@@ -245,8 +265,20 @@ def add_tournament(
             # Execute the query with parameters
             conn.execute(sql_query, parameters)
             transaction.commit()
+            return
         except Exception as e:
             print(f"Failed to add, probably bc duplicate tournament id [{tournament_id}]")
+            transaction.rollback()
+
+    with engine.connect() as conn:
+        transaction = conn.begin()
+        try:
+            # Execute the query with parameters
+            conn.execute(sql_query_2, parameters)
+            transaction.commit()
+        except Exception as e:
+            print(e)
+            print(f"Failed to add, probably bc tournament id doesn't exist here [{tournament_id}]")
             transaction.rollback()
 
 def parse_date_range(date_range):
@@ -308,22 +340,25 @@ def scrape_tourneys_by_tier(tiers = ['s','a','b', 'qualifiers']):
     urls = []
 
     if 's' in tiers:
-        urls.append('https://liquipedia.net/tft/S-Tier_Tournaments')
+        urls.append(('https://liquipedia.net/tft/S-Tier_Tournaments', 'S'))
     
     if 'a' in tiers:
-        urls.append('https://liquipedia.net/tft/A-Tier_Tournaments')
+        urls.append(('https://liquipedia.net/tft/A-Tier_Tournaments', 'A'))
 
     if 'b' in tiers:
-        urls.append('https://liquipedia.net/tft/B-Tier_Tournaments')
+        urls.append(('https://liquipedia.net/tft/B-Tier_Tournaments', 'B'))
 
     if 'qualifiers' in tiers:
-        urls.append('https://liquipedia.net/tft/Qualifiers_Tournaments')
+        urls.append(('https://liquipedia.net/tft/Qualifiers_Tournaments', 'qual'))
 
     tourney_names = []
     cumulative_content_groups = []
 
-    for url in urls:
+    for pack in urls:
         
+        url = pack[0]
+        tier = pack[1]
+
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
         # Step 3: Initialize variables for grouping
@@ -363,6 +398,7 @@ def scrape_tourneys_by_tier(tiers = ['s','a','b', 'qualifiers']):
                 tournament_players_span = tournament_players.find('span', style=lambda value: value and 'vertical-align:top' in value) if tournament_players else ""
                 content['num_participants'] = int(tournament_players_span.text.strip().replace(',','')) if tournament_players_span else None
 
+                content['tier'] = tier
 
                 if current_group:
                     current_group[-1]['content'].append(content)
@@ -384,6 +420,7 @@ def scrape_tourneys_by_tier(tiers = ['s','a','b', 'qualifiers']):
         content_dict = content_group[0]
         set = content_dict['set']
         for t_dict in content_dict['content']:
+            # print(t_dict)
             add_tournament(engine, 
                         tournament_id = t_ids[t_dict['tournament_name']],
                         tournament_name = t_dict['tournament_name'],
@@ -393,8 +430,10 @@ def scrape_tourneys_by_tier(tiers = ['s','a','b', 'qualifiers']):
                         prize_pool = t_dict['prize_pool'],
                         region = t_dict['region'],
                         num_participants = t_dict['num_participants'],
-                        set = set
+                        set = set,
+                        tier = t_dict['tier']
                         )
+
 
 if __name__ == '__main__':
     scrape_tourneys_by_tier()
