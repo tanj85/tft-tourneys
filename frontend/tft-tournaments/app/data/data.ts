@@ -124,15 +124,43 @@ interface GetTourneysParams {
   sortParams?: string[];
   tier?: string;
   region?: string;
+  set?: string;
   dateLowerBound?: string;
   dateUpperBound?: string;
   nameSearchQuery?: string;
+}
+
+
+export interface FilterState {
+  region: string;
+  tier: string;
+  startDate: string;
+  endDate: string;
+  searchQuery: string;
+}
+
+export interface Tournament {
+  tournament_name: string;
+  tournament_id: number; 
+  start_date: string;
+  end_date: string;
+  num_participants: number;
+  patch: string;
+  region: string;
+  tier: string;
+  liquipedia_link: string;
+  has_detail: boolean;
+}
+
+export interface TournamentResponse {
+  tournaments: Tournament[];
 }
 
 export const getTourneys = async ({
   sortParams = [],
   tier = '',
   region = '',
+  set = '',
   dateLowerBound = '',
   dateUpperBound = '',
   nameSearchQuery = ''
@@ -141,13 +169,19 @@ export const getTourneys = async ({
   let queryParams = new URLSearchParams();
 
   // Add sort parameters if any
-  sortParams.forEach(param => {
-    queryParams.append('sort', param);
-  });
+  if (typeof sortParams === 'string'){
+    queryParams.set('sort', sortParams);
+  }
+  else{
+    sortParams.forEach(param => {
+      queryParams.append('sort', param);
+    });
+  }
 
   // Add other filters
   if (tier) queryParams.set('tier', tier);
   if (region) queryParams.set('region', region);
+  if (set) queryParams.set('set', set);
   if (dateLowerBound) queryParams.set('date_lower_bound', dateLowerBound);
   if (dateUpperBound) queryParams.set('date_upper_bound', dateUpperBound);
   if (nameSearchQuery) queryParams.set('name_search_query', nameSearchQuery);
@@ -174,10 +208,13 @@ export const getTourneys = async ({
 export const getTourneyData = async () => {
   // Get the list of tournaments
   const tourneys = await getTourneys();
+  console.log(tourneys[0])
 
   // Create an array of fetch promises for each tournament
-  const fetchPromises = tourneys.map((tourney: any) => {
-    return fetch(`http://127.0.0.1:5000/tournaments/${tourney.id}`, {
+  const fetchPromises = tourneys
+  .filter((tourney: any) => tourney.tournament_id && Number.isInteger(tourney.tournament_id) && tourney.tournament_id > 0)
+  .map((tourney: any) => {
+    return fetch(`http://127.0.0.1:5000/tournaments/?id=${tourney.tournament_id}`, {
       method: "GET",
       headers: {
         "Cache-Control": "no-cache",
@@ -186,7 +223,7 @@ export const getTourneyData = async () => {
       },
     }).then((result) => {
       if (!result.ok) {
-        throw new Error("failed to fetch specific tourney data");
+        throw new Error("Failed to fetch specific tourney data");
       }
       return result.json();
     });
@@ -196,4 +233,31 @@ export const getTourneyData = async () => {
   const results = await Promise.all(fetchPromises);
 
   return results;
+};
+
+export const getOneTourneyData = async (tournament_id: number) => {
+  
+  if (!Number.isInteger(tournament_id) || tournament_id <= 0) {
+    throw new Error("Invalid tournament ID provided");
+  }
+
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/tournaments/?id=${tournament_id}`, {
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tournament data");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(`Error fetching tournament data: ${error.message}`);
+  }
 };

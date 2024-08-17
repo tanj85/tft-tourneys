@@ -15,7 +15,7 @@ export default function LobbiesForGame({ game }: any) {
         id="inner-boxes"
         className="flex flex-col gap-2 max-h-[27rem] sm:max-h-[18rem] md:max-h-[24rem]"
       >
-        {game.lobbies.map((lobby: Lobby, lobbyIndex: number) => (
+        {game?.lobbies?.map((lobby: Lobby, lobbyIndex: number) => (
           <div
             key={lobbyIndex}
             className="bg-lightest-purple shadow-md shadow-darkest-purple py-2 px-2 relative rounded"
