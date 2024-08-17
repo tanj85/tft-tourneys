@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # task_thread = threading.Thread(target=periodic_task, args=[conn])
     # task_thread.daemon = True
     # task_thread.start()
-    test()
-
-    app.run(host="0.0.0.0", debug=True)
-    database.close_connection(conn)
+    try:
+        app.run(debug=False)
+    finally:
+        database.close_pool()

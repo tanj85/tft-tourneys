@@ -1,5 +1,6 @@
 import os
 import psycopg2
+from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extensions import connection, cursor
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
@@ -8,32 +9,51 @@ from datetime import date, datetime
 
 load_dotenv()
 
+conn_pool = SimpleConnectionPool(1, 20, user=os.getenv("DB_USER"),
+                                 password=os.getenv("DB_PASSWORD"),
+                                 host=os.getenv("DB_HOST"),
+                                 port="5432",
+                                 database=os.getenv("DB_NAME"))
+if conn_pool:
+    print("created pool")
+
+def close_conn_pool() -> None:
+    if conn_pool:
+        conn_pool.closeall()
+
 # returns a connection to the database
-def get_db_connection() -> connection:
-    connection = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-    )
-    return connection
+def get_connection() -> connection:
+    print("use get_conn() instead of get_connection()!")
+    return get_conn()
 
-def query_sql(conn: connection, query: str, ret_dict=False):
+def get_conn() -> connection:
+    return conn_pool.getconn()
 
-    if ret_dict:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+def close_conn(conn: connection) -> None:
+    conn_pool.putconn(conn)
+
+
+def query_sql(query: str, ret_dict=False):
+    conn = None
+    try:
+        conn = get_conn()
+
+        if ret_dict:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query)
+                output = cur.fetchall()
+            return output
+
+        with conn.cursor() as cur:
             cur.execute(query)
             output = cur.fetchall()
-        return output
+            return output
+    finally:
+        if conn:
+            close_conn(conn)
 
-    cur = conn.cursor()
-    cur.execute(query)
-    output = cur.fetchall()
-    cur.close()
-    return output
-
-def parse_tournament_info(conn: connection) -> None:
-    rows = query_sql(conn, "SELECT * FROM tbl_tournament_info")
+def parse_tournament_info() -> None:
+    rows = query_sql("SELECT * FROM tbl_tournament_info")
     tourneys = {}
     for row in rows:
         if row[8] not in tourneys:
@@ -63,15 +83,14 @@ def parse_tournament_info(conn: connection) -> None:
 
     return tourneys
 
-
 def expand(lis, num):
     while len(lis) < num:
         lis.append(None)
         
-def parse_tournament_info_new(conn: connection):
+def parse_tournament_info_new():
     tourneys = {}
 
-    columns = query_sql(conn, """
+    columns = query_sql("""
                     SELECT column_name, data_type
                     FROM information_schema.columns
                     WHERE table_name = 'tbl_tournament_info'
@@ -79,7 +98,7 @@ def parse_tournament_info_new(conn: connection):
                 """)
     column_names = [col[0] for col in columns]
 
-    rows = query_sql(conn, "SELECT * FROM tbl_tournament_info")
+    rows = query_sql("SELECT * FROM tbl_tournament_info")
 
 #     tournament_level = ["tourney_name", "tier" ,"region", "start_date", "end_date", "patch", "id"]
  #    day_level = ["num_participants", "link"]
@@ -113,8 +132,8 @@ def parse_tournament_info_new(conn: connection):
         
 
 
-def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
-    rows = query_sql(conn, "SELECT * FROM tbl_placement_data")
+def parse_placement_data(tourneys, players):
+    rows = query_sql("SELECT * FROM tbl_placement_data")
     for row in rows:
         tourney_id = row[3]
         day_num = row[4]
@@ -149,41 +168,31 @@ def parse_placement_data(conn: connection, cur: cursor, tourneys, players):
         players[name]["tournament history"] = list(players[name]["tournament history"])
 
 
-def parse_database(conn: connection):
-    cur = conn.cursor()
+def parse_database():
 
     players = {}
-
-    tourneys = parse_tournament_info(conn)
-    parse_placement_data(conn, cur, tourneys, players)
-
-    cur.close()
+    tourneys = parse_tournament_info()
+    parse_placement_data(tourneys, players)
 
     return tourneys, players
 
 
 
-def print_tournament_info_schema(conn: connection, name):
-    cur = conn.cursor()
-    cur.execute("""
+def print_tournament_info_schema(name):
+    columns = query_sql("""
         SELECT column_name, data_type
         FROM information_schema.columns
         WHERE table_name = """ + name + ";")
 
-    # Fetch all results
-    columns = cur.fetchall()
     print("\nColumns in your_table_name:")
     for column in columns:
         print(f"{column[0]}: {column[1]}")
 
-    cur.close()
-def print_first_row(conn: connection, name):
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM " + name)
-    rows = cur.fetchall()
+def print_first_row(name: str):
+    rows = query_sql("SELECT * FROM " + name)
     print(rows[0])
-    cur.close()
 
+# FUTURE
 def update_tourney(conn: connection, tourneys, tourney_id: int):
     cur = conn.cursor()
     cur.execute(
@@ -192,12 +201,9 @@ def update_tourney(conn: connection, tourneys, tourney_id: int):
     rows = cur.fetchall()
 
 
-def close_connection(conn: connection) -> None:
-    conn.close()
 
 if __name__ == "__main__":
-    conn = get_db_connection()
-    print_tournament_info_schema(conn, "'tbl_tournament_info'")
-    print_tournament_info_schema(conn, "'tbl_placement_data'")
-    print_first_row(conn, "tbl_tournament_info")
-    print_first_row(conn, "tbl_placement_data")
+    print_tournament_info_schema("'tbl_tournament_info'")
+    print_tournament_info_schema("'tbl_placement_data'")
+    print_first_row("tbl_tournament_info")
+    print_first_row("tbl_placement_data")

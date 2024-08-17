@@ -3,6 +3,7 @@ from flask import jsonify
 from psycopg2.extensions import connection, cursor
 from operator import itemgetter
 from datetime import datetime, date
+from Levenshtein import distance
 
 import database
 
@@ -11,12 +12,28 @@ import database
 
 class Tourneys(Resource):
     tourneys = None
-    tourney_fields = ["tournament_name", "tournament_id", "start_date", "end_date", "num_participants", "patch", "liquipedia_link", "tier", "region", "has_detail"]
+    tourney_fields = ["tournament_name", "tournament_id", "start_date", "end_date", "set", "num_participants", "patch", "liquipedia_link", "tier", "region", "has_detail"]
     day_fields = ["day", "sheet_index"]
+
+    set_dict = {
+        2: "Faction Wars",
+        3: "Galaxies",
+        4: "Fates",
+        5: "Reckoning",
+        6: "Gizmos & Gadgets",
+        7: "Dragonlands",
+        8: "Monsters Attack!",
+        9: "Runeterra Reforged",
+        10: "Remix Rumble",
+        11: "Inkborn Fables",
+        12: "Magic n' Mayhem",
+        13: "Set 13",
+    }
+
+    current_set = set_dict[12]
 
     # initialize
     def __init__(self):
-        conn = database.get_db_connection()
         # rows = database.query_sql(conn, "SELECT * FROM tbl_tournament_info")
         tourneys = {}
         tournament_info = {}
@@ -24,7 +41,7 @@ class Tourneys(Resource):
         #     tournament_info[field] = database.query_sql(conn, f"SELECT {field} FROM tbl_liquipedia_tournaments")
         #     tournament_info[field] = [x[0] for x in tournament_info[field]]
 
-        all_info = database.query_sql(conn, "SELECT * FROM tbl_liquipedia_tournaments", True)
+        all_info = database.query_sql("SELECT * FROM tbl_liquipedia_tournaments", True)
 
 
         for row in all_info:
@@ -34,7 +51,7 @@ class Tourneys(Resource):
             tourneys[row["tournament_id"]] = dict(row)
             tourneys[row["tournament_id"]]["has_detail"] = False
         
-        detailed_info = database.query_sql(conn, "SELECT * FROM tbl_tournament_info", True)
+        detailed_info = database.query_sql("SELECT * FROM tbl_tournament_info", True)
 
         # print(tourneys)
 
@@ -55,7 +72,7 @@ class Tourneys(Resource):
         fields = ["tournament_id", "game_num", "day_num", "lobby_id", "placement", "player_name"]
         placement_data = {}
         for field in fields:
-            placement_data[field] = database.query_sql(conn, "SELECT " + field + " FROM tbl_placement_data")
+            placement_data[field] = database.query_sql("SELECT " + field + " FROM tbl_placement_data")
             placement_data[field] = [x[0] for x in placement_data[field]]
 
         for i in range(len(placement_data["tournament_id"])):
@@ -87,10 +104,8 @@ class Tourneys(Resource):
             if player_name not in standings:
                 standings[player_name] = 0
             standings[player_name] += 9 - placement
-           
             
         Tourneys.tourneys = tourneys
-        conn.close()
         
     def get(self):
         if Tourneys.tourneys is None:
@@ -104,7 +119,11 @@ class Tourneys(Resource):
         parser.add_argument("date_lower_bound", type=str, location="args", required = False, help="Lower bound of dates to return", default=None)
         parser.add_argument("date_upper_bound", type=str, location="args", required = False, help="Upper bound of dates to return", default=None)
         parser.add_argument("name_search_query", type=str, location="args", required = False, help="Upper bound of dates to return", default=None)
+        parser.add_argument("set", type=str, location="args", required = False, help="Which Set of tournaments to return", default=None)
         args = parser.parse_args()
+
+        if args["set"] and args["set"].isdigit():
+            args["set"] = int(args["set"])
 
         if args["id"]:
             return self.get_tournament_info(args["id"])
@@ -123,7 +142,56 @@ class Tourneys(Resource):
         
         return Tourneys.get_tournament_list(sort_fields, ascending, 
                                             args["name_search_query"], args["region"], args["tier"],
-                                            args["date_lower_bound"], args["date_upper_bound"])
+                                            args["date_lower_bound"], args["date_upper_bound"], args["set"])
+    
+    def get_tournament_list(sort_fields=["start_date"], ascending=False, 
+                            name_search_query=None, region=None, tier=None, 
+                            date_lower_bound=None, date_upper_bound=None, tft_set=None):
+        
+        tournaments = [{field: Tourneys.tourneys[id][field] for field in Tourneys.tourney_fields} for id in Tourneys.tourneys
+                       if (not name_search_query or name_search_query.lower() in Tourneys.tourneys[id]["tournament_name"].lower()) and
+                        (not region or region.lower() in Tourneys.tourneys[id]["region"].lower()) and
+                        (not tier or tier.lower() in Tourneys.tourneys[id]["tier"].lower()) and 
+                        Tourneys.compare_date_valid(date_lower_bound, date_upper_bound, Tourneys.tourneys[id]["start_date"]) and
+                        (not tft_set or (tft_set if type(tft_set) == str else Tourneys.set_dict[tft_set]) in Tourneys.tourneys[id]["set"])]
+        
+        # print(tournaments, name_search_query)
+
+        if sort_fields:
+            if isinstance(ascending, bool):
+                ascending = [ascending] * len(sort_fields)
+            
+                
+            sort_key = lambda x: tuple((Tourneys.handle_tier_field(asc) if (field == "tier" and x[field] == "S") else 
+                                        x[field] if asc else -x[field] if isinstance(x[field], (int, float)) else 
+                                        Tourneys.reverse_string(x[field].lower()) if isinstance(x[field], str) else 
+                                        x[field]) for field, asc in zip(sort_fields, ascending))
+            
+            tournaments = sorted(tournaments, key=sort_key)
+        
+        for tournament in tournaments:
+            tournament["place_header"] = ""
+
+        if sort_fields and sort_fields[0] == "start_date":
+            today = date.today()
+            saw_upcoming = False
+            saw_ongoing = False
+            saw_past = False
+            for tournament in tournaments:
+                start_date = datetime.strptime(tournament["start_date"], '%Y-%m-%d').date()
+                end_date = datetime.strptime(tournament["end_date"], '%Y-%m-%d').date()
+
+                if not saw_upcoming and start_date > today:
+                    tournament["place_header"] = "upcoming"
+                    saw_upcoming = True
+                elif not saw_ongoing and start_date <= today <= end_date:
+                    tournament["place_header"] = "ongoing"
+                    saw_ongoing = True
+                elif not saw_past and end_date < today:
+                    tournament["place_header"] = "past"
+                    saw_past = True
+
+        return tournaments
     
     def compare_date_valid(date_lower, date_higher, str_date):
         date_lower = date(1969, 6, 22) if date_lower is None else datetime.strptime(date_lower, '%Y-%m-%d').date()
@@ -131,25 +199,13 @@ class Tourneys(Resource):
         str_date = datetime.strptime(str_date, '%Y-%m-%d').date()
         return date_lower < str_date < date_higher
     
-    def get_tournament_list(sort_fields=["start_date"], ascending=False, 
-                            name_search_query=None, region=None, tier=None, 
-                            date_lower_bound=None, date_upper_bound=None):
-        tournaments = [{field: Tourneys.tourneys[id][field] for field in Tourneys.tourney_fields} for id in Tourneys.tourneys
-                       if (name_search_query is None or True) and
-                        (region is None or region in Tourneys.tourneys[id]["region"]) and
-                        (tier is None or tier in Tourneys.tourneys[id]["tier"]) and 
-                        Tourneys.compare_date_valid(date_lower_bound, date_upper_bound, Tourneys.tourneys[id]["start_date"])]
-
-        if sort_fields:
-            if isinstance(ascending, bool):
-                ascending = [ascending] * len(sort_fields)
-                
-            sort_key = lambda x: tuple((x[field] if asc else -x[field] if isinstance(x[field], (int, float)) else x[field][::-1] if isinstance(x[field], str) else x[field])
-                                    for field, asc in zip(sort_fields, ascending))
-            
-            tournaments = sorted(tournaments, key=sort_key)
-
-        return tournaments
+    def handle_tier_field(asc):
+        if asc:
+            return 'z'
+        return '@'
+    
+    def reverse_string(s):
+        return ''.join([chr(53+64+64-ord(x)) for x in s])
     
     def get_tournament_info(self, id: int):
         tourneys = Tourneys.tourneys
@@ -167,14 +223,12 @@ class Players(Resource):
     players = None
 
     def __init__(self):
-        foo = Tourneys()
-       
-        conn = database.get_db_connection()
+        _ = Tourneys() # initialize tourneys
 
         players = {}
         placement_data = {}
         for field in ["player_name", "placement", "tournament_id"]:
-            placement_data[field] = database.query_sql(conn, "SELECT " + field + " FROM tbl_placement_data")
+            placement_data[field] = database.query_sql("SELECT " + field + " FROM tbl_placement_data")
             placement_data[field] = [x[0] for x in placement_data[field]]
 
         for i in range(len(placement_data["player_name"])):
@@ -193,8 +247,6 @@ class Players(Resource):
             players[player_name.lower()]["tournament history"][tourney_name] = tourney_id
 
         Players.players = players
-
-        conn.close()
 
 
     def get(self):
