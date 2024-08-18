@@ -82,20 +82,15 @@ class Tourneys(Resource):
                 ), f"precondition violated: {field} missing in placement data columns"
         return placement_data
 
-    def get_live_tournament_ids() -> Tuple[int]:
-        today = date.today()
-        today = str(today)
-        query_data = database.query_sql(
-            "SELECT tournament_id from tbl_liquipedia_tournaments WHERE start_date <= %s AND %s <= end_date",
-            args=(today, today),
-        )
-        return tuple(set(i[0] for i in query_data))
-
     def get_all_tournament_ids() -> Tuple[int]:
-        query_data = database.query_sql(
-            "SELECT tournament_id from tbl_liquipedia_tournaments"
-        )
-        return tuple(set(i[0] for i in query_data))
+        all_ids = Tourneys.tourneys.keys()
+        return tuple(all_ids)
+
+    def get_live_tournament_ids() -> Tuple[int]:
+        all_ids = Tourneys.get_all_tournament_ids()
+        live_ids = (id for id in all_ids if Tourneys.tourneys[id]["live"])
+
+        return tuple(live_ids)
 
     def load_placement_data(tournament_ids: Tuple[int]):
         placement_data = Tourneys.get_placement_data(tournament_ids)
@@ -129,11 +124,15 @@ class Tourneys(Resource):
         tourneys = {}
 
         all_info = database.query_sql("SELECT * FROM tbl_liquipedia_tournaments", True)
+        today = str(date.today())
         for row in all_info:
             for k, v in row.items():
                 row[k] = v if type(v) == int else str(v)
             tourneys[row["tournament_id"]] = dict(row)
             tourneys[row["tournament_id"]]["has_detail"] = False
+            tourneys[row["tournament_id"]]["live"] = (
+                row["start_date"] <= today <= row["end_date"]
+            )
 
         detailed_info = database.query_sql("SELECT * FROM tbl_tournament_info", True)
 
@@ -154,6 +153,7 @@ class Tourneys(Resource):
         Tourneys.tourneys = tourneys
         Tourneys.load_placement_data(Tourneys.get_all_tournament_ids())
         Tourneys.last_load_all = datetime.now()
+        Tourneys.last_load_live = datetime.now()
 
         return True
 
@@ -278,7 +278,10 @@ class Tourneys(Resource):
     ):
 
         tournaments = [
-            {field: Tourneys.tourneys[id][field] for field in Tourneys.tourney_fields}
+            {
+                field: Tourneys.tourneys[id][field]
+                for field in Tourneys.tourney_fields + ["live"]
+            }
             for id in Tourneys.tourneys
             if (
                 not name_search_query
