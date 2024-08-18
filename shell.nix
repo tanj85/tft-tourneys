@@ -10,6 +10,9 @@ in pkgs.mkShell {
       python-pkgs.psycopg2
       python-pkgs.python-dotenv
       python-pkgs.levenshtein
+      python-pkgs.requests
+      python-pkgs.pip
     ]))
+    pkgs.nodejs_22
   ];
 }
