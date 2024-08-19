@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <>
       {/* desktop navbar */}
-      <div className="backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-20">
+      <div className="backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-[69]">
         <Link href="/">
           <div className="relative h-20 w-[240px]">
             <Image

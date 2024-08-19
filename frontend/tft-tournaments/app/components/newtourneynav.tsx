@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatDate } from "../data/utils";
 import Button from "./button";
 import StandingsForDay from "./standings";
+import { Console } from "console";
 
 interface Standings {
   [key: string]: number;
@@ -64,7 +65,9 @@ const NewTourneyNav = ({ tournament }: any) => {
   const [activeTab, setActiveTab] = useState("Results");
   const [activeDayIndex, setActiveDayIndex] = useState(0);
 
+  // console.log("AH");
   useEffect(() => {
+    // console.log("afwaf");
     if (typeof window !== 'undefined') {
       // Now safe to use sessionStorage
       const storedTourney = sessionStorage.getItem("currentTourney");
@@ -170,7 +173,10 @@ const NewTourneyNav = ({ tournament }: any) => {
                   <button
                     key={tab}
                     className={`hover:bg-active-purple my-1 mx-1 rounded ${activeTab === tab ? "text-white bg-active-purple" : ""}`}
-                    onClick={() => handleTabClick(tab)}
+                    
+                    onClick={() => {
+                      handleTabClick(tab);
+                    }}
                   >
                     <SectionLabel
                       sourceImage={`/${tab}.png`}

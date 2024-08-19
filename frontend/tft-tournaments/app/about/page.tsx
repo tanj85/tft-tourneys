@@ -74,9 +74,7 @@ export default function About() {
             <div className=" font-bold">Rachel</div>
           </div>
         </div>
-        <div className="w-[80%] text-not-white">
-        TFTourneys was created under Riot Games&apos; &quot;Legal Jibber Jabber&quot; policy using assets owned by Riot Games.  Riot Games does not endorse or sponsor this project.
-        </div>
+        <div className="w-[80%] text-not-white"></div>
       </div>
 
       {/* testing */}

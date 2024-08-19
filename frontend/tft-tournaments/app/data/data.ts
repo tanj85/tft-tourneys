@@ -120,6 +120,57 @@ export const getPlayerData = async (player: string) => {
   return res.json();
 };
 
+// data.ts
+
+export async function fetchFilteredTournaments({
+  query = "",
+  page = "1",
+  sortParams = [],
+  tier = "",
+  region = "",
+  set = "",
+  dateLowerBound = "",
+  dateUpperBound = "",
+}: {
+  query?: string;
+  page?: string;
+  sortParams?: string[];
+  tier?: string;
+  region?: string;
+  set?: string;
+  dateLowerBound?: string;
+  dateUpperBound?: string;
+}): Promise<{ tournaments: any[]; totalPages: number }> {
+  const currentPage = Number(page) || 1;
+  const tournamentsPerPage = 10;
+
+  const tourneys = await getTourneys({
+    sortParams,
+    tier,
+    region,
+    set,
+    dateLowerBound,
+    dateUpperBound,
+    nameSearchQuery: query,
+  });
+
+  // console.log(tourneys.slice(0,10));
+
+  const totalTournaments = tourneys.length;
+  const totalPages = Math.ceil(totalTournaments / tournamentsPerPage);
+  // Calculate the start and end index for pagination
+  const startIndex = (currentPage - 1) * tournamentsPerPage;
+  const endIndex = Math.min(startIndex + tournamentsPerPage, totalTournaments);
+
+  // Slice the array to get the tournaments for the current page
+  const paginatedTournaments = tourneys.slice(startIndex, endIndex);
+
+  return {
+    tournaments: paginatedTournaments,
+    totalPages,
+  };
+}
+
 interface GetTourneysParams {
   sortParams?: string[];
   tier?: string;
@@ -129,7 +180,6 @@ interface GetTourneysParams {
   dateUpperBound?: string;
   nameSearchQuery?: string;
 }
-
 
 export interface FilterState {
   region: string;
@@ -141,7 +191,7 @@ export interface FilterState {
 
 export interface Tournament {
   tournament_name: string;
-  tournament_id: number; 
+  tournament_id: number;
   start_date: string;
   end_date: string;
   num_participants: number;
@@ -158,33 +208,32 @@ export interface TournamentResponse {
 
 export const getTourneys = async ({
   sortParams = [],
-  tier = '',
-  region = '',
-  set = '',
-  dateLowerBound = '',
-  dateUpperBound = '',
-  nameSearchQuery = ''
+  tier = "",
+  region = "",
+  set = "",
+  dateLowerBound = "",
+  dateUpperBound = "",
+  nameSearchQuery = "",
 }: GetTourneysParams = {}): Promise<any[]> => {
   // Construct the query string based on input parameters
   let queryParams = new URLSearchParams();
 
   // Add sort parameters if any
-  if (typeof sortParams === 'string'){
-    queryParams.set('sort', sortParams);
-  }
-  else{
-    sortParams.forEach(param => {
-      queryParams.append('sort', param);
+  if (typeof sortParams === "string") {
+    queryParams.set("sort", sortParams);
+  } else {
+    sortParams.forEach((param) => {
+      queryParams.append("sort", param);
     });
   }
 
   // Add other filters
-  if (tier) queryParams.set('tier', tier);
-  if (region) queryParams.set('region', region);
-  if (set) queryParams.set('set', set);
-  if (dateLowerBound) queryParams.set('date_lower_bound', dateLowerBound);
-  if (dateUpperBound) queryParams.set('date_upper_bound', dateUpperBound);
-  if (nameSearchQuery) queryParams.set('name_search_query', nameSearchQuery);
+  if (tier) queryParams.set("tier", tier);
+  if (region) queryParams.set("region", region);
+  if (set) queryParams.set("set", set);
+  if (dateLowerBound) queryParams.set("date_lower_bound", dateLowerBound);
+  if (dateUpperBound) queryParams.set("date_upper_bound", dateUpperBound);
+  if (nameSearchQuery) queryParams.set("name_search_query", nameSearchQuery);
 
   // Construct the final URL
   const url = `http://127.0.0.1:5000/tournaments/?${queryParams.toString()}`;
@@ -208,26 +257,34 @@ export const getTourneys = async ({
 export const getTourneyData = async () => {
   // Get the list of tournaments
   const tourneys = await getTourneys();
-  console.log(tourneys[0])
+  console.log(tourneys[0]);
 
   // Create an array of fetch promises for each tournament
   const fetchPromises = tourneys
-  .filter((tourney: any) => tourney.tournament_id && Number.isInteger(tourney.tournament_id) && tourney.tournament_id > 0)
-  .map((tourney: any) => {
-    return fetch(`http://127.0.0.1:5000/tournaments/?id=${tourney.tournament_id}`, {
-      method: "GET",
-      headers: {
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    }).then((result) => {
-      if (!result.ok) {
-        throw new Error("Failed to fetch specific tourney data");
-      }
-      return result.json();
+    .filter(
+      (tourney: any) =>
+        tourney.tournament_id &&
+        Number.isInteger(tourney.tournament_id) &&
+        tourney.tournament_id > 0
+    )
+    .map((tourney: any) => {
+      return fetch(
+        `http://127.0.0.1:5000/tournaments/?id=${tourney.tournament_id}`,
+        {
+          method: "GET",
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        }
+      ).then((result) => {
+        if (!result.ok) {
+          throw new Error("Failed to fetch specific tourney data");
+        }
+        return result.json();
+      });
     });
-  });
 
   // Wait for all fetch promises to resolve
   const results = await Promise.all(fetchPromises);
@@ -236,20 +293,22 @@ export const getTourneyData = async () => {
 };
 
 export const getOneTourneyData = async (tournament_id: number) => {
-  
   if (!Number.isInteger(tournament_id) || tournament_id <= 0) {
     throw new Error("Invalid tournament ID provided");
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/tournaments/?id=${tournament_id}`, {
-      method: "GET",
-      headers: {
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    });
+    const response = await fetch(
+      `http://127.0.0.1:5000/tournaments/?id=${tournament_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch tournament data");

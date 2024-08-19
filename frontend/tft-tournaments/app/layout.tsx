@@ -4,6 +4,7 @@ import Navbar from "./components/navbar";
 
 import type { Viewport } from "next";
 import Script from "next/script";
+import Footer from "./components/footer";
 
 export const viewport: Viewport = {
   themeColor: "#ff9c4",
@@ -84,9 +85,8 @@ export default function RootLayout({
         <div className="font-soleil overflow-x-clip">
           <Navbar />
           {children}
+          <Footer />
         </div>
-        {/* <Script src="https://unpkg.com/aos@next/dist/aos.js" />
-        <Script>AOS.init();</Script> */}
       </body>
     </html>
   );

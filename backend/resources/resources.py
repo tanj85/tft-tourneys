@@ -31,6 +31,21 @@ class Tourneys(Resource):
         "has_detail",
     ]
     day_fields = ["day", "sheet_index"]
+    field_types = {
+        "tournament_name": str,
+        "tournament_id": int,
+        "start_date": str,
+        "end_date": str,
+        "set": str, 
+        "num_participants": int,
+        "patch": str, 
+        "liquipedia_link": str,
+        "tier": str, 
+        "region": str, 
+        "has_detail": bool,  
+        "day": str,
+        "sheet_index": int
+    }
 
     set_dict = {
         2: "Faction Wars",
@@ -127,7 +142,7 @@ class Tourneys(Resource):
         today = str(date.today())
         for row in all_info:
             for k, v in row.items():
-                row[k] = v if type(v) == int else str(v)
+                row[k] = v if type(v) in (int, type(None)) else str(v)
             tourneys[row["tournament_id"]] = dict(row)
             tourneys[row["tournament_id"]]["has_detail"] = False
             tourneys[row["tournament_id"]]["live"] = (
@@ -307,6 +322,10 @@ class Tourneys(Resource):
         if sort_fields:
             if isinstance(ascending, bool):
                 ascending = [ascending] * len(sort_fields)
+        
+            for i in range(len(ascending)):
+                if Tourneys.field_types[sort_fields[i]] == str and not "date" in sort_fields[i]:
+                    ascending[i] = not ascending[i]
 
             sort_key = lambda x: tuple(
                 (
@@ -370,15 +389,23 @@ class Tourneys(Resource):
         )
         str_date = datetime.strptime(str_date, "%Y-%m-%d").date()
         return date_lower < str_date < date_higher
+    
+    def handle_none(field):
+        if Tourneys.field_types[field] == int:
+            return 0
+        if Tourneys.field_types[field] == str:
+            return ""
+        return None
 
     def handle_tier_field(asc):
+        # print(asc)
         if asc:
-            return "z"
-        return "@"
-
+            return '@'
+        return 'z'
+    
     def reverse_string(s):
-        return "".join([chr(53 + 64 + 64 - ord(x)) for x in s])
-
+        return ''.join([chr(255-ord(x)) for x in s if ord(x) > 0 and ord(x) < 255])
+    
     def get_tournament_info(self, id: int):
         tourneys = Tourneys.tourneys
         assert tourneys is not None

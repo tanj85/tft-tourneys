@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Button from "./button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LobbiesForGame from "./lobbies";
 
 export default function GamesForDay({ tournament, dayIndex }: any) {
@@ -51,6 +51,10 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
   const games = getGamesForDay(tournament, dayIndex);
   const [activeGameIndex, setActiveGameIndex] = useState(0);
 
+  useEffect(() => {
+    setActiveGameIndex(0); // Reset to the first game when dayIndex changes
+  }, [dayIndex]);
+
   const handleGameClick = (index: any) => {
     // setActiveDay(dayTabs[index]);
     setActiveGameIndex(index);
@@ -91,7 +95,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
             Lobbies
           </div>
         </div>
-        <LobbiesForGame game={games[activeGameIndex]} />
+        <LobbiesForGame game={games[activeGameIndex]} tournament={tournament} />
       </div>
     </div>
   );
