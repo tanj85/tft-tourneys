@@ -61,11 +61,47 @@ const FlyIn = ({ children }: { children: React.ReactNode }) => {
       initial={{ opacity: 0, x: "-100px", scale: 0.8 }} // Start with a smaller scale and off-screen
       whileInView={{ opacity: 1, x: 0, scale: 1 }} // Grow to full size and slide into position
       transition={{ duration: 0.5, ease: "easeOut" }} // Smooth animation
-      viewport={{ once: false }} // Animation occurs every time the element comes into view
+      viewport={{ once: true }} // Animation occurs every time the element comes into view
     >
       {children}
     </motion.div>
   );
 };
 
-export { BobAnimation, Bob2, FlyIn };
+const FlyInRight = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: "100px", scale: 0.8 }} // Start with a smaller scale and off-screen
+      whileInView={{ opacity: 1, x: 0, scale: 1 }} // Grow to full size and slide into position
+      transition={{ duration: 0.5, ease: "easeOut" }} // Smooth animation
+      viewport={{ once: true }} // Animation occurs every time the element comes into view
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const FlyInBot = ({
+  children,
+  delay,
+}: {
+  children: React.ReactNode;
+  delay: number;
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: "100px", scale: 0.8 }} // Start with a smaller scale and off-screen
+      whileInView={{ opacity: 1, y: 0, scale: 1 }} // Grow to full size and slide into position
+      transition={{
+        duration: 0.5, // Smooth animation duration
+        ease: "easeOut", // Easing function
+        delay, // Delay before the animation starts
+      }}
+      viewport={{ once: true }} // Animation occurs only the first time the element comes into view
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+export { BobAnimation, Bob2, FlyIn, FlyInRight, FlyInBot };

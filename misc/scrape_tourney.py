@@ -1,11 +1,14 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 import psycopg2
+import requests
+from bs4 import BeautifulSoup
+from remove_eprod import remove_eprod
 
 
 db_user = 'postgres'
 db_password = 'tft!'
-db_host = '68.183.150.147'
+db_host = '127.0.0.1'
 db_port = '5432'
 db_name = 'tftourneys'
 table_name = 'tbl_tournament_info'
@@ -40,6 +43,26 @@ def insert_placement_data(player_name, placement, tournament_id, day_num, lobby_
 
 def getNum(df, r, c):
     return int(''.join(filter(str.isdigit, df.iloc[r, c])))
+
+def getSheetIndexByName(url, sheetName):
+    response = requests.get(url)
+    html_content = response.text
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+    tabs = soup.find_all('li', id=lambda value: value and value.startswith('sheet-button'))
+
+    # Extract sheet names and IDs
+    sheets = []
+    for tab in tabs:
+        sheet_name = tab.find('a').text.strip()
+        sheets.append(sheet_name)
+    try:
+        sheetIndex = sheets.index(sheetName)
+    except:
+        print(f"{sheetName} NOT A VALID SHEET NAME IN THIS SHEET")
+        sheetIndex = -1
+    
+    return sheetIndex
 
 def default_scrape(tournament_id, url, day, sheet):
 
@@ -121,7 +144,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
         # Database connection details
         db_user = 'postgres'
         db_password = 'tft!'
-        db_host = '68.183.150.147'
+        db_host = '127.0.0.1'
         db_port = '5432'
         db_name = 'tftourneys'
         table_name = 'tbl_tournament_info'
@@ -133,12 +156,13 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
     # Set up the database query to retrieve URLs for the given tournament ID
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT link,day,sheet_index, updated_flag FROM tbl_tournament_info WHERE id = :t_id"),
+            text("SELECT link,day,sheet_index,sheet_name,updated_flag FROM tbl_tournament_info WHERE id = :t_id"),
             {'t_id': tournament_id}
         )
         urls = []
         days = []
         sheet_indices = [] 
+        sheet_names = []
         updated = []
         
         # Iterate through the result set a single time
@@ -146,7 +170,8 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
             urls.append(row[0])       # Access by column name for clarity
             days.append(row[1])
             sheet_indices.append(row[2]) 
-            updated.append(row[3])            
+            sheet_names.append(row[3])
+            updated.append(row[4])            
     # Process each URL
     # print(urls)
     # print(days)
@@ -158,11 +183,18 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
             print(f"skippa tourney {tournament_id}, day {days[j]}")
             continue
 
+        if sheet_indices[j] == -1:
+            print("using sheet_name")
+            sheet_indices[j] = getSheetIndexByName(urls[j], sheet_names[j])
+            if sheet_indices[j] == -1:
+                print(f"Tourney {tournament_id}, day {days[j]} is BOINKED, sadge")
+                continue
+
         special_scrape = None
 
-        with engine.connect() as conn:
+        with engine.connect() as conn2:
             
-            result = conn.execute(
+            result = conn2.execute(
                 text("SELECT special_scrape FROM tbl_tournament_rules WHERE id = :t_id"),
                 {'t_id': tournament_id}
             )
@@ -183,6 +215,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
                 WHERE id = {tournament_id} AND link='{urls[j]}' AND day={days[j]} AND sheet_index = {sheet_indices[j]};
                 """))
             transaction.commit()
+        remove_eprod()
         print(f"Successfully scraped tournament_id: {tournament_id}, day {days[j]}")
 
 # if run this file directly
@@ -191,7 +224,7 @@ if __name__ == '__main__':
     # Database connection details
     db_user = 'postgres'
     db_password = 'tft!'
-    db_host = '68.183.150.147'
+    db_host = '127.0.0.1'
     db_port = '5432'
     db_name = 'tftourneys'
     table_name = 'tbl_tournament_info'

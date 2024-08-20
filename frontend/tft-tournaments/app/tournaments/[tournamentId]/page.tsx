@@ -1,4 +1,4 @@
-import { getOneTourneyData, getTourneyData } from "@/app/data/data";
+import { getOneTourneyData } from "@/app/data/data";
 import Image from "next/image";
 import NewTourneyNav from "@/app/components/newtourneynav";
 

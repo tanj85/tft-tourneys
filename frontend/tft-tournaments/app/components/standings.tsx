@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PlayerModal from "./playermodal";
 
 export default function StandingsForDay({ tournament, dayIndex }: any) {
   interface Standings {
@@ -35,12 +36,25 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
     days: (Day | null)[];
   }
 
+  const standings = getStandingsForDay(tournament, dayIndex);
+
+  const sortedStandings = Object.entries(standings).sort(
+    ([, placeA]: any, [, placeB]: any) => placeB - placeA
+  );
+
+  
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<any>('');
+
+  const openModal = (content: any) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
   function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
     const day = tournament.days[dayIndex];
     return day ? day.standings : null;
   }
-
-  const standings = getStandingsForDay(tournament, dayIndex);
 
   if (!standings || standings.length === 0) {
     return (
@@ -53,11 +67,8 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
     );
   }
 
-  const sortedStandings = Object.entries(standings).sort(
-    ([, placeA]: any, [, placeB]: any) => placeB - placeA
-  );
-
   return (
+    
     <div className="h-[89%] max-w-[25rem]">
       <div className="bg-opacity-60 overflow-auto overscroll-none break-all max-h-[34rem] bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
         {/* {JSON.stringify(standings)} */}
@@ -84,7 +95,7 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
                   className="w-[1px] h-6 bg-active-purple-b"
                 ></div>
               </div>
-              <Link href={`/players/${playerLink}`}>{formattedPlayer}</Link>
+              <button onClick={() => openModal(formattedPlayer)} className="hover:underline">{formattedPlayer}</button>
               <div className="text-not-white">
                 {points} <span className="text-xs">pts</span>
               </div>
@@ -92,6 +103,12 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
           );
         })}
       </div>
+      <PlayerModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          tournament={tournament}
+          player={modalContent}
+        />
     </div>
   );
 }

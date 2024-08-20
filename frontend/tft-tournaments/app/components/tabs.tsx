@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { formatDate } from "../data/utils";
 
-import { getTourneyData, getTourneys } from "../data/data";
+import { getTourneys } from "../data/data";
+import { TbCalendarUp, TbCalendarDown, TbCalendarClock } from "react-icons/tb";
+import { FaCircle } from "react-icons/fa";
+import Image from "next/image";
 
 const TournamentTabs = async ({ tourneys }: any) => {
   return (
@@ -11,8 +14,14 @@ const TournamentTabs = async ({ tourneys }: any) => {
           <>
             {/* Display place header if not empty */}
             {tourney.place_header && (
-              <div className="px-4 py-1 capitalize font-bold text-left text-white text-lg">
-                {tourney.place_header}
+              <div className="px-4 py-1 capitalize font-bold text-left text-white text-lg flex gap-2 items-center bg-active-purple rounded-md border-active-purple-b border">
+                {tourney.place_header === "upcoming" && <TbCalendarUp />}
+                {tourney.place_header === "current" && <TbCalendarClock />}
+                {tourney.place_header === "past" && <TbCalendarDown />}
+                {tourney.place_header === "live" && (
+                  <FaCircle className="text-red-500 h-3 w-3" />
+                )}
+                <div>{tourney.place_header}</div>
               </div>
             )}
             <div
@@ -31,26 +40,30 @@ const TournamentTabs = async ({ tourneys }: any) => {
               >
                 <div className="p-4 rounded-md mx-2">
                   <div className="grid grid-cols-6 gap-8 text-center items-center">
-                    <div className="md:col-span-1 col-span-2 text-left font-bold text-balance w-40 truncate-lines-3">
+                    <div className="md:col-span-1 col-span-2 text-left font-bold text-balance w-[100px] lg:w-[200px] truncate-lines-3">
                       {tourney.tournament_name}
                     </div>
                     <div>{tourney.tier}</div>
                     <div className="hidden md:block">{tourney.region}</div>
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       {tourney.num_participants}
                     </div>
-                    <div className="flex justify-center items-center">
+                    <div className="flex justify-center items-center col-span-2 sm:col-span-1">
                       {tourney.has_detail ? (
-                        <img
+                        <Image
+                          height={50}
+                          width={50}
                           src="/new_small_logo.png"
                           alt="TFTourneys Logo"
-                          className="w-12 h-12"
+                          className=""
                         />
                       ) : (
-                        <img
+                        <Image
+                          height={50}
+                          width={50}
                           src="/liquipedia_logo.svg"
                           alt="Liquipedia Logo"
-                          className="w-12 h-12"
+                          className=""
                         />
                       )}
                     </div>

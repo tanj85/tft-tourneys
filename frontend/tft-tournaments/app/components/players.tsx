@@ -44,7 +44,7 @@ const PlayerList: React.FC<{ lobby: Lobby, tournament: any }> = ({ lobby, tourna
                   id="border"
                   className="ml-1 w-[1px] h-6 bg-active-purple-b"
                 ></div>
-                <button className={`${place === 1 ? "text-pris-yellow" : place > 4 ? "text-not-white" : "text-white"} truncate`} 
+                <button className={`${place === 1 ? "text-pris-yellow" : place > 4 ? "text-not-white" : "text-white"} truncate hover:underline`} 
                   onClick={() => openModal(formattedPlayer)}>
                   {formattedPlayer}
                 </button>

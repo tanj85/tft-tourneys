@@ -62,14 +62,14 @@ const Navbar = () => {
       <div
         className={
           menuOpen
-            ? "z-50 fixed bg-darkest-blue left-0 top-0 w-full h-screen flex flex-col justify-start"
+            ? "z-[70] fixed bg-darkest-blue left-0 top-0 w-full h-screen flex flex-col justify-start"
             : "hidden"
         }
       >
-        <div className="flex justify-end mr-6">
+        <div className="flex justify-end mr-6 relative z-[70]">
           <AiOutlineClose
             onClick={handleMenu}
-            className="z-50 h-20 w-[25px] cursor-pointer"
+            className="z-[70] h-20 w-[25px] cursor-pointer"
           />
         </div>
         <ul className="flex flex-col items-center mt-48 font-bold tracking-wide text-lg">
@@ -83,7 +83,7 @@ const Navbar = () => {
       </div>
 
       {/* mobile navbar */}
-      <div className="sticky top-0 md:hidden backdrop-blur bg-darkest-blue bg-opacity-80 flex justify-between overflow-hidden z-30">
+      <div className="sticky top-0 md:hidden backdrop-blur bg-darkest-blue bg-opacity-80 flex justify-between overflow-hidden z-[69]">
         <Link href="/">
           <div className="relative h-20 w-[79px]">
             <Image

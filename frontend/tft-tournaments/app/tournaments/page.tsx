@@ -1,10 +1,12 @@
 import Heading from "../components/heading";
 import TournamentTabs from "../components/tabs";
+import ScrollManager from "../components/scrollmanager";
 // import { tournamentsExample } from "../data/data";
 import { fetchFilteredTournaments, getTourneys } from "../data/data";
 import Image from "next/image";
 import TabHeader from "../components/tabheader";
 import Pagination from "../components/pagination";
+import internal from "stream";
 
 export default async function Tournaments({
   searchParams,
@@ -18,37 +20,41 @@ export default async function Tournaments({
     set?: string;
     dateLowerBound?: string;
     dateUpperBound?: string;
+    hasDetail?: string;
   };
 }) {
   // const tourneyNames = await getTourneys();
 
   // console.log(searchParams?.sortParams);
 
-  const tourneys: any[] = await getTourneys({
-    sortParams: searchParams?.sortParams || [],
-    tier: searchParams?.tier || "",
-    region: searchParams?.region || "",
-    set: searchParams?.set || "",
-    dateLowerBound: searchParams?.dateLowerBound || "",
-    dateUpperBound: searchParams?.dateUpperBound || "",
-    nameSearchQuery: searchParams?.query || "",
-  });
+  // const tourneys: any[] = await getTourneys({
+  //   sortParams: searchParams?.sortParams || [],
+  //   tier: searchParams?.tier || "",
+  //   region: searchParams?.region || "",
+  //   set: searchParams?.set || "",
+  //   dateLowerBound: searchParams?.dateLowerBound || "",
+  //   dateUpperBound: searchParams?.dateUpperBound || "",
+  //   nameSearchQuery: searchParams?.query || "",
+  //   hasDetail: searchParams?.hasDetail || 0,
+  // });
 
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const { tournaments, totalPages } = await fetchFilteredTournaments({
     query: searchParams?.query,
     page: searchParams?.page,
-    sortParams: searchParams?.sortParams || ["-start_date"],
-    tier: searchParams?.tier || "",
-    region: searchParams?.region || "",
-    set: searchParams?.set || "",
-    dateLowerBound: searchParams?.dateLowerBound || "",
-    dateUpperBound: searchParams?.dateUpperBound || "",
+    sortParams: searchParams?.sortParams || undefined,
+    tier: searchParams?.tier || undefined,
+    region: searchParams?.region || undefined,
+    set: searchParams?.set || undefined,
+    dateUpperBound: searchParams?.dateUpperBound || undefined,
+    dateLowerBound: searchParams?.dateLowerBound || undefined,
+    hasDetail: searchParams?.hasDetail || undefined,
   });
 
   return (
     <>
+      <ScrollManager searchParams={searchParams} />
       {/* background image section
       <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
       <div className="animate-fade absolute top-0 -z-20 h-[37rem] w-full">
@@ -79,7 +85,9 @@ export default async function Tournaments({
         <div className="absolute top-[10rem] h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
       </div>
 
-      <Heading>Tournaments</Heading>
+      <div className="text-5xl md:text-7xl">
+        <Heading>Tournaments</Heading>
+      </div>
       {/* blobs */}
       <div className="relative w-full max-w-lg">
         <div className="absolute top-[2rem] w-[25rem] h-[25rem] bg-pris-blue rounded-full mix-blend-overlay filter blur-3xl animate-blob opacity-80"></div>

@@ -3,10 +3,23 @@ import AOS from "aos";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Bob2, BobAnimation, FlyIn } from "./components/animations";
+import { getTourneys } from "./data/data";
+import { FaCircle } from "react-icons/fa6";
 // ..
 // AOS.init();
 
-export default function Home() {
+export default async function Home() {
+  const liveTourneys = await getTourneys({
+    sortParams: undefined,
+    tier: undefined,
+    region: undefined,
+    set: undefined,
+    dateUpperBound: undefined,
+    dateLowerBound: undefined,
+    hasDetail: undefined,
+    live: true,
+  });
+
   return (
     <>
       {/* blobs */}
@@ -48,13 +61,15 @@ export default function Home() {
 
       {/* section 1 banner */}
       <div className="mt-[25vh] relative">
-        <Image
-          src="/section1banner.png"
-          height={1000}
-          width={1000}
-          alt="logo"
-          className="w-full"
-        />
+        <div className="flex">
+          <Image
+            src="/section1banner.png"
+            height={1000}
+            width={1000}
+            alt="logo"
+            className="w-full min-h-[20rem] object-cover"
+          />
+        </div>
         <div className="absolute -inset-[.5px] bg-gradient-to-t from-darkest-blue mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-yellow to-pris-yellow opacity-20 mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-pink via-pris-blue to-pris-purple opacity-20 mix-blend-multiply"></div>
@@ -79,25 +94,48 @@ export default function Home() {
           <div className="text-xl">
             From qualifiers to Worlds, find all you need to know here.
           </div>
-          {/* <div className="text-xl font-bold">Live</div> */}
+          {liveTourneys.length !== 0 && (
+            <>
+              <div className="text-xl font-bold flex gap-2 items-center -mb-3">
+                <FaCircle className="text-red-500 h-3 w-3" />
+                LIVE
+              </div>
+              <div className="flex gap-2 flex-wrap justify-between">
+                {liveTourneys.map((liveTourney) => (
+                  <>
+                    <Link
+                      href={`/tournaments/${liveTourney.tournament_id}`}
+                      className="hover:underline w-[18rem] border-idle-purple-b border bg-idle-purple rounded-md py-2 px-4 "
+                    >
+                      <div className="line-clamp-2">
+                        {liveTourney.tournament_name}
+                      </div>
+                    </Link>
+                  </>
+                ))}
+              </div>
+            </>
+          )}
           <Link
             href="/tournaments"
             className="text-xl font-bold bg-pris-pink py-2 px-2 text-center rounded-xl"
           >
-            Let's go!
+            Let&apos;s go!
           </Link>
         </div>
       </div>
 
       {/* section 2 banner */}
       <div className="mt-20 relative">
-        <Image
-          src="/section2banner.png"
-          height={1000}
-          width={1000}
-          alt="logo"
-          className="w-full flex-shrink-0"
-        />
+        <div className="flex">
+          <Image
+            src="/section2banner.png"
+            height={1000}
+            width={1000}
+            alt="logo"
+            className="w-full min-h-[20rem] object-cover"
+          />
+        </div>
         <div className="absolute -inset-[.5px] bg-gradient-to-t from-darkest-blue mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-yellow to-pris-yellow opacity-80 mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-pink via-pris-blue to-pris-purple opacity-80 mix-blend-multiply"></div>
@@ -115,7 +153,7 @@ export default function Home() {
         <div className="relative w-[35rem] h-[20rem]">
           <Bob2>
             <Image
-              src="/pengu2.png"
+              src="/penguclean.png"
               height={800}
               width={800}
               alt="logo"

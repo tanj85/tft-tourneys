@@ -12,7 +12,7 @@ import { TbSwords } from "react-icons/tb";
 
 import { PiSword } from "react-icons/pi";
 
-import { IoPodium } from "react-icons/io5";
+import { IoPodium, IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa6";
 
 interface Standings {
@@ -142,11 +142,11 @@ const PlayerModal: React.FC<ModalProps> = ({
       });
   });
 
-  console.log(games);
-  console.log(standings);
-  console.log(stats);
+  // console.log(games);
+  // console.log(standings);
+  // console.log(stats);
 
-  const groupedByDay = games.reduce((acc, current) => {
+  const groupedByDay: any = games.reduce((acc: any, current) => {
     const { day } = current;
     if (!acc[day]) {
       acc[day] = [];
@@ -162,9 +162,12 @@ const PlayerModal: React.FC<ModalProps> = ({
 
   return ReactDOM.createPortal(
     <>
-      <div className="fixed inset-0 bg-idle-purple bg-opacity-10 backdrop-blur-sm z-10"></div>
-      <div className="fixed top-20 inset-0 flex items-center justify-center z-30">
-        <div className="bg-darker-blue h-[70vh] w-[90vw] sm:w-[60vw] px-12 py-6 rounded-lg relative font-soleil overflow-y-auto">
+      <div className="fixed inset-0 bg-idle-purple bg-opacity-10 backdrop-blur-sm z-20"></div>
+      <div
+        className="fixed top-20 inset-0 flex items-center justify-center z-30"
+        onClick={onClose}
+      >
+        <div className="bg-darker-blue flex flex-col max-h-[70vh] w-[90vw] sm:w-[60vw] z-40 rounded-lg relative font-soleil overflow-y-auto">
           {/* <Image
             src="/poro.png"
             height={200}
@@ -172,19 +175,22 @@ const PlayerModal: React.FC<ModalProps> = ({
             alt="logo"
             className="absolute right-24 -top-20"
           /> */}
-          <span
-            className="absolute top-3 right-6 text-2xl cursor-pointer"
-            onClick={onClose}
-          >
-            &times;
-          </span>
-          <div className="text-xl text-bold">{player}</div>
-          <div className="flex gap-4 mt-4 flex-wrap justify-between">
-            <div className="flex gap-4 flex-col">
+          <div className="sticky top-0 bg-darker-blue py-4 px-4 rounded-lg">
+            <span
+              className="absolute top-4 right-6 text-2xl cursor-pointer"
+              onClick={onClose}
+            >
+              <IoClose />
+            </span>
+            <div className="text-xl text-bold">{player}</div>
+          </div>
+
+          <div className="flex gap-4 mb-10 mt-4 mx-8 flex-wrap justify-center">
+            <div className="flex gap-4 flex-col w-1/2 min-w-[20rem]">
               {/* leaderboard position */}
-              <div className="border border-lightest-purple bg-idle-purple w-[24rem] min-w-[12rem] h-full rounded-lg px-4 py-2">
+              <div className="border border-lightest-purple bg-idle-purple h-full rounded-lg px-4 py-2">
                 Leaderboard Position
-                <div className="border border-lightest-purple bg-active-purple w-full h-3/4 mt-2 rounded-md px-4 py-2 flex flex-col gap-1">
+                <div className="border border-lightest-purple bg-active-purple w-full h-[4/5] lg:h-3/4 mt-2 rounded-md px-4 py-2 flex flex-col gap-1">
                   {standings
                     .slice()
                     .reverse()
@@ -209,9 +215,9 @@ const PlayerModal: React.FC<ModalProps> = ({
                   </div> */}
                 </div>
               </div>
-              <div className="border border-lightest-purple bg-idle-purple w-[24rem] h-full rounded-lg px-4 py-2">
-                Tournament stats
-                <div className=" border border-lightest-purple bg-active-purple w-full h-3/4 mt-2 rounded-md px-4 py-2 flex flex-col justify-between">
+              <div className="border border-lightest-purple bg-idle-purple h-full rounded-lg px-4 py-2">
+                Tournament Stats
+                <div className=" border border-lightest-purple bg-active-purple w-full mt-2 rounded-md px-4 py-2 flex flex-col justify-between">
                   <div className="flex justify-between">
                     <div className="flex gap-2 items-center">
                       <FaRegThumbsUp />
@@ -254,15 +260,16 @@ const PlayerModal: React.FC<ModalProps> = ({
             </div>
 
             {/* daily placements */}
-            <div className="border border-lightest-purple bg-idle-purple w-[24rem] h-[27rem] rounded-lg px-4 py-2">
-              Daily Standings
+            <div className="border border-lightest-purple bg-idle-purple h-full rounded-lg px-4 py-2">
+              Game Placements
               <div className="border border-lightest-purple bg-active-purple w-full h-[88%] mt-2 rounded-md px-4 py-2 flex flex-col gap-4">
                 {daysArray.map((day) => (
                   <>
                     <div>Day {day.day}</div>
                     <div className="flex flex-wrap gap-2 ">
-                      {day.entries.map((game: any) => (
+                      {day.entries.map((game: any, index: number) => (
                         <div
+                          key={index}
                           className={`
                           rounded-md 
                           ${game.placement === 1 ? "text-pris-yellow border-pris-yellow border" : ""}

@@ -27,6 +27,7 @@ class Tourneys(Resource):
         "tier",
         "region",
         "has_detail",
+        "live",
     ]
     day_fields = ["day", "sheet_index"]
     field_types = {
@@ -43,6 +44,7 @@ class Tourneys(Resource):
         "has_detail": bool,
         "day": str,
         "sheet_index": int,
+        "live": bool,
     }
 
     set_dict = {
@@ -150,9 +152,7 @@ class Tourneys(Resource):
                 row[k] = v if type(v) in (int, type(None)) else str(v)
             tourneys[row["tournament_id"]] = dict(row)
             tourneys[row["tournament_id"]]["has_detail"] = False
-            tourneys[row["tournament_id"]]["live"] = (
-                row["start_date"] <= today <= row["end_date"]
-            )
+            tourneys[row["tournament_id"]]["live"] = False 
 
         detailed_info = database.query_sql("SELECT * FROM tbl_tournament_info", True)
 
@@ -160,6 +160,9 @@ class Tourneys(Resource):
             id = row["id"]
             day = row["day"]
             tourneys[id]["has_detail"] = True
+            tourneys[id]["live"] = (
+                tourneys[id]["start_date"] <= today <= tourneys[id]["end_date"]
+            )
             if "days" not in tourneys[id]:
                 tourneys[id]["days"] = []
 
@@ -249,7 +252,10 @@ class Tourneys(Resource):
             default=None,
         )
         parser.add_argument(
-            "live_only", type=bool, location="args", required=False, default=False
+            "has_detail", type=str, location="args", required=False, default=None
+        )
+        parser.add_argument(
+            "live", type=str, location="args", required=False, default=None
         )
         args = parser.parse_args()
 
@@ -258,6 +264,23 @@ class Tourneys(Resource):
 
         if args["id"]:
             return self.get_tournament_info(args["id"])
+        
+        if args["live"]:
+            if args["live"] == "true":
+                args["live"] = True
+            elif args["live"] == "false":
+                args["live"] = False
+            else:
+                args["live"] = None
+        
+        # print(args["has_detail"])
+        if args["has_detail"]:
+            if args["has_detail"] == "TFTourneys":
+                args["has_detail"] = True
+            elif args["has_detail"] == "Liquipedia":
+                args["has_detail"] = False
+            else:
+                args["has_detail"] = None
 
         # If no ID, process sorting parameters and return sorted list
         sort_fields = []
@@ -280,6 +303,8 @@ class Tourneys(Resource):
             args["date_lower_bound"],
             args["date_upper_bound"],
             args["set"],
+            args["has_detail"],
+            args["live"],
         )
 
     def get_tourney_list(tourney_ids: Tuple[int, ...]):
@@ -288,40 +313,32 @@ class Tourneys(Resource):
         return tuple(tourney_list)
 
     def get_tournament_list(
-        sort_fields=["start_date"],
-        ascending=False,
+        sort_fields=[],
+        ascending=[],
         name_search_query=Optional[str],
         region=Optional[str],
         tier=None,
         date_lower_bound=None,
         date_upper_bound=None,
         tft_set=None,
+        has_detail = None,
+        live = None,
     ):
-        tourney_list = (id for id in Tourneys.tourneys)
-        if name_search_query is not None:
-            tourney_list = (
-                id
-                for id in tourney_list
-                if name_search_query.lower()
-                in Tourneys.tourneys[id]["tournament_name"].lower()
-            )
-        if region is not None:
-            tourney_list = (
-                id
-                for id in tourney_list
-                if region.lower() in Tourney.tourneys[id]["region"].lower()
-            )
-        if tier is not None:
-            tourney_list = (
-                id
-                for id in tourney_list
-                if tier.lower() in Tourneys.tourneys[id]["tier"].lower()
-            )
+        all_params = (sort_fields, ascending, name_search_query, region, tier, date_lower_bound, date_upper_bound, tft_set, has_detail)
+        pull_out_live = False
+        if all(not x for x in all_params):
+            sort_fields = ["live","start_date"]
+            ascending = False
+            pull_out_live = True
+        
+        if not sort_fields:
+            sort_fields = ["live","start_date"]
+            ascending = False
 
         tournaments = [
             {
                 field: Tourneys.tourneys[id][field]
-                for field in Tourneys.tourney_fields + ["live"]
+                for field in Tourneys.tourney_fields
             }
             for id in Tourneys.tourneys
             if (
@@ -341,6 +358,14 @@ class Tourneys(Resource):
                 tft_set is None
                 or (tft_set if type(tft_set) == str else Tourneys.set_dict[tft_set])
                 in Tourneys.tourneys[id]["set"]
+            )
+            and (
+                has_detail is None
+                or has_detail == Tourneys.tourneys[id]["has_detail"]
+            )
+            and (
+                live is None
+                or live == Tourneys.tourneys[id]["live"]
             )
         ]
 
@@ -362,15 +387,19 @@ class Tourneys(Resource):
                     Tourneys.handle_tier_field(asc)
                     if (field == "tier" and x[field] == "S")
                     else (
-                        x[field]
-                        if asc
-                        else (
-                            -x[field]
-                            if isinstance(x[field], (int, float))
+                        Tourneys.handle_none(field) 
+                        if x[field] is None 
+                        else(
+                            x[field]
+                            if asc
                             else (
-                                Tourneys.reverse_string(x[field].lower())
-                                if isinstance(x[field], str)
-                                else x[field]
+                                -x[field]
+                                if isinstance(x[field], (int, float))
+                                else (
+                                    Tourneys.reverse_string(x[field].lower())
+                                    if isinstance(x[field], str)
+                                    else x[field]
+                                )
                             )
                         )
                     )
@@ -383,18 +412,22 @@ class Tourneys(Resource):
         for tournament in tournaments:
             tournament["place_header"] = ""
 
-        if sort_fields and sort_fields[0] == "start_date":
+        if sort_fields and (sort_fields[0] == "start_date" or sort_fields[0] == "live"):
             today = date.today()
             saw_upcoming = False
             saw_ongoing = False
             saw_past = False
+            saw_live = False
             for tournament in tournaments:
                 start_date = datetime.strptime(
                     tournament["start_date"], "%Y-%m-%d"
                 ).date()
                 end_date = datetime.strptime(tournament["end_date"], "%Y-%m-%d").date()
 
-                if not saw_upcoming and start_date > today:
+                if pull_out_live and not saw_live and start_date <= today <= end_date:
+                    tournament["place_header"] = "live"
+                    saw_live = True
+                elif not saw_upcoming and start_date > today:
                     tournament["place_header"] = "upcoming"
                     saw_upcoming = True
                 elif not saw_ongoing and start_date <= today <= end_date:
@@ -430,9 +463,9 @@ class Tourneys(Resource):
     def handle_tier_field(asc):
         # print(asc)
         if asc:
-            return "@"
-        return "z"
-
+            return chr(1)
+        return chr(255)
+    
     def reverse_string(s):
         return "".join([chr(255 - ord(x)) for x in s if ord(x) > 0 and ord(x) < 255])
 

@@ -17,6 +17,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
     set: searchParams.get("set") || "",
     tier: searchParams.get("tier") || "",
     region: searchParams.get("region") || "",
+    hasDetail: searchParams.get("hasDetail") || "",
   });
 
   const handleSearch = useDebouncedCallback((term: string) => {
@@ -78,13 +79,13 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
 
   return (
     <>
-      <div className="flex items-center space-x-4">
-        <div className="relative w-1/5">
+      <div className="flex flex-wrap items-start gap-6 relative z-50 lg:justify-start justify-center mb-2">
+        <div className="relative w-full">
           <label htmlFor="search" className="sr-only">
             Search
           </label>
           <input
-            className="peer block text-black w-full rounded-md border border-gray-200 py-[9px] pl-2 text-sm outline-2 placeholder:text-gray-500"
+            className="block text-black bg-white w-full min-w-[80px] rounded-md border border-gray-200 py-[9px] pl-2 outline-2 placeholder:text-gray-500"
             placeholder={"Search Tournament..."}
             onChange={(e) => handleSearch(e.target.value)}
             defaultValue={searchParams.get("query")?.toString()}
@@ -92,7 +93,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
         </div>
 
         <select
-          className="border text-black border-gray-200 rounded-md p-2"
+          className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.tier}
           onChange={(e) => handleDropdownChange("tier", e.target.value)}
         >
@@ -100,10 +101,11 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="S">Tier: S</option>
           <option value="A">Tier: A</option>
           <option value="B">Tier: B</option>
+          <option value="qual">Tier: Q</option>
         </select>
 
         <select
-          className="border text-black border-gray-200 rounded-md p-2"
+          className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.region}
           onChange={(e) => handleDropdownChange("region", e.target.value)}
         >
@@ -123,7 +125,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="Africa">Region: Africa</option>
         </select>
         <select
-          className="border text-black border-gray-200 rounded-md p-2"
+          className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.set}
           onChange={(e) => handleDropdownChange("set", e.target.value)}
         >
@@ -141,7 +143,17 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="2">Set 2: Faction Wars</option>
           <option value="13">Set 13: Unannounced</option>
         </select>
- 
+
+        <select
+          className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
+          value={dropdownValues.hasDetail}
+          onChange={(e) => handleDropdownChange("hasDetail", e.target.value)}
+        >
+          <option value="">Data Host: All</option>
+          <option value="TFTourneys">Data Host: TFTourneys</option>
+          <option value="Liquipedia">Data Host: Liquipedia</option>
+        </select>
+
         <Pagination totalPages={totalPages} />
       </div>
 
@@ -153,25 +165,28 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           NAME
           <SortArrow sortOrder={sortState["tournament_name"]} />
         </div>
-        <div className="cursor-pointer flex items-center justify-center" onClick={() => handleSort("tier")}>
+        <div
+          className="cursor-pointer flex items-center justify-center"
+          onClick={() => handleSort("tier")}
+        >
           TIER
           <SortArrow sortOrder={sortState["tier"]} />
         </div>
-        <div className="cursor-pointer hidden md:flex items-center justify-center" onClick={() => handleSort("region")}>
-          REGION
-        <SortArrow sortOrder={sortState["region"]} />
-        </div>
         <div
           className="cursor-pointer hidden md:flex items-center justify-center"
+          onClick={() => handleSort("region")}
+        >
+          REGION
+          <SortArrow sortOrder={sortState["region"]} />
+        </div>
+        <div
+          className="cursor-pointer hidden lg:flex items-center justify-center"
           onClick={() => handleSort("num_participants")}
         >
           PARTICIPANTS
           <SortArrow sortOrder={sortState["num_participants"]} />
         </div>
-        <div
-        >
-          DATA
-        </div>
+        <div>DATA</div>
         <div
           className="cursor-pointer hidden md:flex items-center justify-center"
           onClick={() => handleSort("start_date")}

@@ -1,3 +1,7 @@
+import { FaLessThanEqual } from "react-icons/fa6";
+
+const changeBusterInterval = 120;
+
 export const tournamentsExample = [
   {
     id: "1",
@@ -85,8 +89,16 @@ export const tournamentsExample = [
   },
 ];
 
+function generateCacheBuster(interval: number) {
+  const now = new Date();
+  const millisecondsPerInterval = interval * 1000; // convert interval from minutes to milliseconds
+  const roundedTime = Math.floor(now.getTime() / millisecondsPerInterval) * millisecondsPerInterval;
+  // console.log(roundedTime);
+  return roundedTime;
+}
+
 export const getPlayers = async () => {
-  const res = await fetch("http://127.0.0.1:5000/players/", {
+  const res = await fetch("http://127.0.0.1:8080/players/", {
     next: { revalidate: 300 },
     method: "GET",
     headers: {
@@ -103,7 +115,7 @@ export const getPlayers = async () => {
 
 export const getPlayerData = async (player: string) => {
   const res = await fetch(
-    `http://127.0.0.1:5000/players/?name=${player}&tag=eprod`,
+    `http://127.0.0.1:8080/players/?name=${player}&tag=eprod`,
     {
       next: { revalidate: 300 },
       method: "GET",
@@ -131,6 +143,8 @@ export async function fetchFilteredTournaments({
   set = "",
   dateLowerBound = "",
   dateUpperBound = "",
+  hasDetail = "",
+  live = undefined,
 }: {
   query?: string;
   page?: string;
@@ -140,6 +154,8 @@ export async function fetchFilteredTournaments({
   set?: string;
   dateLowerBound?: string;
   dateUpperBound?: string;
+  hasDetail?: string;
+  live?: boolean;
 }): Promise<{ tournaments: any[]; totalPages: number }> {
   const currentPage = Number(page) || 1;
   const tournamentsPerPage = 10;
@@ -152,6 +168,8 @@ export async function fetchFilteredTournaments({
     dateLowerBound,
     dateUpperBound,
     nameSearchQuery: query,
+    hasDetail: hasDetail,
+    live,
   });
 
   // console.log(tourneys.slice(0,10));
@@ -179,6 +197,8 @@ interface GetTourneysParams {
   dateLowerBound?: string;
   dateUpperBound?: string;
   nameSearchQuery?: string;
+  hasDetail?: string;
+  live?: boolean;
 }
 
 export interface FilterState {
@@ -214,6 +234,8 @@ export const getTourneys = async ({
   dateLowerBound = "",
   dateUpperBound = "",
   nameSearchQuery = "",
+  hasDetail = "",
+  live = undefined,
 }: GetTourneysParams = {}): Promise<any[]> => {
   // Construct the query string based on input parameters
   let queryParams = new URLSearchParams();
@@ -234,9 +256,10 @@ export const getTourneys = async ({
   if (dateLowerBound) queryParams.set("date_lower_bound", dateLowerBound);
   if (dateUpperBound) queryParams.set("date_upper_bound", dateUpperBound);
   if (nameSearchQuery) queryParams.set("name_search_query", nameSearchQuery);
-
+  if (hasDetail) queryParams.set("has_detail", hasDetail);
+  if (live !== undefined) queryParams.set("live", live ? "true" : "false");
   // Construct the final URL
-  const url = `http://127.0.0.1:5000/tournaments/?${queryParams.toString()}`;
+  const url = `http://127.0.0.1:8080/tournaments/?${queryParams.toString()}&cb=${generateCacheBuster(changeBusterInterval)}`;
 
   const result = await fetch(url, {
     method: "GET",
@@ -254,43 +277,43 @@ export const getTourneys = async ({
   return result.json();
 };
 
-export const getTourneyData = async () => {
-  // Get the list of tournaments
-  const tourneys = await getTourneys();
-  console.log(tourneys[0]);
+// export const getTourneyData = async () => {
+//   // Get the list of tournaments
+//   const tourneys = await getTourneys();
+//   console.log(tourneys[0]);
 
-  // Create an array of fetch promises for each tournament
-  const fetchPromises = tourneys
-    .filter(
-      (tourney: any) =>
-        tourney.tournament_id &&
-        Number.isInteger(tourney.tournament_id) &&
-        tourney.tournament_id > 0
-    )
-    .map((tourney: any) => {
-      return fetch(
-        `http://127.0.0.1:5000/tournaments/?id=${tourney.tournament_id}`,
-        {
-          method: "GET",
-          headers: {
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-            Expires: "0",
-          },
-        }
-      ).then((result) => {
-        if (!result.ok) {
-          throw new Error("Failed to fetch specific tourney data");
-        }
-        return result.json();
-      });
-    });
+//   // Create an array of fetch promises for each tournament
+//   const fetchPromises = tourneys
+//     .filter(
+//       (tourney: any) =>
+//         tourney.tournament_id &&
+//         Number.isInteger(tourney.tournament_id) &&
+//         tourney.tournament_id > 0
+//     )
+//     .map((tourney: any) => {
+//       return fetch(
+//         `http://127.0.0.1:8080/tournaments/?id=${tourney.tournament_id}`,
+//         {
+//           method: "GET",
+//           headers: {
+//             "Cache-Control": "no-cache",
+//             Pragma: "no-cache",
+//             Expires: "0",
+//           },
+//         }
+//       ).then((result) => {
+//         if (!result.ok) {
+//           throw new Error("Failed to fetch specific tourney data");
+//         }
+//         return result.json();
+//       });
+//     });
 
-  // Wait for all fetch promises to resolve
-  const results = await Promise.all(fetchPromises);
+//   // Wait for all fetch promises to resolve
+//   const results = await Promise.all(fetchPromises);
 
-  return results;
-};
+//   return results;
+// };
 
 export const getOneTourneyData = async (tournament_id: number) => {
   if (!Number.isInteger(tournament_id) || tournament_id <= 0) {
@@ -299,7 +322,7 @@ export const getOneTourneyData = async (tournament_id: number) => {
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:5000/tournaments/?id=${tournament_id}`,
+      `http://127.0.0.1:8080/tournaments/?id=${tournament_id}&cb=${generateCacheBuster(changeBusterInterval)}`,
       {
         method: "GET",
         headers: {

@@ -2,7 +2,7 @@
 # Database credentials and connection details
 db_user = 'postgres'
 db_password = 'tft!'
-db_host = '68.183.150.147'
+db_host = '127.0.0.1'
 db_port = '5432'
 db_name = 'tftourneys'
 table_name = 'tbl_placement_data'  # Ensure this is the correct table you intend to use
