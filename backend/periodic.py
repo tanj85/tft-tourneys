@@ -12,4 +12,4 @@ if __name__ == "__main__":
             print(response.json())
         except:
             print("couldn't get repsonse")
-        sleep(1)
+        sleep(60)

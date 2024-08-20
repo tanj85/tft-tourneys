@@ -4,7 +4,7 @@ from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extensions import connection, cursor
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
-from typing import Dict, List, Optional, Tuple, Iterable
+from typing import Dict, List, Optional, Tuple, Iterable, Union
 
 load_dotenv()
 
@@ -17,8 +17,6 @@ conn_pool = SimpleConnectionPool(
     port="5432",
     database=os.getenv("DB_NAME"),
 )
-if conn_pool:
-    print("created pool")
 
 
 def close_conn_pool() -> None:
@@ -27,14 +25,27 @@ def close_conn_pool() -> None:
 
 
 def get_conn() -> connection:
+    """Returns a connection from database pool"""
     return conn_pool.getconn()
 
 
 def close_conn(conn: connection) -> None:
+    """Returns a connection to database pool"""
     conn_pool.putconn(conn)
 
 
-def query_sql(query: str, ret_dict=False, args=None):
+def query_sql(query: str, ret_dict: bool = False, args=None):
+    """
+    Queries database and returns result.
+
+    Args:
+        query (str): The sql query
+        ret_dict (bool): TODO. Defaults to False.
+        args (TODO): The arguments passed to query used by psycopg2. Defaults to None.
+
+    Returns:
+        The result of the query.
+    """
     conn = None
     try:
         conn = get_conn()
@@ -54,131 +65,10 @@ def query_sql(query: str, ret_dict=False, args=None):
             close_conn(conn)
 
 
-def parse_tournament_info() -> None:
-    rows = query_sql("SELECT * FROM tbl_tournament_info")
-    tourneys = {}
-    for row in rows:
-        if row[8] not in tourneys:
-            tourney = {
-                "name": row[0],
-                "tier": row[1],
-                "region": row[2],
-                "start_date": str(row[3]),
-                "end_date": str(row[4]),
-                "link": row[6],
-                "patch": row[7],
-                "id": row[8],
-                "days": [],  # todo: want standings in days
-            }
-            tourneys[row[8]] = tourney
-
-        while len(tourney["days"]) < row[9]:
-            tourney["days"].append(None)
-
-        tourney["days"][row[9] - 1] = {
-            "standings": {},
-            "num_participants": row[5],
-            "day": row[9],
-            "sheet_index": row[10],
-            "games": [],
-        }
-
-    return tourneys
-
-
-def expand(lis, num):
+def expand(lis: List, num: int) -> None:
+    """Expands a [lis] to have length of at least [num]."""
     while len(lis) < num:
         lis.append(None)
-
-
-def parse_tournament_info_new():
-    tourneys = {}
-
-    columns = query_sql(
-        """
-                    SELECT column_name, data_type
-                    FROM information_schema.columns
-                    WHERE table_name = 'tbl_tournament_info'
-                      AND table_schema = 'public'
-                """
-    )
-    column_names = [col[0] for col in columns]
-
-    rows = query_sql("SELECT * FROM tbl_tournament_info")
-
-    #     tournament_level = ["tourney_name", "tier" ,"region", "start_date", "end_date", "patch", "id"]
-    #    day_level = ["num_participants", "link"]
-    seen_tourneys = set()
-    for row in rows:
-        seen = False
-        day = {}
-        for col_name, col_value in zip(column_names, row):
-            if col_value != "integer":
-                col_value = str(col_value)
-            day[col_name] = col_value
-
-        id = tourney["id"]
-
-        if id not in seen_tourneys:
-            tourney = {}
-            for col_name in col_names:
-                tourney[col_name] = []
-        seen_tourneys.add(id)
-        for col_name in col_names:
-            expand(tourney[col_name]["day"])
-            tourney[col_name][day] = day[col_name]
-
-    for id in tourneys:
-        for col_name in col_names:
-            if len(tourneys["id"]) <= 1:
-                break
-
-    return tourneys
-
-
-def parse_placement_data(tourneys, players):
-    rows = query_sql("SELECT * FROM tbl_placement_data")
-    for row in rows:
-        tourney_id = row[3]
-        day_num = row[4]
-
-        game_num = row[6]
-        print(tourneys[tourney_id]["days"][day_num - 1])
-        games = tourneys[tourney_id]["days"][day_num - 1]["games"]
-        while len(games) < game_num:
-            games.append({"lobbies": []})
-
-        lobby_id = row[5]
-        lobbies = games[game_num - 1]["lobbies"]
-        while len(lobbies) < lobby_id:
-            lobbies.append({})
-        player_name = row[1]
-        placement = row[2]
-        lobbies[lobby_id - 1][player_name] = placement
-
-        standings = tourneys[tourney_id]["days"][day_num - 1]["standings"]
-        if player_name not in standings:
-            standings[player_name] = 0
-        standings[player_name] += 9 - placement
-
-        if player_name not in players:
-            players[player_name] = {
-                "name": player_name,
-                "live": {},
-                "tournament history": set(),
-            }
-        players[player_name]["tournament history"].add(tourneys[tourney_id]["name"])
-    for name in players.keys():
-        players[name]["tournament history"] = list(players[name]["tournament history"])
-
-
-def parse_database():
-
-    players = {}
-    tourneys = parse_tournament_info()
-    parse_placement_data(tourneys, players)
-
-    return tourneys, players
 
 
 def print_tournament_info_schema(name):
@@ -197,6 +87,7 @@ def print_tournament_info_schema(name):
 
 
 def get_column_names(table_name: str) -> Tuple[str]:
+    """Returns the column_names the table [table_name]."""
     columns = query_sql(
         f"""
         SELECT column_name
@@ -213,19 +104,5 @@ def print_first_row(name: str):
     print(rows[0])
 
 
-# FUTURE
-def update_tourney(conn: connection, tourneys, tourney_id: int):
-    cur = conn.cursor()
-    cur.execute(
-        "SELECT * FROM tbl_placement_data WHERE tournament_id=" + str(tourney_id)
-    )
-    rows = cur.fetchall()
-
-
 if __name__ == "__main__":
-    # print_tournament_info_schema("'tbl_tournament_info'")
-    # print_tournament_info_schema("'tbl_placement_data'")
-    # print_first_row("tbl_tournament_info")
-    # print_first_row("tbl_placement_data")
-
     close_conn_pool()

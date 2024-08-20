@@ -1,4 +1,6 @@
 .env
-__pycache__/
+__pycache__
 .DS_STORE
 commit_message.txt
+.mypy_cache
+venv

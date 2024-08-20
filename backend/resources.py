@@ -1,22 +1,20 @@
 # from operator import itemgetter
 from datetime import datetime, date
 from typing import List, Callable, Iterable, Optional, Tuple
+from dataclasses import dataclass
 
-from flask_restful import Resource, reqparse
-from Levenshtein import distance
+from flask_restful import Resource, reqparse  # type: ignore
+
+# from Levenshtein import distance
 
 import database
 
 debug = True
 
 
-def is_live(start_date: date, end_date: date):
-    return start_date <= date.today() <= end_date
-
-
 class Tourneys(Resource):
     _initialized = False
-    tourneys = {}
+    tourneys: dict[int, dict] = {}
     tourney_fields = [
         "tournament_name",
         "tournament_id",
@@ -36,15 +34,15 @@ class Tourneys(Resource):
         "tournament_id": int,
         "start_date": str,
         "end_date": str,
-        "set": str, 
+        "set": str,
         "num_participants": int,
-        "patch": str, 
+        "patch": str,
         "liquipedia_link": str,
-        "tier": str, 
-        "region": str, 
-        "has_detail": bool,  
+        "tier": str,
+        "region": str,
+        "has_detail": bool,
         "day": str,
-        "sheet_index": int
+        "sheet_index": int,
     }
 
     set_dict = {
@@ -67,21 +65,22 @@ class Tourneys(Resource):
     LOAD_ALL_DELTA: int = 10
     LOAD_LIVE_DELTA: int = 5
 
-    def get_placement_data(tournament_ids: Optional[Iterable[int]] = None):
+    @classmethod
+    def get_placement_data(cls, tournament_ids: Tuple[int, ...]) -> dict[str, list]:
+        """Given [tournament_ids], return placement data of those tournaments"""
         placement_data_columns = database.get_column_names("tbl_placement_data")
 
         query = "SELECT * FROM tbl_placement_data"
-
-        if tournament_ids is not None:
+        if len(tournament_ids) > 0:
             query += f" WHERE tournament_id IN {tournament_ids}"
 
         query_data = database.query_sql(query)
-        placement_data = {name: [] for name in placement_data_columns}
+        placement_data: dict[str, list] = {name: [] for name in placement_data_columns}
         for row in query_data:
             for i, col_name in enumerate(placement_data_columns):
                 placement_data[col_name].append(row[i])
 
-        # preocndition
+        # postcondition
         if debug:
             assert_fields = (
                 "tournament_id",
@@ -94,20 +93,24 @@ class Tourneys(Resource):
             for field in assert_fields:
                 assert (
                     field in placement_data
-                ), f"precondition violated: {field} missing in placement data columns"
+                ), f"postcondition violated: {field} missing in placement data columns"
         return placement_data
 
-    def get_all_tournament_ids() -> Tuple[int]:
+    @classmethod
+    def get_all_tournament_ids(cls) -> Tuple[int, ...]:
         all_ids = Tourneys.tourneys.keys()
         return tuple(all_ids)
 
-    def get_live_tournament_ids() -> Tuple[int]:
+    @classmethod
+    def get_live_tournament_ids(cls) -> Tuple[int, ...]:
         all_ids = Tourneys.get_all_tournament_ids()
         live_ids = (id for id in all_ids if Tourneys.tourneys[id]["live"])
 
         return tuple(live_ids)
 
-    def load_placement_data(tournament_ids: Tuple[int]):
+    def load_placement_data(tournament_ids: Tuple[int, ...]) -> None:
+        """Loads/reloads the placement data of the tournaments with ids in [tournament_ids].
+        Modifies Tourneys.tourneys."""
         placement_data = Tourneys.get_placement_data(tournament_ids)
 
         for i in range(len(placement_data["tournament_id"])):
@@ -135,7 +138,9 @@ class Tourneys(Resource):
                 standings[player_name] = 0
             standings[player_name] += 9 - placement
 
-    def load_all_tourneys(delta=None) -> bool:
+    @classmethod
+    def load_all_tourneys(cls) -> None:
+        """Loads/reloads all tourneys. Modifies Tourneys.tourneys."""
         tourneys = {}
 
         all_info = database.query_sql("SELECT * FROM tbl_liquipedia_tournaments", True)
@@ -170,13 +175,12 @@ class Tourneys(Resource):
         Tourneys.last_load_all = datetime.now()
         Tourneys.last_load_live = datetime.now()
 
-        return True
-
     # initialize
     def __init__(self):
         Tourneys.init()
 
-    def init():
+    @classmethod
+    def init(cls) -> None:
         if not Tourneys._initialized:
             Tourneys.load_all_tourneys()
             Tourneys._initialized = True
@@ -184,9 +188,6 @@ class Tourneys(Resource):
     def get(self, id=None):
         if id:
             return id
-
-        if Tourneys.tourneys is None:
-            return {"message": "Server Error: Tournament data not available"}, 500
 
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=int, location="args", required=False)
@@ -281,16 +282,41 @@ class Tourneys(Resource):
             args["set"],
         )
 
+    def get_tourney_list(tourney_ids: Tuple[int, ...]):
+        assert Tourneys.tourneys is not None
+        tourney_list = (Tourney.tourneys[id] for id in tourney_ids)
+        return tuple(tourney_list)
+
     def get_tournament_list(
         sort_fields=["start_date"],
         ascending=False,
-        name_search_query=None,
-        region=None,
+        name_search_query=Optional[str],
+        region=Optional[str],
         tier=None,
         date_lower_bound=None,
         date_upper_bound=None,
         tft_set=None,
     ):
+        tourney_list = (id for id in Tourneys.tourneys)
+        if name_search_query is not None:
+            tourney_list = (
+                id
+                for id in tourney_list
+                if name_search_query.lower()
+                in Tourneys.tourneys[id]["tournament_name"].lower()
+            )
+        if region is not None:
+            tourney_list = (
+                id
+                for id in tourney_list
+                if region.lower() in Tourney.tourneys[id]["region"].lower()
+            )
+        if tier is not None:
+            tourney_list = (
+                id
+                for id in tourney_list
+                if tier.lower() in Tourneys.tourneys[id]["tier"].lower()
+            )
 
         tournaments = [
             {
@@ -299,19 +325,20 @@ class Tourneys(Resource):
             }
             for id in Tourneys.tourneys
             if (
-                not name_search_query
+                name_search_query is None
                 or name_search_query.lower()
                 in Tourneys.tourneys[id]["tournament_name"].lower()
             )
             and (
-                not region or region.lower() in Tourneys.tourneys[id]["region"].lower()
+                region is None
+                or region.lower() in Tourneys.tourneys[id]["region"].lower()
             )
-            and (not tier or tier.lower() in Tourneys.tourneys[id]["tier"].lower())
+            and (tier is None or tier.lower() in Tourneys.tourneys[id]["tier"].lower())
             and Tourneys.compare_date_valid(
                 date_lower_bound, date_upper_bound, Tourneys.tourneys[id]["start_date"]
             )
             and (
-                not tft_set
+                tft_set is None
                 or (tft_set if type(tft_set) == str else Tourneys.set_dict[tft_set])
                 in Tourneys.tourneys[id]["set"]
             )
@@ -322,9 +349,12 @@ class Tourneys(Resource):
         if sort_fields:
             if isinstance(ascending, bool):
                 ascending = [ascending] * len(sort_fields)
-        
+
             for i in range(len(ascending)):
-                if Tourneys.field_types[sort_fields[i]] == str and not "date" in sort_fields[i]:
+                if (
+                    Tourneys.field_types[sort_fields[i]] == str
+                    and not "date" in sort_fields[i]
+                ):
                     ascending[i] = not ascending[i]
 
             sort_key = lambda x: tuple(
@@ -389,7 +419,7 @@ class Tourneys(Resource):
         )
         str_date = datetime.strptime(str_date, "%Y-%m-%d").date()
         return date_lower < str_date < date_higher
-    
+
     def handle_none(field):
         if Tourneys.field_types[field] == int:
             return 0
@@ -400,12 +430,12 @@ class Tourneys(Resource):
     def handle_tier_field(asc):
         # print(asc)
         if asc:
-            return '@'
-        return 'z'
-    
+            return "@"
+        return "z"
+
     def reverse_string(s):
-        return ''.join([chr(255-ord(x)) for x in s if ord(x) > 0 and ord(x) < 255])
-    
+        return "".join([chr(255 - ord(x)) for x in s if ord(x) > 0 and ord(x) < 255])
+
     def get_tournament_info(self, id: int):
         tourneys = Tourneys.tourneys
         assert tourneys is not None
@@ -416,24 +446,20 @@ class Tourneys(Resource):
             return None, 500
 
     def post(self):
-        assert Tourneys.last_load_all is not None
-        assert Tourneys.last_load_live is not None
-
-        time_elapsed = datetime.now() - Tourneys.last_load_all
-        time_elapsed = time_elapsed.seconds
-        if time_elapsed > Tourneys.LOAD_ALL_DELTA:
+        parser = reqparse.RequestParser()
+        parser.add_argument("live_only", type=bool, location="args", required=False)
+        args = parser.parse_args()
+        if args["live_only"] is None:
             Tourneys.load_all_tourneys()
             Tourneys.last_load_all = datetime.now()
+            print("reloaded all tournaments")
             return {"message": "reloaded all tournaments"}, 200
-        else:
-            time_elapsed = datetime.now() - Tourneys.last_load_live
-            time_elapsed = time_elapsed.seconds
-            if time_elapsed > Tourneys.LOAD_LIVE_DELTA:
-                Tourneys.load_placement_data(Tourneys.get_live_tournament_ids())
-                Tourneys.last_load_live = datetime.now()
-                return {"message": "reloaded live tournaments"}, 200
-            else:
-                return {"message": "no reloads"}, 500
+
+        if args["live_only"] == True:
+            print("reloaded live tournaments only")
+            Tourneys.load_placement_data(Tourneys.get_live_tournament_ids())
+            Tourneys.last_load_live = datetime.now()
+            return {"message": "reloaded live tournaments"}, 200
 
 
 # api request for individual player, when given a name
@@ -499,18 +525,19 @@ class Players(Resource):
         return None, 400
 
 
-# returns true if s1 is a prefix of s2
-def is_prefix(s1, s2):
+def is_prefix(s1: str, s2: str) -> bool:
+    """returns if [s1] is a prefix of [s2]"""
     if len(s1) > len(s2):
         return False
 
     return s1 == s2[: len(s1)]
 
 
-def remove_tag(name):
+def remove_tag(name: str) -> str:
     for i in range(len(name) - 1, -1, -1):
         if name[i] == "#":
             return name[:i]
+    return name
 
 
 class Search(Resource):
