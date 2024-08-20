@@ -28,18 +28,20 @@ def insert_placement_data(player_name, placement, tournament_id, day_num, lobby_
         with psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_password) as conn:
             with conn.cursor() as cur:
                 # Execute the INSERT statement with a check for existing record
-                cur.execute(sql, (player_name, placement, tournament_id, day_num, lobby_id, game_num, 
+                cur.execute(sql, (player_name, placement, tournament_id, day_num, lobby_id, game_num,
                                   player_name, tournament_id, day_num, lobby_id, game_num))
-                
+                # Check the number of rows affected
+                rows_added = cur.rowcount
+
                 # Commit the changes to the database
                 conn.commit()
-                
+                return 1 if rows_added > 0 else 0  # Return 1 if a row was added, otherwise 0
+    
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"Error: {error}")
-        conn.rollback()
+        if conn:
+            conn.rollback()  # Rollback transaction on error
         return 0
-    
-    return 1
 
 def getNum(df, r, c):
     return int(''.join(filter(str.isdigit, df.iloc[r, c])))
@@ -99,6 +101,8 @@ def default_scrape(tournament_id, url, day, sheet):
                 # print(f"{df.iloc[index, col]:<30} {9-getNum(df, index, col+1):<5} {current_lobby:<5} {current_game:<5}")
     print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
 
+    return scraped
+
 
 def day_header_scrape(tournament_id, url, day, sheet):
 
@@ -136,7 +140,11 @@ def day_header_scrape(tournament_id, url, day, sheet):
                 # print(f"{df.iloc[index, col]:<30} {9-getNum(df, index, col+1):<5} {current_lobby:<5} {current_game:<5}")
     print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
 
+    return scraped
+
 def scrape_tourney(tournament_id, engine = None, quick_insert = False):
+
+    scraped = 0
 
     if engine is None:
         
@@ -203,9 +211,9 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
                 special_scrape = row[0]
 
         if special_scrape == "day_header":
-            day_header_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
+            scraped += day_header_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
         else:
-            default_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
+            scraped += default_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
 
         with engine.connect() as conn:
 
@@ -217,6 +225,8 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
             transaction.commit()
         remove_eprod()
         print(f"Successfully scraped tournament_id: {tournament_id}, day {days[j]}")
+
+    return scraped
 
 # if run this file directly
 if __name__ == '__main__':

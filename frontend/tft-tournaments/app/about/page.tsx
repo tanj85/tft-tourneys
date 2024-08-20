@@ -75,7 +75,7 @@ export default function About() {
 
           <div
             id="tourney finder"
-            className="flex gap-6 items-center justify-between flex-wrap-reverse lg:flex-nowrap mt-24"
+            className="flex gap-12 items-center justify-between flex-wrap-reverse lg:flex-nowrap mt-24"
           >
             <div className="lg:flex-shrink-0">
               <FlyIn>

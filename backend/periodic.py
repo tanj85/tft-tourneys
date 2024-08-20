@@ -1,15 +1,78 @@
 from time import sleep
 import requests
+from datetime import datetime
+import threading
+import sys
+from pathlib import Path
 
+# Get the parent directory
+parent_dir = Path(__file__).resolve().parent.parent
+child_dir = parent_dir / 'misc'
+sys.path.append(str(parent_dir))
+sys.path.append(str(child_dir))
 
-url = "https://127.0.0.1/tournaments/"
+import misc.scrape_tourney as scrape_tourney
+
+# Global settings
+sleepTime = 5
+checkNewLiveTourneysTime = 3600
+liveTourneyTimer = 0
+lock = threading.Lock()  # Lock for thread-safe operations
+shutdown_event = threading.Event()  # Shutdown event for clean thread termination
+
+def updateLive(liveTourneyIds=None):
+    global liveTourneyTimer
+
+    while not shutdown_event.is_set():
+        with lock:  # Ensure that changes to liveTourneyTimer are thread-safe
+            liveTourneyTimer -= sleepTime
+
+        if liveTourneyIds is None or liveTourneyTimer <= 0:
+            with lock:
+                liveTourneyTimer = checkNewLiveTourneysTime  # Reset timer safely
+
+            try:
+                response = requests.get("http://127.0.0.1:8080/tournaments/?live=true")
+                response.raise_for_status()
+                liveTourneyIds = [x["tournament_id"] for x in response.json()]
+                print(f"Got new liveTourneyIds: {liveTourneyIds}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                liveTourneyIds = []
+
+        scraped = 0
+        for tourneyId in liveTourneyIds:
+            if shutdown_event.is_set():
+                break  # Stop processing if a shutdown is triggered
+            scraped += scrape_tourney.scrape_tourney(tourneyId)
+
+        if scraped > 0:
+            try:
+                response = requests.post("http://127.0.0.1:8080/tournaments?live_only=true")
+                print(response.json())
+            except Exception as e:
+                print(f"Couldn't get response: {e}")
+            print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        else:
+            print(f"No updates to databases at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+        if shutdown_event.wait(sleepTime):
+            break  # Exit the loop if shutdown event is set during the wait
+
+def main():
+    # Starting the update function in a thread
+    update_thread = threading.Thread(target=updateLive)
+    update_thread.start()
+
+    try:
+        while True:
+            sleep(0.5)
+    except KeyboardInterrupt:
+        print("Received shutdown signal")
+        shutdown_event.set()  # Signal all threads to stop
+
+    update_thread.join()  # Wait for the update thread to finish
+    print("All threads have been cleanly shut down")
 
 if __name__ == "__main__":
-
-    while True:
-        try:
-            response = requests.post("http://127.0.0.1:5000/tournaments")
-            print(response.json())
-        except:
-            print("couldn't get repsonse")
-        sleep(60)
+    main()

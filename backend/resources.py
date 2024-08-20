@@ -73,8 +73,14 @@ class Tourneys(Resource):
         placement_data_columns = database.get_column_names("tbl_placement_data")
 
         query = "SELECT * FROM tbl_placement_data"
-        if len(tournament_ids) > 0:
+        if len(tournament_ids) > 1:
+            # print(tournament_ids, len(tournament_ids))
+            # print(str(tournament_ids))
             query += f" WHERE tournament_id IN {tournament_ids}"
+        elif len(tournament_ids) == 1:
+            print("hi")
+            query += f" WHERE tournament_id IN ({tournament_ids[0]})"
+            print(query)
 
         query_data = database.query_sql(query)
         placement_data: dict[str, list] = {name: [] for name in placement_data_columns}
@@ -307,10 +313,10 @@ class Tourneys(Resource):
             args["live"],
         )
 
-    def get_tourney_list(tourney_ids: Tuple[int, ...]):
-        assert Tourneys.tourneys is not None
-        tourney_list = (Tourney.tourneys[id] for id in tourney_ids)
-        return tuple(tourney_list)
+    # def get_tourney_list(tourney_ids: Tuple[int, ...]):
+    #     assert Tourneys.tourneys is not None
+    #     tourney_list = (Tourneys.tourneys[id] for id in tourney_ids)
+        # return tuple(tourney_list)
 
     def get_tournament_list(
         sort_fields=[],
@@ -480,19 +486,22 @@ class Tourneys(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("live_only", type=bool, location="args", required=False)
+        parser.add_argument("live_only", type=str, location="args", required=False, default=None)
         args = parser.parse_args()
+        print(args)
         if args["live_only"] is None:
             Tourneys.load_all_tourneys()
             Tourneys.last_load_all = datetime.now()
             print("reloaded all tournaments")
             return {"message": "reloaded all tournaments"}, 200
 
-        if args["live_only"] == True:
-            print("reloaded live tournaments only")
+        if args["live_only"].lower() == "true":
             Tourneys.load_placement_data(Tourneys.get_live_tournament_ids())
             Tourneys.last_load_live = datetime.now()
+            print("reloaded live tournaments only")
             return {"message": "reloaded live tournaments"}, 200
+        
+        return {"message": "couldn't load anything"}, 500
 
 
 # api request for individual player, when given a name
@@ -587,4 +596,6 @@ class Search(Resource):
 
 
 if __name__ == "__main__":
+    Tourneys.init()
+    print(Tourneys.get_live_tournament_ids())
     pass

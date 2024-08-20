@@ -4,6 +4,8 @@ import argparse
 import scrape_tourney
 from datetime import datetime
 
+# depreciated
+
 
 live_tourney_id = 61727238
 csv_path = "/root/tft-tourneys/misc/tourney_info.csv"
