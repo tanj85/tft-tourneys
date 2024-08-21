@@ -23,8 +23,6 @@ export default async function Home() {
     live: true,
   });
 
-  console.log("please work");
-
   return (
     <>
       {/* blobs */}

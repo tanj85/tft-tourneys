@@ -25,10 +25,11 @@ const Navbar = () => {
       {/* desktop navbar */}
       <div className="backdrop-blur bg-darkest-blue bg-opacity-80 sticky top-0 hidden md:flex flex-row justify-between overflow-hidden  z-[69]">
         <Link href="/">
-          <div className="relative h-20 w-[240px]">
+          <div className="relative">
             <Image
               src="/new_full_logo.png"
-              fill={true}
+              height={240}
+              width={240}
               alt="logo"
               className="p-3 ml-2"
             />
@@ -84,10 +85,11 @@ const Navbar = () => {
       {/* mobile navbar */}
       <div className="sticky top-0 md:hidden backdrop-blur bg-darkest-blue bg-opacity-80 flex justify-between overflow-hidden z-[69]">
         <Link href="/">
-          <div className="relative h-20 w-20">
+          <div className="relative">
             <Image
               src="/new_small_logo.png"
-              fill={true}
+              height={77}
+              width={77}
               alt="logo"
               className="p-3 ml-2"
               priority
