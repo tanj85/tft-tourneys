@@ -1,0 +1,10 @@
+# Block all crawlers for /accounts
+User-agent: *
+Disallow: /tournaments
+
+User-agent: *
+Disallow: /about
+
+# Allow all crawlers
+User-agent: *
+Allow: /

@@ -51,6 +51,7 @@ module.exports = {
         "pris-purple": "#988BFA",
         "pris-pink": "#DD88FF",
         "pris-light-pink": "#F1C2FF",
+        "button-blue": "#074F9C",
         "pris-blue": "#B1DFFF",
         "pris-yellow": "#F8D283",
         "not-white": "#9397AE",

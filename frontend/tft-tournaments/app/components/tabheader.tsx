@@ -92,7 +92,11 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           />
         </div>
 
+        <label htmlFor="tier" className="sr-only">
+          Tier:
+        </label>
         <select
+          id="tier"
           className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.tier}
           onChange={(e) => handleDropdownChange("tier", e.target.value)}
@@ -104,7 +108,12 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="qual">Tier: Q</option>
         </select>
 
+        <label htmlFor="region" className="sr-only">
+          Region:
+        </label>
+
         <select
+          id="region"
           className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.region}
           onChange={(e) => handleDropdownChange("region", e.target.value)}
@@ -124,7 +133,12 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="Middle East">Region: Middle East</option>
           <option value="Africa">Region: Africa</option>
         </select>
+
+        <label htmlFor="tier" className="sr-only">
+          Set:
+        </label>
         <select
+          id="set"
           className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.set}
           onChange={(e) => handleDropdownChange("set", e.target.value)}
@@ -144,7 +158,11 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <option value="13">Set 13: Unannounced</option>
         </select>
 
+        <label htmlFor="data-host" className="sr-only">
+          Data Host:
+        </label>
         <select
+          id="data-host"
           className="border text-black bg-white border-gray-200 rounded-md p-2 hover:cursor-pointer"
           value={dropdownValues.hasDetail}
           onChange={(e) => handleDropdownChange("hasDetail", e.target.value)}

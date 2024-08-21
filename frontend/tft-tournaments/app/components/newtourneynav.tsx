@@ -6,7 +6,7 @@ import Image from "next/image";
 import { formatDate } from "../data/utils";
 import Button from "./button";
 import StandingsForDay from "./standings";
-import { Console } from "console";
+// import { Console } from "console";
 
 interface Standings {
   [key: string]: number;
@@ -52,11 +52,12 @@ const NewTourneyNav = ({ tournament }: any) => {
   const patch = tournament.patch;
   const days = tournament.days;
   const tier = tournament.tier;
-  const overview_info = tournament.overview_info !== undefined ? tournament.overview_info : ""
+  const overview_info =
+    tournament.overview_info !== undefined ? tournament.overview_info : "";
   // const participants = tournament.num_participants;
 
-  if (!overview_info){
-    tourneyTabs = tourneyTabs.filter(item => item !== "Overview");
+  if (!overview_info) {
+    tourneyTabs = tourneyTabs.filter((item) => item !== "Overview");
   }
 
   const standings = tournament.standings;
@@ -68,11 +69,13 @@ const NewTourneyNav = ({ tournament }: any) => {
   // console.log("AH");
   useEffect(() => {
     // console.log("afwaf");
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Now safe to use sessionStorage
       const storedTourney = sessionStorage.getItem("currentTourney");
       const storedActiveTab = sessionStorage.getItem("activeTab") || "Results";
-      const storedActiveDay = parseInt(sessionStorage.getItem("activeDay") || "0");
+      const storedActiveDay = parseInt(
+        sessionStorage.getItem("activeDay") || "0"
+      );
 
       if (id == storedTourney) {
         setActiveTab(storedActiveTab);
@@ -121,12 +124,9 @@ const NewTourneyNav = ({ tournament }: any) => {
       <div id="name-info-results" className="md:w-[70%] flex flex-col gap-2">
         <div id="name-info" className="">
           <div className="text-3xl text-balance lg:text-4xl font-bold">
-            {name}
+            <h1>{name}</h1>
           </div>
-          <div
-            id="info"
-            className="hidden lg:block lg:flex mt-2 gap-4"
-          >
+          <div id="info" className="hidden lg:block lg:flex mt-2 gap-4">
             <div> Region: {region}</div>
             <div> Tier: {tier} </div>
             <div> Patch: {patch} </div>
@@ -173,7 +173,6 @@ const NewTourneyNav = ({ tournament }: any) => {
                   <button
                     key={tab}
                     className={`hover:bg-active-purple my-1 mx-1 rounded ${activeTab === tab ? "text-white bg-active-purple" : ""}`}
-                    
                     onClick={() => {
                       handleTabClick(tab);
                     }}

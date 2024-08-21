@@ -10,29 +10,23 @@ export const viewport: Viewport = {
   themeColor: "#ff9c4",
 };
 
-// export const metadata: Metadata = {
-//   title: "TFTourneys",
-//   description:
-//     "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors.",
-// };
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://tftourneys.com/"),
   title: {
     default: "TFTourneys",
-    template: "%s | TFTourneys",
+    template: "TFTourneys | %s",
   },
   description:
-    "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors.",
+    "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments.",
   openGraph: {
     title: "TFTourneys",
     description:
-      "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors.",
+      "TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments.",
     siteName: "TFTourneys",
     images: "/opengraph-image.png",
     type: "website",
   },
-  keywords: ["TFT", "TFTourneys", "Esports"],
+  keywords: ["Tournaments", "TFTourneys", "Esports"],
   twitter: {
     card: "summary_large_image",
     title: "TFTourneys",
@@ -49,9 +43,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="canonical" href="https://tftourneys.com/" />
+
+        <link rel="preconnect" href="https://use.typekit.net/cdd6oyg.css" />
+        <link rel="dns-prefetch" href="https://use.typekit.net/cdd6oyg.css" />
         <link rel="stylesheet" href="https://use.typekit.net/cdd6oyg.css" />
-        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-        {/* <title>TFTourneys</title>
+
         <link
           rel="apple-touch-icon"
           sizes="120x120"
@@ -69,17 +66,6 @@ export default function RootLayout({
           sizes="16x16"
           href="/favicon-16x16.png"
         />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" /> */}
-
-        {/* <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="TFTourneys" />
-        <meta name="twitter:title" content="TFTourneys" />
-        <meta
-          name="twitter:description"
-          content="TFTourneys is dedicated to all things related to TFT Esports! Keep up with LIVE and upcoming tournaments or explore the results of past tournaments. Follow your favorite players and see how their performances line up against their competitors."
-        />
-        <meta name="twitter:image" content="/tft-banner.png" /> */}
       </head>
       <body className="">
         <div className="font-soleil overflow-x-clip">

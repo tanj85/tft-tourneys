@@ -4,6 +4,10 @@ from datetime import datetime
 import threading
 import sys
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Get the parent directory
 parent_dir = Path(__file__).resolve().parent.parent
@@ -14,7 +18,7 @@ sys.path.append(str(child_dir))
 import misc.scrape_tourney as scrape_tourney
 
 # Global settings
-sleepTime = 5
+sleepTime = 60
 checkNewLiveTourneysTime = 3600
 liveTourneyTimer = 0
 lock = threading.Lock()  # Lock for thread-safe operations
@@ -36,8 +40,10 @@ def updateLive(liveTourneyIds=None):
                 response.raise_for_status()
                 liveTourneyIds = [x["tournament_id"] for x in response.json()]
                 print(f"Got new liveTourneyIds: {liveTourneyIds}")
+                logger.info(f"Got new liveTourneyIds: {liveTourneyIds}")
             except Exception as e:
                 print(f"An unexpected error occurred: {e}")
+                logger.info(f"An unexpected error occurred: {e}")
                 liveTourneyIds = []
 
         scraped = 0

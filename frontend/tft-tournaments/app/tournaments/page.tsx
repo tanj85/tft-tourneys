@@ -6,7 +6,19 @@ import { fetchFilteredTournaments, getTourneys } from "../data/data";
 import Image from "next/image";
 import TabHeader from "../components/tabheader";
 import Pagination from "../components/pagination";
-import internal from "stream";
+// import internal from "stream";
+import dynamic from "next/dynamic";
+
+import type { Metadata } from "next";
+
+const TournamentTabsLazy = dynamic(() => import("../components/tabs"), {
+  loading: () => <p>Loading...</p>,
+});
+
+export const metadata: Metadata = {
+  title: "Tournaments",
+  description: "Explore all TFT tournaments, live or past.",
+};
 
 export default async function Tournaments({
   searchParams,
@@ -40,6 +52,7 @@ export default async function Tournaments({
 
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
+  console.log("truoanw");
   const { tournaments, totalPages } = await fetchFilteredTournaments({
     query: searchParams?.query,
     page: searchParams?.page,
@@ -52,23 +65,11 @@ export default async function Tournaments({
     hasDetail: searchParams?.hasDetail || undefined,
   });
 
+  // console.log("tourneypage working");
+
   return (
     <>
       <ScrollManager searchParams={searchParams} />
-      {/* background image section
-      <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
-      <div className="animate-fade absolute top-0 -z-20 h-[37rem] w-full">
-        <Image
-          src="/inkborn_banner.jpg"
-          fill={true}
-          alt="logo"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-darkest-blue opacity-90 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-blue to-pris-yellow opacity-70 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-blue to-pris-yellow opacity-70 mix-blend-multiply"></div>
-        <div className="absolute top-[10rem] h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-40%"></div>
-      </div> */}
 
       {/* background image section */}
       <div className="absolute top-0 z-0 bg-gradient-to-b from-darkest-blue from-65% opacity-70 h-20 w-full"></div>
@@ -78,6 +79,7 @@ export default async function Tournaments({
           fill={true}
           alt="logo"
           className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-darkest-blue opacity-90 mix-blend-multiply"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-pris-light-pink via-pris-yellow to-pris-yellow opacity-50 mix-blend-multiply"></div>
@@ -98,7 +100,7 @@ export default async function Tournaments({
       <div className="flex justify-center">
         <div className="flex flex-col w-[80%] rounded">
           <TabHeader totalPages={totalPages} />
-          <TournamentTabs tourneys={tournaments} />
+          <TournamentTabsLazy tourneys={tournaments} />
         </div>
       </div>
     </>

@@ -36,13 +36,13 @@ const Navbar = () => {
         </Link>
 
         <div className="items-center flex gap-[1.5rem] mr-[10rem] tracking-wider">
-          {navLinks.map((link) => {
+          {navLinks.map((link, index) => {
             const isActive = pathname && pathname.startsWith(link.href);
             return (
               <>
                 <Link
+                  key={index}
                   href={link.href}
-                  key={link.name}
                   className={
                     isActive
                       ? "h-7 mx-5 py-4 items-center flex gradient-text animate-gradient text-transparent items-center"
@@ -55,7 +55,6 @@ const Navbar = () => {
             );
           })}
         </div>
-        <Link href="/profile"></Link>
       </div>
 
       {/* mobile version menu */}
@@ -73,10 +72,10 @@ const Navbar = () => {
           />
         </div>
         <ul className="flex flex-col items-center mt-48 font-bold tracking-wide text-lg">
-          <li onClick={handleMenu} className="py-3">
+          <li key="tournaments" onClick={handleMenu} className="py-3">
             <Link href="/tournaments">Tournaments</Link>
           </li>
-          <li onClick={handleMenu} className="py-3">
+          <li key="about" onClick={handleMenu} className="py-3">
             <Link href="/about">About</Link>
           </li>
         </ul>
@@ -85,12 +84,13 @@ const Navbar = () => {
       {/* mobile navbar */}
       <div className="sticky top-0 md:hidden backdrop-blur bg-darkest-blue bg-opacity-80 flex justify-between overflow-hidden z-[69]">
         <Link href="/">
-          <div className="relative h-20 w-[79px]">
+          <div className="relative h-20 w-20">
             <Image
               src="/new_small_logo.png"
               fill={true}
               alt="logo"
               className="p-3 ml-2"
+              priority
             />
           </div>
         </Link>

@@ -330,9 +330,9 @@ class Tourneys(Resource):
         has_detail = None,
         live = None,
     ):
-        all_params = (sort_fields, ascending, name_search_query, region, tier, date_lower_bound, date_upper_bound, tft_set, has_detail)
+        all_params_except_detail = (sort_fields, ascending, name_search_query, region, tier, date_lower_bound, date_upper_bound, tft_set)
         pull_out_live = False
-        if all(not x for x in all_params):
+        if all(not x for x in all_params_except_detail):
             sort_fields = ["live","start_date"]
             ascending = False
             pull_out_live = True

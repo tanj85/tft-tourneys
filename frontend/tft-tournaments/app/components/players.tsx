@@ -3,18 +3,27 @@ import { useState } from "react";
 import React from "react";
 import PlayerModal from "./playermodal";
 
+import dynamic from "next/dynamic";
+
+const PlayerModalLazy = dynamic(() => import("../components/playermodal"), {
+  loading: () => <p>Loading...</p>,
+});
+
 interface Lobby {
   [key: string]: number;
 }
 
-const PlayerList: React.FC<{ lobby: Lobby, tournament: any }> = ({ lobby, tournament }) => {
+const PlayerList: React.FC<{ lobby: Lobby; tournament: any }> = ({
+  lobby,
+  tournament,
+}) => {
   // Sort the players by place
   const sortedPlayers = Object.entries(lobby).sort(
     ([, placeA], [, placeB]) => placeA - placeB
   );
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<any>('');
+  const [modalContent, setModalContent] = useState<any>("");
 
   const openModal = (content: any) => {
     setModalContent(content);
@@ -44,11 +53,13 @@ const PlayerList: React.FC<{ lobby: Lobby, tournament: any }> = ({ lobby, tourna
                   id="border"
                   className="ml-1 w-[1px] h-6 bg-active-purple-b"
                 ></div>
-                <button className={`${place === 1 ? "text-pris-yellow" : place > 4 ? "text-not-white" : "text-white"} truncate hover:underline`} 
-                  onClick={() => openModal(formattedPlayer)}>
+                <button
+                  className={`${place === 1 ? "text-pris-yellow" : place > 4 ? "text-not-white" : "text-white"} truncate hover:underline`}
+                  onClick={() => openModal(formattedPlayer)}
+                >
                   {formattedPlayer}
                 </button>
-                <PlayerModal
+                <PlayerModalLazy
                   isOpen={isModalOpen}
                   onClose={() => setIsModalOpen(false)}
                   tournament={tournament}

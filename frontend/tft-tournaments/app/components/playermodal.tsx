@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { tournamentsExample } from "../data/data";
-import { kMaxLength } from "buffer";
+// import { kMaxLength } from "buffer";
 import Image from "next/image";
 import { FaRegThumbsUp } from "react-icons/fa6";
 
@@ -188,34 +188,30 @@ const PlayerModal: React.FC<ModalProps> = ({
           <div className="flex gap-4 mb-10 mt-4 mx-8 flex-wrap justify-center">
             <div className="flex gap-4 flex-col w-1/2 min-w-[20rem]">
               {/* leaderboard position */}
-              <div className="border border-lightest-purple bg-idle-purple h-full rounded-lg px-4 py-2">
+              <div className="border border-lightest-purple bg-idle-purple rounded-lg px-4 py-2">
                 Leaderboard Position
-                <div className="border border-lightest-purple bg-active-purple w-full h-[4/5] lg:h-3/4 mt-2 rounded-md px-4 py-2 flex flex-col gap-1">
+                <div className="border border-lightest-purple bg-active-purple w-full mt-2 rounded-md px-4 py-2 flex flex-col gap-1">
                   {standings
                     .slice()
                     .reverse()
                     .map((day, index) => {
                       const isLastDay = index === 0;
                       return (
-                        <>
-                          <div className="flex justify-between">
-                            <div
-                              className={`flex gap-2 items-center ${isLastDay ? "text-pris-yellow" : "text-white"}`}
-                            >
-                              <FaStar />
-                              {day.dayPlacement} out of {day.num_players}
-                            </div>
-                            <div>Day {standings.length - index}</div>
+                        <div key={index} className="flex justify-between">
+                          <div
+                            className={`flex gap-2 items-center ${isLastDay ? "text-pris-yellow" : "text-white"}`}
+                          >
+                            <FaStar />
+                            {day.dayPlacement} out of {day.num_players}
                           </div>
-                        </>
+                          <div>Day {standings.length - index}</div>
+                        </div>
                       );
                     })}
-                  {/* <div className="text-xs break-all">
-                    {JSON.stringify(standings)}
-                  </div> */}
                 </div>
               </div>
-              <div className="border border-lightest-purple bg-idle-purple h-full rounded-lg px-4 py-2">
+
+              <div className="border border-lightest-purple bg-idle-purple rounded-lg px-4 py-2">
                 Tournament Stats
                 <div className=" border border-lightest-purple bg-active-purple w-full mt-2 rounded-md px-4 py-2 flex flex-col justify-between">
                   <div className="flex justify-between">

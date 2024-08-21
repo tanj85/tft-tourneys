@@ -5,6 +5,14 @@ import Image from "next/image";
 import { FaDiscord } from "react-icons/fa";
 import { FlyIn, FlyInBot, FlyInRight } from "../components/animations";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "TFTourneys offers a centralized place to view all TFT tournaments - past, present, and future.",
+};
+
 export default function About() {
   return (
     <>
@@ -41,7 +49,9 @@ export default function About() {
         <div className="mx-[10vw] flex gap-4 flex-col mt-20">
           <div className="flex gap-12 items-center justify-between flex-wrap lg:flex-nowrap">
             <div className="flex gap-6 flex-col">
-              <div className="text-5xl font-bold">Live Tournament Scores</div>
+              <div className="text-5xl font-bold">
+                <h2>Live Tournament Scores</h2>
+              </div>
               <div
                 id="live tournament scores"
                 className="gap-4 flex flex-col max-w-[40rem]"
@@ -90,7 +100,9 @@ export default function About() {
             </div>
 
             <div className="flex flex-col gap-4 max-w-[40rem]">
-              <div className="text-5xl font-bold">Tournaments Page</div>
+              <div className="text-5xl font-bold">
+                <h2>Tournaments Page</h2>
+              </div>
               <div>
                 In our tournaments page, tournaments can be searched, filtered,
                 and sorted by region, date, or set. For some entries, specific
@@ -104,7 +116,9 @@ export default function About() {
             id="meet the team"
             className="mt-20 text-6xl text-center font-bold"
           >
-            <div>Meet The Team</div>
+            <div>
+              <h2>Meet The Team</h2>
+            </div>
           </div>
         </div>
 
@@ -119,7 +133,9 @@ export default function About() {
                 className="rounded-lg min-w-[20rem]"
               />
             </FlyInBot>
-            <div className=" font-bold text-lg">Tean</div>
+            <div className=" font-bold text-lg">
+              <h3>Tean</h3>
+            </div>
           </div>
           <div className="flex flex-col items-center gap-4">
             <FlyInBot delay={0.3}>
@@ -131,7 +147,10 @@ export default function About() {
                 className="rounded-lg min-w-[20rem]"
               />
             </FlyInBot>
-            <div className="font-bold text-lg">Rachel</div>
+            <div className="font-bold text-lg">
+              {" "}
+              <h3>Rachel</h3>
+            </div>
           </div>
           <div className="flex flex-col items-center gap-4">
             <FlyInBot delay={0.4}>
@@ -143,7 +162,10 @@ export default function About() {
                 className="rounded-lg min-w-[20rem]"
               />
             </FlyInBot>
-            <div className="font-bold text-lg">Jeffrey</div>
+            <div className="font-bold text-lg">
+              {" "}
+              <h3>Jeffrey</h3>
+            </div>
           </div>
           <div className="mx-[10vw] flex gap-4 flex-col">
             <div>

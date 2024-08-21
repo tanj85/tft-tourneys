@@ -1,14 +1,17 @@
 import Image from "next/image";
-import AOS from "aos";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Bob2, BobAnimation, FlyIn } from "./components/animations";
 import { getTourneys } from "./data/data";
 import { FaCircle } from "react-icons/fa6";
-// ..
-// AOS.init();
+// import { LiveWrapper } from "./components/livewrapper";
+import LiveTourneyInfo from "./components/livetourneys";
+import { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  // console.log(liveTourneys.length);
   const liveTourneys = await getTourneys({
     sortParams: undefined,
     tier: undefined,
@@ -19,6 +22,8 @@ export default async function Home() {
     hasDetail: undefined,
     live: true,
   });
+
+  console.log("please work");
 
   return (
     <>
@@ -34,7 +39,7 @@ export default async function Home() {
           <div className="mb-2">Welcome to</div>
           <div className="text-6xl md:text-8xl md:-mr-8">
             <div className="animate-gradient gradient-text text-transparent">
-              TFTourneys
+              <h1>TFTourneys</h1>
             </div>
           </div>
         </div>
@@ -45,6 +50,7 @@ export default async function Home() {
             width={400}
             alt="logo"
             className="m-[8rem] z-0 -order-1 md:order-1 hidden md:block"
+            priority
           />
         </BobAnimation>
         {/* mobile image */}
@@ -55,6 +61,7 @@ export default async function Home() {
             width={300}
             alt="logo"
             className="m-8 mt-[4rem] z-0 -order-1 md:order-1 md:hidden"
+            priority
           />
         </BobAnimation>
       </div>
@@ -90,10 +97,14 @@ export default async function Home() {
         </div>
 
         <div className="flex w-[20rem] sm:w-[40vw] flex-col gap-6 relative z-20">
-          <div className="text-5xl font-bold">Explore All Tournaments</div>
+          <div className="text-5xl font-bold">
+            <h2>Explore All Tournaments</h2>
+          </div>
           <div className="text-xl">
             From qualifiers to Worlds, find all you need to know here.
           </div>
+
+          {/* <LiveWrapper slot={<LiveTourneyInfo />} /> */}
           {liveTourneys.length !== 0 && (
             <>
               <div className="text-xl font-bold flex gap-2 items-center -mb-3">
@@ -118,7 +129,7 @@ export default async function Home() {
           )}
           <Link
             href="/tournaments"
-            className="text-xl font-bold bg-pris-pink py-2 px-2 text-center rounded-xl"
+            className="text-xl font-bold bg-button-blue py-2 px-2 text-center rounded-xl"
           >
             Let&apos;s go!
           </Link>
@@ -144,7 +155,9 @@ export default async function Home() {
 
       <div className="flex justify-center items-center flex-wrap-reverse mx-auto mb-24">
         <div className="flex w-[20rem] sm:w-[40vw] flex-col gap-6 relative z-20">
-          <div className="text-5xl font-bold">Track Your Favorite Players</div>
+          <div className="text-5xl font-bold">
+            <h2>Track Your Favorite Players</h2>
+          </div>
           <div className="text-xl">
             Check standings from each day of the tournament!
           </div>
