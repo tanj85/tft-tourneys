@@ -126,7 +126,7 @@ export default async function Home() {
             </>
           )}
           <Link
-            href="/tournaments"
+            href="/tournaments/?hasDetail=TFTourneys"
             className="text-xl font-bold bg-button-blue py-2 px-2 text-center rounded-xl"
           >
             Let&apos;s go!

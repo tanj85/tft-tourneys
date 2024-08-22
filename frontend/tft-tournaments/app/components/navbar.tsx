@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Tournaments", href: "/tournaments" },
+    { name: "Tournaments", href: "/tournaments/?hasDetail=TFTourneys" },
     { name: "About", href: "/about" },
   ];
 
@@ -74,7 +74,7 @@ const Navbar = () => {
         </div>
         <ul className="flex flex-col items-center mt-48 font-bold tracking-wide text-lg">
           <li key="tournaments" onClick={handleMenu} className="py-3">
-            <Link href="/tournaments">Tournaments</Link>
+            <Link href="/tournaments/?hasDetail=TFTourneys">Tournaments</Link>
           </li>
           <li key="about" onClick={handleMenu} className="py-3">
             <Link href="/about">About</Link>

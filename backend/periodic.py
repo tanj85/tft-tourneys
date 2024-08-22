@@ -5,9 +5,16 @@ import threading
 import sys
 from pathlib import Path
 import logging
+from logging.handlers import TimedRotatingFileHandler
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+handler = TimedRotatingFileHandler("logs/periodic/periodic.log", when="midnight", interval=1, utc=True)
+handler.suffix = "%Y-%m-%d"
+handler.extMatch = r"^\d{4}-\d{2}-\d{2}$"
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # Get the parent directory
 parent_dir = Path(__file__).resolve().parent.parent
@@ -39,10 +46,10 @@ def updateLive(liveTourneyIds=None):
                 response = requests.get("http://127.0.0.1:8080/tournaments/?live=true")
                 response.raise_for_status()
                 liveTourneyIds = [x["tournament_id"] for x in response.json()]
-                print(f"Got new liveTourneyIds: {liveTourneyIds}")
+                # print(f"Got new liveTourneyIds: {liveTourneyIds}")
                 logger.info(f"Got new liveTourneyIds: {liveTourneyIds}")
             except Exception as e:
-                print(f"An unexpected error occurred: {e}")
+                # print(f"An unexpected error occurred: {e}")
                 logger.info(f"An unexpected error occurred: {e}")
                 liveTourneyIds = []
 
@@ -55,12 +62,16 @@ def updateLive(liveTourneyIds=None):
         if scraped > 0:
             try:
                 response = requests.post("http://127.0.0.1:8080/tournaments?live_only=true")
-                print(response.json())
+                # print(response.json())
+                logger.info(response.json())
             except Exception as e:
-                print(f"Couldn't get response: {e}")
-            print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                # print(f"Couldn't get response: {e}")
+                logger.info(f"Couldn't get response: {e}")
+            # print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         else:
-            print(f"No updates to databases at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            # print(f"No updates to databases at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"No updates to databases at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         if shutdown_event.wait(sleepTime):
             break  # Exit the loop if shutdown event is set during the wait
@@ -74,11 +85,13 @@ def main():
         while True:
             sleep(0.5)
     except KeyboardInterrupt:
-        print("Received shutdown signal")
+        # print("Received shutdown signal")
+        logger.info("Received shutdown signal")
         shutdown_event.set()  # Signal all threads to stop
 
     update_thread.join()  # Wait for the update thread to finish
-    print("All threads have been cleanly shut down")
+    # print("All threads have been cleanly shut down")
+    logger.info("All threads have been cleanly shut down")
 
 if __name__ == "__main__":
     main()

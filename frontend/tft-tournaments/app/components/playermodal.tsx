@@ -62,6 +62,20 @@ interface GameInfo {
   placement: number;
 }
 
+
+interface Tournament {
+  name: string;
+  tier: string;
+  region: string;
+  start_date: string;
+  end_date: string;
+  link: string;
+  patch: string;
+  id: number;
+  days: (Day | null)[];
+}
+
+
 const PlayerModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -122,13 +136,33 @@ const PlayerModal: React.FC<ModalProps> = ({
     });
   });
 
+  function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
+    const day = tournament.days[dayIndex];
+    return day ? day.standings : null;
+  }
+
+  function getPlayerCumulativeScore(player: string, dayIndex: number, tournament: Tournament): number {
+    let total = 0;
+    for (let i = 0; i < dayIndex+1; i++) {
+      const standings = getStandingsForDay(tournament, i)
+      total += standings ? standings[player] : 0;
+    }
+    return total;
+  }
+
   const standings: PlayerStanding[] = [];
   tournament.days.forEach((day: Day, dayIndex: number) => {
     const num_games = day.games.length;
-    // Extracting player names and sorting by points to determine placement
     Object.entries(day.standings)
-      .sort((a, b) => b[1] - a[1]) // Sort players by points in descending order
-      .forEach(([p, points], index) => {
+    .sort(
+      ([playerA, standingA]: [string, any], [playerB, standingB]: [string, any]) => {
+        // First compare by score
+        if (standingB !== standingA) {
+          return standingB - standingA;
+        }
+        return getPlayerCumulativeScore(playerB, dayIndex, tournament) - getPlayerCumulativeScore(playerA, dayIndex, tournament);
+      }
+    ).forEach(([p, points], index) => {
         if (p === player) {
           const playerStanding: PlayerStanding = {
             player: player,

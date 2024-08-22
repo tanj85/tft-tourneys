@@ -121,6 +121,11 @@ class Tourneys(Resource):
         Modifies Tourneys.tourneys."""
         placement_data = Tourneys.get_placement_data(tournament_ids)
 
+        
+        for i in range(len(tournament_ids)):
+            if tournament_ids[i] in Tourneys.tourneys and "days" in Tourneys.tourneys[tournament_ids[i]]:
+                Tourneys.tourneys[tournament_ids[i]]["days"] = []
+
         for i in range(len(placement_data["tournament_id"])):
             tourney_id = int(placement_data["tournament_id"][i])
             day_num = placement_data["day_num"][i]

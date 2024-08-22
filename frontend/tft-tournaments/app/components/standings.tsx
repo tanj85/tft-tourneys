@@ -39,7 +39,18 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   const standings = getStandingsForDay(tournament, dayIndex);
 
   const sortedStandings = Object.entries(standings).sort(
-    ([, placeA]: any, [, placeB]: any) => placeB - placeA
+    ([playerA, standingA]: [string, any], [playerB, standingB]: [string, any]) => {
+      // First compare by score
+      if (standingB !== standingA) {
+        return standingB - standingA;
+      }
+      // if (dayIndex === 1){
+      //   console.log("A", playerA,getPlayerCumulativeScore(playerA, dayIndex, tournament), standingA, dayIndex);
+      //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
+      // }
+      // If scores are tied, compare by games played
+      return getPlayerCumulativeScore(playerB, dayIndex, tournament) - getPlayerCumulativeScore(playerA, dayIndex, tournament);
+    }
   );
 
   
@@ -54,6 +65,15 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
     const day = tournament.days[dayIndex];
     return day ? day.standings : null;
+  }
+
+  function getPlayerCumulativeScore(player: string, dayIndex: number, tournament: Tournament): number {
+    let total = 0;
+    for (let i = 0; i < dayIndex+1; i++) {
+      const standings = getStandingsForDay(tournament, i)
+      total += standings ? standings[player] : 0;
+    }
+    return total;
   }
 
   if (!standings || standings.length === 0) {
