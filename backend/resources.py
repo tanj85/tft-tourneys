@@ -78,7 +78,7 @@ class Tourneys(Resource):
             # print(str(tournament_ids))
             query += f" WHERE tournament_id IN {tournament_ids}"
         elif len(tournament_ids) == 1:
-            print("hi")
+            # print("hi")
             query += f" WHERE tournament_id IN ({tournament_ids[0]})"
             print(query)
 
@@ -142,9 +142,14 @@ class Tourneys(Resource):
             while len(games) < game_num:
                 games.append({"lobbies": []})
             lobbies = games[game_num - 1]["lobbies"]
-            while len(lobbies) < lobby_id:
-                lobbies.append({})
-            lobbies[lobby_id - 1][player_name] = placement
+            if (lobby_id != -1):
+                while len(lobbies) < lobby_id:
+                    lobbies.append({})
+                lobbies[lobby_id - 1][player_name] = placement
+            else:
+                if len(lobbies) == 0:
+                    lobbies.append({})
+                lobbies[0][player_name] = placement
 
             standings = Tourneys.tourneys[tourney_id]["days"][day_num - 1]["standings"]
             if player_name not in standings:

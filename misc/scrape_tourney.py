@@ -66,6 +66,35 @@ def getSheetIndexByName(url, sheetName):
     
     return sheetIndex
 
+def apac_scrape(tournament_id, url, day, sheet):
+    dfs = pd.read_html(url)  # This reads all tables into a list of DataFrame objects
+
+    df = dfs[sheet]
+
+    player_cols = [i for i, col in enumerate(df.columns) if df[col].astype(str).str.contains("Name").any()]
+
+    game_cols = [i for i, col in enumerate(df.columns) if df[col].astype(str).str.contains("Round").any()]
+
+    scraped = 0
+
+    current_game = 0
+    # print(df)
+    num_player_rows = int(pd.to_numeric(df.iloc[:, 1], errors='coerce').max())
+    # print(num_player_rows)
+
+    for col in game_cols:
+        current_game += 1
+        for i in range(num_player_rows):
+            # print(df.iloc[i+1, player_cols[0]], "|", df.iloc[i, col])
+            try:
+                scraped += insert_placement_data(df.iloc[i+1, player_cols[0]], 9-int(df.iloc[i+1, col]), tournament_id, day, -1, current_game)
+            except:
+                pass
+                # scraped += insert_placement_data(df.iloc[i+1, player_cols[0]], 9, tournament_id, day, -1, current_game)
+    print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
+
+    return scraped
+
 def default_scrape(tournament_id, url, day, sheet):
 
     dfs = pd.read_html(url)  # This reads all tables into a list of DataFrame objects
@@ -193,6 +222,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
 
         if sheet_indices[j] == -1:
             if not sheet_names[j]:
+                print(f"skippa bc not exist tourney {tournament_id}, day {days[j]}")
                 continue
             print("using sheet_name")
             sheet_indices[j] = getSheetIndexByName(urls[j], sheet_names[j])
@@ -214,6 +244,8 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
 
         if special_scrape == "day_header":
             scraped += day_header_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
+        if special_scrape == "apac":
+            scraped += apac_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
         else:
             scraped += default_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
 
