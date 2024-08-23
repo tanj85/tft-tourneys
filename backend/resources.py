@@ -435,7 +435,7 @@ class Tourneys(Resource):
                 ).date()
                 end_date = datetime.strptime(tournament["end_date"], "%Y-%m-%d").date()
 
-                if pull_out_live and not saw_live and start_date <= today <= end_date:
+                if pull_out_live and not saw_live and tournament["live"]:
                     tournament["place_header"] = "live"
                     saw_live = True
                 elif not saw_upcoming and start_date > today:
