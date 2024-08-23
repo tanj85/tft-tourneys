@@ -48,7 +48,7 @@ const PlayerList: React.FC<{ lobby: Lobby; tournament: any }> = ({
           return (
             <div key={playerIndex} className="flex gap-2">
               <div className="w-1 text-left text-not-white ml-2">{place}</div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 max-w-[8rem]">
                 <div
                   id="border"
                   className="ml-1 w-[1px] h-6 bg-active-purple-b"
