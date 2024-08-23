@@ -17,7 +17,7 @@ api.add_resource(Search, "/search/<string:search_name>/")
 if __name__ == "__main__":
     try:
         Tourneys.init()
-        app.run(debug=True)
+        app.run(port=8080, debug=True)
     finally:
         print("closing pool")
         database.close_conn_pool()
