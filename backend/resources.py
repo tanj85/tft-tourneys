@@ -185,7 +185,8 @@ class Tourneys(Resource):
                 tourneys[id]["days"].append({"standings": {}, "games": []})
 
             for key in row.keys():
-                tourneys[id]["days"][day - 1][key] = row[key]
+                if len(tourneys[id]["days"]) > day-1:
+                    tourneys[id]["days"][day - 1][key] = row[key]
 
         # intialize standings for each game, changes modifies tourneys
         Tourneys.tourneys = tourneys
