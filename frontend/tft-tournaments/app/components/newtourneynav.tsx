@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formatDate } from "../data/utils";
 import Button from "./button";
 import StandingsForDay from "./standings";
+import { FaCircle } from "react-icons/fa6";
 // import { Console } from "console";
 
 interface Standings {
@@ -43,7 +44,7 @@ interface Tournament {
 // const dayTabs = ["Day 1", "Day 2", "Day 3"];
 var tourneyTabs = ["Overview", "Results", "Standings"];
 
-const NewTourneyNav = ({ tournament }: any) => {
+const NewTourneyNav = ({ tournament, isLive }: any) => {
   const id = tournament.tournament_id;
   const name = tournament.tournament_name;
   const region = tournament.region;
@@ -109,7 +110,7 @@ const NewTourneyNav = ({ tournament }: any) => {
     //   const standingsMap = new Map(Object.entries(standings));
     //   setTourneyStandings(standingsMap);
     // }
-    
+
     if (days.length === 0) {
       setActiveDayIndex(-1);
     }
@@ -127,6 +128,12 @@ const NewTourneyNav = ({ tournament }: any) => {
     >
       {/* NAME & INFO SECTION */}
       <div id="name-info-results" className="md:w-[70%] flex flex-col gap-2">
+        {isLive && (
+          <div className="text-xl font-bold flex gap-2 items-center">
+            <FaCircle className="text-red-500 h-3 w-3" />
+            LIVE
+          </div>
+        )}
         <div id="name-info" className="">
           <div className="text-3xl text-balance lg:text-4xl font-bold">
             <h1>{name}</h1>

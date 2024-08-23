@@ -1,6 +1,7 @@
 import { getOneTourneyData } from "@/app/data/data";
 import Image from "next/image";
 import NewTourneyNav from "@/app/components/newtourneynav";
+import { spec } from "node:test/reporters";
 
 export default async function TournamentPage({ params }: any) {
   const specificTourney = await getOneTourneyData(Number(params.tournamentId));
@@ -33,8 +34,11 @@ export default async function TournamentPage({ params }: any) {
           <div className="absolute bottom-0 h-[40rem] w-full bg-gradient-to-t from-darkest-blue from-20%"></div>
         </div>
 
-        <NewTourneyNav tournament={specificTourney} />
-        {/* <NewTourneyNav /> */}
+        <NewTourneyNav
+          tournament={specificTourney}
+          isLive={specificTourney.live}
+        />
+
         <div></div>
       </div>
     </>
