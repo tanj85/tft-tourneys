@@ -337,14 +337,17 @@ class Tourneys(Resource):
     ):
         all_params_except_detail = (sort_fields, ascending, name_search_query, region, tier, date_lower_bound, date_upper_bound, tft_set)
         pull_out_live = False
+        urlParamsEmpty = False
         if all(not x for x in all_params_except_detail):
             sort_fields = ["live","start_date"]
             ascending = False
             pull_out_live = True
+            urlParamsEmpty = True
         
         if not sort_fields:
             sort_fields = ["live","start_date"]
             ascending = False
+            urlParamsEmpty = True
 
         tournaments = [
             {
@@ -425,11 +428,15 @@ class Tourneys(Resource):
 
         if sort_fields and (sort_fields[0] == "start_date" or sort_fields[0] == "live"):
             today = date.today()
+            upcoming_first_index = -1
+            upcoming_last_index = -1
             saw_upcoming = False
             saw_ongoing = False
             saw_past = False
             saw_live = False
+            curr_index = -1
             for tournament in tournaments:
+                curr_index += 1
                 start_date = datetime.strptime(
                     tournament["start_date"], "%Y-%m-%d"
                 ).date()
@@ -439,14 +446,26 @@ class Tourneys(Resource):
                     tournament["place_header"] = "live"
                     saw_live = True
                 elif not saw_upcoming and start_date > today:
-                    tournament["place_header"] = "upcoming"
+                    if not urlParamsEmpty:
+                        tournament["place_header"] = "upcoming"
                     saw_upcoming = True
+                    upcoming_first_index = curr_index
+                    upcoming_last_index = curr_index
+                elif saw_upcoming and start_date > today:
+                    upcoming_last_index = curr_index
                 elif not saw_ongoing and start_date <= today <= end_date:
                     tournament["place_header"] = "ongoing"
                     saw_ongoing = True
                 elif not saw_past and end_date < today:
                     tournament["place_header"] = "past"
                     saw_past = True
+            if urlParamsEmpty and upcoming_first_index >= 0 and upcoming_last_index >= 0:
+                # print(upcoming_first_index, upcoming_last_index)
+                rev_upcoming = list(reversed(tournaments[upcoming_first_index:upcoming_last_index+1])) 
+                # print([x["start_date"] for x in rev_upcoming])
+                tournaments = tournaments[:upcoming_first_index]  + rev_upcoming + tournaments[upcoming_last_index+1:]  
+                tournaments[upcoming_first_index]["place_header"] = "upcoming"
+                # print([x["start_date"] for x in tournaments])
 
         return tournaments
 
