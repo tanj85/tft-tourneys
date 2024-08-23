@@ -99,7 +99,7 @@ export default function About() {
               </FlyIn>
             </div>
 
-            <div className="flex flex-col gap-4 max-w-[40rem]">
+            <div className="flex flex-col gap-6 max-w-[40rem]">
               <div className="text-5xl font-bold">
                 <h2>Tournaments Page</h2>
               </div>
@@ -134,7 +134,9 @@ export default function About() {
               />
             </FlyInBot>
             <div className=" font-bold text-lg">
-              <h3>Tean</h3>
+              <FlyInBot delay={0.25}>
+                <h3>Tean</h3>
+              </FlyInBot>
             </div>
           </div>
           <div className="flex flex-col items-center gap-4">
@@ -148,8 +150,9 @@ export default function About() {
               />
             </FlyInBot>
             <div className="font-bold text-lg">
-              {" "}
-              <h3>Rachel</h3>
+              <FlyInBot delay={0.35}>
+                <h3>Rachel</h3>
+              </FlyInBot>
             </div>
           </div>
           <div className="flex flex-col items-center gap-4">
@@ -163,8 +166,9 @@ export default function About() {
               />
             </FlyInBot>
             <div className="font-bold text-lg">
-              {" "}
-              <h3>Jeffrey</h3>
+              <FlyInBot delay={0.45}>
+                <h3>Jeffrey</h3>
+              </FlyInBot>
             </div>
           </div>
           <div className="mx-[10vw] flex gap-4 flex-col">
@@ -178,18 +182,10 @@ export default function About() {
             <div>
               TFT has endless potential as the largest competitive strategy game
               in the world, and this is only a step towards making competitive
-              TFT fully accessible. Drop by our discord to leave your feedback
+              TFT fully accessible. Drop by our Discord to leave your feedback
               to help us continue to provide the best experience.
             </div>
           </div>
-          <Link
-            href="https://discord.gg/gPvXy4Nxt4"
-            rel="noopener noreferrer"
-            target="_blank"
-            className="transition ease-in-out delay-50 hover:scale-110 duration-200"
-          >
-            <FaDiscord className="w-12 h-12 -mt-4" />
-          </Link>
         </div>
       </div>
 
