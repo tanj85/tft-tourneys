@@ -93,7 +93,7 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
 
   if ((!standings || standings.length === 0) && dayIndex === -1) {
     return (
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center m-4">
         <Image src="/sadyuumi.png" width={100} height={100} alt="icon" />
         <div className="text-not-white italic text-center">
           No standings found for this Tournament!
