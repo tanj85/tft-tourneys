@@ -82,7 +82,7 @@ export default async function Home() {
       </div>
 
       <div className="flex justify-center items-center flex-wrap mx-auto">
-        <div className="relative w-[35rem] h-[25rem]">
+        <div className="relative w-[35rem] h-[20.6rem] sm:h-[25rem]">
           <Bob2>
             <Image
               src="/poro1.png"
@@ -161,7 +161,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="relative w-[35rem] h-[20rem]">
+        <div className="relative w-[35rem] h-[15rem] sm:h-[20rem]">
           <Bob2>
             <Image
               src="/penguclean.png"
