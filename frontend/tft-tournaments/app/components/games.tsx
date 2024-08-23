@@ -100,7 +100,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
         ))}
       </div>
       {/* EACH GAME'S DATA */}
-      <div className="max-h-[33rem] sm:min-w-[21rem] overflow-auto overscroll-none mt-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
+      <div className="max-h-[33rem] min-w-[19rem] overflow-auto overscroll-none mt-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
         <div className="flex justify-center mb-2 relative">
           Game {activeGameIndex + 1}
           <div className="absolute left-0 bottom-0 text-not-white italic text-sm">

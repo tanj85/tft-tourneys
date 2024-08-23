@@ -175,7 +175,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
         <Pagination totalPages={totalPages} />
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 text-center p-4 font-bold relative z-50">
+      <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 text-center items-center p-4 font-bold relative z-50">
         <div
           className="text-left cursor-pointer flex items-center"
           onClick={() => handleSort("tournament_name")}
@@ -191,7 +191,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           <SortArrow sortOrder={sortState["tier"]} />
         </div>
         <div
-          className="cursor-pointer hidden md:flex items-center justify-center"
+          className="cursor-pointer hidden md:flex items-center w-[110px] justify-center"
           onClick={() => handleSort("region")}
         >
           REGION
@@ -204,7 +204,7 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
           PARTICIPANTS
           <SortArrow sortOrder={sortState["num_participants"]} />
         </div>
-        <div>DATA</div>
+        <div className="flex items-center justify-center ">DATA</div>
         <div
           className="cursor-pointer hidden md:flex items-center justify-center"
           onClick={() => handleSort("start_date")}

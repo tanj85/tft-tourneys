@@ -62,7 +62,6 @@ interface GameInfo {
   placement: number;
 }
 
-
 interface Tournament {
   name: string;
   tier: string;
@@ -74,7 +73,6 @@ interface Tournament {
   id: number;
   days: (Day | null)[];
 }
-
 
 const PlayerModal: React.FC<ModalProps> = ({
   isOpen,
@@ -141,10 +139,14 @@ const PlayerModal: React.FC<ModalProps> = ({
     return day ? day.standings : null;
   }
 
-  function getPlayerCumulativeScore(player: string, dayIndex: number, tournament: Tournament): number {
+  function getPlayerCumulativeScore(
+    player: string,
+    dayIndex: number,
+    tournament: Tournament
+  ): number {
     let total = 0;
-    for (let i = 0; i < dayIndex+1; i++) {
-      const standings = getStandingsForDay(tournament, i)
+    for (let i = 0; i < dayIndex + 1; i++) {
+      const standings = getStandingsForDay(tournament, i);
       total += standings ? standings[player] : 0;
     }
     return total;
@@ -154,15 +156,22 @@ const PlayerModal: React.FC<ModalProps> = ({
   tournament.days.forEach((day: Day, dayIndex: number) => {
     const num_games = day.games.length;
     Object.entries(day.standings)
-    .sort(
-      ([playerA, standingA]: [string, any], [playerB, standingB]: [string, any]) => {
-        // First compare by score
-        if (standingB !== standingA) {
-          return standingB - standingA;
+      .sort(
+        (
+          [playerA, standingA]: [string, any],
+          [playerB, standingB]: [string, any]
+        ) => {
+          // First compare by score
+          if (standingB !== standingA) {
+            return standingB - standingA;
+          }
+          return (
+            getPlayerCumulativeScore(playerB, dayIndex, tournament) -
+            getPlayerCumulativeScore(playerA, dayIndex, tournament)
+          );
         }
-        return getPlayerCumulativeScore(playerB, dayIndex, tournament) - getPlayerCumulativeScore(playerA, dayIndex, tournament);
-      }
-    ).forEach(([p, points], index) => {
+      )
+      .forEach(([p, points], index) => {
         if (p === player) {
           const playerStanding: PlayerStanding = {
             player: player,
@@ -303,9 +312,9 @@ const PlayerModal: React.FC<ModalProps> = ({
                           className={`
                           rounded-md 
                           ${game.placement === 1 ? "text-pris-yellow border-pris-yellow border" : ""}
-                          ${game.placement === 2 ? "text-pris-blue border-pris-blue border" : ""}
-                          ${game.placement === 3 ? "text-pris-light-pink border-pris-light-pink border" : ""}
-                          ${game.placement === 4 ? "text-white border-white border" : ""}
+                          ${game.placement === 2 ? "text-second border-second border" : ""}
+                          ${game.placement === 3 ? "text-third border-third border" : ""}
+                          ${game.placement === 4 ? "text-fourth border-fourth border" : ""}
                           
                           ${game.placement > 4 ? "border border-whitish text-whitish" : ""}
                         `}

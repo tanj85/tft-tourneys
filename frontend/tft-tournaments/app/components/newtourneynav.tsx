@@ -131,7 +131,7 @@ const NewTourneyNav = ({ tournament }: any) => {
           <div className="text-3xl text-balance lg:text-4xl font-bold">
             <h1>{name}</h1>
           </div>
-          <div id="info" className="hidden lg:block lg:flex mt-2 gap-4">
+          <div id="info" className="hidden lg:flex mt-2 gap-4">
             <div> Region: {region}</div>
             <div> Tier: {tier} </div>
             <div> Patch: {patch} </div>
@@ -145,7 +145,7 @@ const NewTourneyNav = ({ tournament }: any) => {
         {/* RESULTS & OVERVIEW SECTION */}
         <div
           id="results-overview"
-          className="max-w-full max-w-[20rem] min-w-[20rem] h-[40rem] bg-darker-blue rounded-md bg-opacity-80 backdrop-blur"
+          className="max-w-full h-[40rem] bg-darker-blue rounded-md bg-opacity-80 backdrop-blur"
         >
           <div
             id="results-overview-tabs"
@@ -168,7 +168,7 @@ const NewTourneyNav = ({ tournament }: any) => {
                     </button>
                     <div
                       id="artificial-border"
-                      className="sm: hiddenw-[1px] h-6 bg-idle-purple-b"
+                      className="sm: hidden w-[1px] h-6 bg-idle-purple-b"
                     ></div>
                   </>
                 );
@@ -177,7 +177,7 @@ const NewTourneyNav = ({ tournament }: any) => {
                 <>
                   <button
                     key={tab}
-                    className={`hover:bg-active-purple my-1 mx-1 rounded ${activeTab === tab ? "text-white bg-active-purple" : ""}`}
+                    className={`sm:hidden hover:bg-active-purple my-1 mx-1 rounded ${activeTab === tab ? "text-white bg-active-purple" : ""}`}
                     onClick={() => {
                       handleTabClick(tab);
                     }}
@@ -190,7 +190,25 @@ const NewTourneyNav = ({ tournament }: any) => {
                   </button>
                   <div
                     id="artificial-border"
-                    className="w-[1px] h-6 bg-idle-purple-b"
+                    className="sm:hidden w-[1px] h-6 bg-idle-purple-b"
+                  ></div>
+
+                  <button
+                    key={tab}
+                    className={`hidden sm:block cursor-default my-1 mx-1 rounded ${activeTab === tab ? "text-white" : ""}`}
+                    onClick={() => {
+                      handleTabClick(tab);
+                    }}
+                  >
+                    <SectionLabel
+                      sourceImage={`/${tab}.png`}
+                      text={tab}
+                      props={`${activeTab === tab ? "text-white" : "text-not-white hover:text-white"}`}
+                    />
+                  </button>
+                  <div
+                    id="artificial-border"
+                    className="hidden sm:block w-[1px] h-6 bg-idle-purple-b"
                   ></div>
                 </>
               );
@@ -296,7 +314,7 @@ const NewTourneyNav = ({ tournament }: any) => {
       {/* STANDINGS SECTION DESKTOP */}
       <div
         id="standings"
-        className="text-sm lg:text-base hidden h-full sm:block grow max-w-[25rem] h-[84vh] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
+        className="text-sm lg:text-base hidden h-full sm:block grow max-w-[25rem] min-w-[17rem] h-[84vh] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
       >
         <div className="flex items-center gap-2 border-b border-idle-purple-b">
           <SectionLabel

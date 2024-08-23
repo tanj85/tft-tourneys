@@ -38,24 +38,31 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
 
   const standings = getStandingsForDay(tournament, dayIndex);
 
-  const sortedStandings = standings ? Object.entries(standings).sort(
-      ([playerA, standingA]: [string, any], [playerB, standingB]: [string, any]) => {
-        // First compare by score
-        if (standingB !== standingA) {
-          return standingB - standingA;
+  const sortedStandings = standings
+    ? Object.entries(standings).sort(
+        (
+          [playerA, standingA]: [string, any],
+          [playerB, standingB]: [string, any]
+        ) => {
+          // First compare by score
+          if (standingB !== standingA) {
+            return standingB - standingA;
+          }
+          // if (dayIndex === 1){
+          //   console.log("A", playerA,getPlayerCumulativeScore(playerA, dayIndex, tournament), standingA, dayIndex);
+          //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
+          // }
+          // If scores are tied, compare by games played
+          return (
+            getPlayerCumulativeScore(playerB, dayIndex, tournament) -
+            getPlayerCumulativeScore(playerA, dayIndex, tournament)
+          );
         }
-        // if (dayIndex === 1){
-        //   console.log("A", playerA,getPlayerCumulativeScore(playerA, dayIndex, tournament), standingA, dayIndex);
-        //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
-        // }
-        // If scores are tied, compare by games played
-        return getPlayerCumulativeScore(playerB, dayIndex, tournament) - getPlayerCumulativeScore(playerA, dayIndex, tournament);
-      }
-    ) : null;
+      )
+    : null;
 
-  
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<any>('');
+  const [modalContent, setModalContent] = useState<any>("");
 
   const openModal = (content: any) => {
     setModalContent(content);
@@ -63,8 +70,7 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   };
 
   function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
-
-    if (dayIndex === -1){
+    if (dayIndex === -1) {
       return null;
     }
 
@@ -72,16 +78,20 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
     return day ? day.standings : null;
   }
 
-  function getPlayerCumulativeScore(player: string, dayIndex: number, tournament: Tournament): number {
+  function getPlayerCumulativeScore(
+    player: string,
+    dayIndex: number,
+    tournament: Tournament
+  ): number {
     let total = 0;
-    for (let i = 0; i < dayIndex+1; i++) {
-      const standings = getStandingsForDay(tournament, i)
+    for (let i = 0; i < dayIndex + 1; i++) {
+      const standings = getStandingsForDay(tournament, i);
       total += standings ? standings[player] : 0;
     }
     return total;
   }
 
-  if ((!standings || standings.length === 0) && dayIndex === -1){
+  if ((!standings || standings.length === 0) && dayIndex === -1) {
     return (
       <div className="flex flex-row items-center">
         <Image src="/sadyuumi.png" width={100} height={100} alt="icon" />
@@ -104,8 +114,7 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   }
 
   return (
-    
-    <div className="h-[89%] max-w-[25rem]">
+    <div className="h-[89%]">
       <div className="bg-opacity-60 overflow-auto overscroll-none break-all max-h-[34rem] bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
         {/* {JSON.stringify(standings)} */}
 
@@ -131,7 +140,12 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
                   className="w-[1px] h-6 bg-active-purple-b"
                 ></div>
               </div>
-              <button onClick={() => openModal(formattedPlayer)} className="hover:underline">{formattedPlayer}</button>
+              <button
+                onClick={() => openModal(formattedPlayer)}
+                className="hover:underline mx-2"
+              >
+                {formattedPlayer}
+              </button>
               <div className="text-not-white">
                 {points} <span className="text-xs">pts</span>
               </div>
@@ -140,11 +154,11 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
         })}
       </div>
       <PlayerModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          tournament={tournament}
-          player={modalContent}
-        />
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        tournament={tournament}
+        player={modalContent}
+      />
     </div>
   );
 }
