@@ -164,6 +164,7 @@ class Tourneys(Resource):
             tourneys[row["tournament_id"]] = dict(row)
             tourneys[row["tournament_id"]]["has_detail"] = False
             tourneys[row["tournament_id"]]["live"] = False 
+            tourneys[row["tournament_id"]]["days"] = []
 
         detailed_info = database.query_sql("SELECT * FROM tbl_tournament_info", True)
 
@@ -174,8 +175,6 @@ class Tourneys(Resource):
             tourneys[id]["live"] = (
                 tourneys[id]["start_date"] <= today <= tourneys[id]["end_date"]
             )
-            if "days" not in tourneys[id]:
-                tourneys[id]["days"] = []
 
             while len(tourneys[id]["days"]) < day:
                 tourneys[id]["days"].append({"standings": {}, "games": []})

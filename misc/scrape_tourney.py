@@ -192,6 +192,8 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
             continue
 
         if sheet_indices[j] == -1:
+            if not sheet_names[j]:
+                continue
             print("using sheet_name")
             sheet_indices[j] = getSheetIndexByName(urls[j], sheet_names[j])
             if sheet_indices[j] == -1:
