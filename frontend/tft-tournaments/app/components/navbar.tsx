@@ -36,7 +36,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="items-center flex gap-[1.5rem] mr-[10rem] tracking-wider">
+        <div className="items-center flex gap-[1.5rem] mr-[8rem] tracking-wider">
           {navLinks.map((link, index) => {
             const isActive = pathname && pathname.startsWith(link.href);
             return (

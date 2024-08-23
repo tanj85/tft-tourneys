@@ -175,9 +175,9 @@ export default function TabHeader({ totalPages }: { totalPages: number }) {
         <Pagination totalPages={totalPages} />
       </div>
 
-      <div className="grid grid-cols-6 px-6 gap-8 text-center p-4 font-bold relative z-50">
+      <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 text-center p-4 font-bold relative z-50">
         <div
-          className="md:col-span-1 col-span-2 text-left cursor-pointer flex items-center"
+          className="text-left cursor-pointer flex items-center"
           onClick={() => handleSort("tournament_name")}
         >
           NAME

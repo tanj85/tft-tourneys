@@ -38,17 +38,19 @@ const TournamentTabs = async ({ tourneys }: any) => {
                 target={tourney.has_detail ? "_self" : "_blank"}
                 rel={tourney.has_detail ? "" : "noopener noreferrer"}
               >
-                <div className="p-4 rounded-md mx-2">
-                  <div className="grid grid-cols-6 gap-8 text-center items-center">
-                    <div className="md:col-span-1 col-span-2 text-left font-bold text-balance w-[100px] lg:w-[200px] truncate-lines-3">
+                <div className="p-4 rounded-md mx-2 text-sm">
+                  <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 text-center items-center">
+                    <div className="text-left font-bold text-balance w-[120px] lg:w-[160px] truncate-lines-3">
                       {tourney.tournament_name}
                     </div>
                     <div>{tourney.tier}</div>
-                    <div className="hidden md:block">{tourney.region}</div>
+                    <div className="hidden md:block break-words w-[110px] hyphens-auto">
+                      {tourney.region}
+                    </div>
                     <div className="hidden lg:block">
                       {tourney.num_participants}
                     </div>
-                    <div className="flex justify-center items-center col-span-2 sm:col-span-1">
+                    <div className="flex justify-center items-center">
                       {tourney.has_detail ? (
                         <Image
                           height={50}
