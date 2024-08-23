@@ -85,9 +85,9 @@ const NewTourneyNav = ({ tournament }: any) => {
   }, [id]);
 
   const [tourneyDays, setTourneyDays] = useState<any[]>([]);
-  const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
-    new Map()
-  );
+  // const [tourneyStandings, setTourneyStandings] = useState<Map<any, any>>(
+  //   new Map()
+  // );
 
   const handleTabClick = (tab: any) => {
     setActiveTab(tab);
@@ -105,15 +105,20 @@ const NewTourneyNav = ({ tournament }: any) => {
 
   useEffect(() => {
     setTourneyDays(days);
-    if (standings) {
-      const standingsMap = new Map(Object.entries(standings));
-      setTourneyStandings(standingsMap);
+    // if (standings) {
+    //   const standingsMap = new Map(Object.entries(standings));
+    //   setTourneyStandings(standingsMap);
+    // }
+    
+    if (days.length === 0) {
+      setActiveDayIndex(-1);
     }
+
     sessionStorage.setItem("currentTourney", id);
   }, [days, standings, id]);
 
-  const standingsEntries = Array.from(tourneyStandings.entries());
-  standingsEntries.sort((a, b) => b[1] - a[1]); // sort the entries by value (descending order)
+  // const standingsEntries = Array.from(tourneyStandings.entries());
+  // standingsEntries.sort((a, b) => b[1] - a[1]); // sort the entries by value (descending order)
 
   return (
     <div

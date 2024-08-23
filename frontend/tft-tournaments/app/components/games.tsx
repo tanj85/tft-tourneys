@@ -40,6 +40,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
     tournament: Tournament,
     dayIndex: number
   ): Game[] | null {
+    if (dayIndex === -1) return null;
     const day = tournament.days[dayIndex];
     return day ? day.games : null;
   }
@@ -59,6 +60,17 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
     // setActiveDay(dayTabs[index]);
     setActiveGameIndex(index);
   };
+
+  if ((!games || games.length === 0) && dayIndex === -1) {
+    return (
+      <div className="flex flex-row items-center">
+        <Image src="/sad_emote.png" width={100} height={100} alt="icon" />
+        <div className="text-not-white italic text-center">
+          No games found for this Tournament!
+        </div>
+      </div>
+    );
+  }
 
   if (!games || games.length === 0) {
     return (
