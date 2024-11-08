@@ -1,5 +1,5 @@
 # from operator import itemgetter
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import List, Callable, Iterable, Optional, Tuple
 from dataclasses import dataclass
 
@@ -81,6 +81,8 @@ class Tourneys(Resource):
             # print("hi")
             query += f" WHERE tournament_id IN ({tournament_ids[0]})"
             print(query)
+        else:
+            return {name: [] for name in placement_data_columns}
 
         query_data = database.query_sql(query)
         placement_data: dict[str, list] = {name: [] for name in placement_data_columns}
@@ -162,7 +164,7 @@ class Tourneys(Resource):
         tourneys = {}
 
         all_info = database.query_sql("SELECT * FROM tbl_liquipedia_tournaments", True)
-        today = str(date.today())
+        current_time = datetime.now()
         for row in all_info:
             for k, v in row.items():
                 row[k] = v if type(v) in (int, type(None)) else str(v)
@@ -177,8 +179,10 @@ class Tourneys(Resource):
             id = row["id"]
             day = row["day"]
             tourneys[id]["has_detail"] = True
+            start_date = datetime.strptime(tourneys[id]["start_date"], "%Y-%m-%d")
+            end_date = datetime.strptime(tourneys[id]["end_date"], "%Y-%m-%d") + timedelta(hours=31)
             tourneys[id]["live"] = (
-                tourneys[id]["start_date"] <= today <= tourneys[id]["end_date"]
+                start_date <= current_time <= end_date
             )
 
             while len(tourneys[id]["days"]) < day:
@@ -458,7 +462,7 @@ class Tourneys(Resource):
                     upcoming_last_index = curr_index
                 elif saw_upcoming and start_date > today:
                     upcoming_last_index = curr_index
-                elif not saw_ongoing and start_date <= today <= end_date:
+                elif not saw_ongoing and start_date <= today <= end_date and not tournament["live"]:
                     tournament["place_header"] = "ongoing"
                     saw_ongoing = True
                 elif not saw_past and end_date < today:

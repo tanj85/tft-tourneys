@@ -3,14 +3,16 @@ from sqlalchemy import create_engine, text
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
+import os
 from remove_eprod import remove_eprod
 
 
-db_user = 'postgres'
-db_password = 'tft!'
-db_host = '127.0.0.1'
+
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
 db_port = '5432'
-db_name = 'tftourneys'
 table_name = 'tbl_tournament_info'
 
 def insert_placement_data(player_name, placement, tournament_id, day_num, lobby_id, game_num):
@@ -44,7 +46,12 @@ def insert_placement_data(player_name, placement, tournament_id, day_num, lobby_
         return 0
 
 def getNum(df, r, c):
-    return int(''.join(filter(str.isdigit, df.iloc[r, c])))
+    num = ''.join(filter(str.isdigit, df.iloc[r, c]))
+    return int(num) if num.isdigit() else None
+
+def removeTag(name):
+    parts = name.rsplit('#', 1)
+    return parts[0] if len(parts) > 1 else name
 
 def getSheetIndexByName(url, sheetName):
     response = requests.get(url)
@@ -87,10 +94,13 @@ def apac_scrape(tournament_id, url, day, sheet):
         for i in range(num_player_rows):
             # print(df.iloc[i+1, player_cols[0]], "|", df.iloc[i, col])
             try:
-                scraped += insert_placement_data(df.iloc[i+1, player_cols[0]], 9-int(df.iloc[i+1, col]), tournament_id, day, -1, current_game)
+                
+                num = getNum(df, i+1, col)
+                if num is None:
+                    continue
+                scraped += insert_placement_data(removeTag(df.iloc[i+1, player_cols[0]]), 9-num, tournament_id, day, -1, current_game)
             except:
                 pass
-                # scraped += insert_placement_data(df.iloc[i+1, player_cols[0]], 9, tournament_id, day, -1, current_game)
     print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
 
     return scraped
@@ -126,7 +136,10 @@ def default_scrape(tournament_id, url, day, sheet):
                 # print(index, col)
                 current_lobby = getNum(df, index, col)
             elif current_lobby is not None and pd.notna(df.iloc[index, col]) and pd.notna(df.iloc[index, col+1]):
-                scraped += insert_placement_data(df.iloc[index, col], 9-getNum(df, index, col+1), tournament_id, day, current_lobby, current_game)
+                num = getNum(df, index, col+1)
+                if num is None:
+                    continue
+                scraped += insert_placement_data(removeTag(df.iloc[index, col]), 9-num, tournament_id, day, current_lobby, current_game)
                 # print(f"{df.iloc[index, col]:<30} {9-getNum(df, index, col+1):<5} {current_lobby:<5} {current_game:<5}")
     print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
 
@@ -146,7 +159,7 @@ def day_header_scrape(tournament_id, url, day, sheet):
 
     # print(f"{'Player':<30} {'Score':<5} {'Lobby':<5} {'Game':<5}")
 
-    # print(player_cols)
+    print(player_cols)
 
     scraped = 0
 
@@ -164,7 +177,10 @@ def day_header_scrape(tournament_id, url, day, sheet):
                 # print(index, col)
                 current_lobby = getNum(df, index, col)
             elif current_lobby is not None and pd.notna(df.iloc[index, col]) and pd.notna(df.iloc[index, col+1]):
-                scraped += insert_placement_data(df.iloc[index, col], 9-getNum(df, index, col+1), tournament_id, day, current_lobby, current_game)
+                num = getNum(df, index, col+1)
+                if num is None:
+                    continue
+                scraped += insert_placement_data(removeTag(df.iloc[index, col]), 9-num, tournament_id, day, current_lobby, current_game)
                 
                 # print(f"{df.iloc[index, col]:<30} {9-getNum(df, index, col+1):<5} {current_lobby:<5} {current_game:<5}")
     print(f"scraped tourney {tournament_id}, day {day} and updated {scraped} entries")
@@ -179,11 +195,12 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
         
 
         # Database connection details
-        db_user = 'postgres'
-        db_password = 'tft!'
-        db_host = '127.0.0.1'
+
+        db_name = os.getenv("DB_NAME")
+        db_user = os.getenv("DB_USER")
+        db_password = os.getenv("DB_PASSWORD")
+        db_host = os.getenv("DB_HOST")
         db_port = '5432'
-        db_name = 'tftourneys'
         table_name = 'tbl_tournament_info'
 
 
@@ -244,7 +261,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
 
         if special_scrape == "day_header":
             scraped += day_header_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
-        if special_scrape == "apac":
+        elif special_scrape == "apac":
             scraped += apac_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
         else:
             scraped += default_scrape(tournament_id, urls[j], days[j], sheet_indices[j])
@@ -257,7 +274,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
                 WHERE id = {tournament_id} AND link='{urls[j]}' AND day={days[j]} AND sheet_index = {sheet_indices[j]};
                 """))
             transaction.commit()
-        remove_eprod()
+        # remove_eprod()
         print(f"Successfully scraped tournament_id: {tournament_id}, day {days[j]}")
 
     return scraped
@@ -266,11 +283,12 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
 if __name__ == '__main__':
 
     # Database connection details
-    db_user = 'postgres'
-    db_password = 'tft!'
-    db_host = '127.0.0.1'
+
+    db_name = os.getenv("DB_NAME")
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    db_host = os.getenv("DB_HOST")
     db_port = '5432'
-    db_name = 'tftourneys'
     table_name = 'tbl_tournament_info'
 
 

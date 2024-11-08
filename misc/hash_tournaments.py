@@ -18,7 +18,15 @@ def get_tournament_id_dict(csv_file):
         return
     
     return dict(zip(existing_data['tourney_name'], existing_data['id']))
-    
+
+def hash_player_name(name, region, country, seed=0):
+    # Create a hash object using MD5, including the seed in the hash input for collision resolution
+    hash_input = f"{name}-{region}-{country}-{seed}".encode()
+    hash_object = hashlib.md5(hash_input)
+
+    # Convert the hash to an 8-digit number
+    eight_digit_hash = int(hash_object.hexdigest(), 16) % 100000000
+    return int(eight_digit_hash)
     
 
 def append_unique_to_csv(strings, csv_file):

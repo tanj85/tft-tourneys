@@ -37,10 +37,11 @@ const TournamentTabs = async ({ tourneys }: any) => {
                 key={tourney.tournament_id}
                 target={tourney.has_detail ? "_self" : "_blank"}
                 rel={tourney.has_detail ? "" : "noopener noreferrer"}
+                className="w-full"
               >
                 <div className="p-4 rounded-md mx-2 text-sm">
                   <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8 text-center items-center">
-                    <div className="text-left font-bold text-balance w-[100px] sm:w-[120px] lg:w-[160px] truncate-lines-3">
+                    <div className="text-left font-bold text-balance w-[100px] sm:w-[120px] lg:w-auto truncate-lines-3">
                       {tourney.tournament_name}
                     </div>
                     <div>{tourney.tier}</div>

@@ -1,5 +1,6 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
+import os
 
 def update():
     # Load the CSV data into a DataFrame
@@ -7,11 +8,12 @@ def update():
     new_data = pd.read_csv(csv_file).drop_duplicates()
 
     # Database connection details
-    db_user = 'postgres'
-    db_password = 'tft!'
-    db_host = 'localhost'
+
+    db_name = os.getenv("DB_NAME")
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    db_host = os.getenv("DB_HOST")
     db_port = '5432'
-    db_name = 'tftourneys'
     table_name = 'tbl_tournament_info'
     engine_url = f'postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
     engine = create_engine(engine_url)

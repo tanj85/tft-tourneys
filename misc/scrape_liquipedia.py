@@ -8,12 +8,13 @@ import hash_tournaments
 import time
 import re
 import copy
+import os
 
-user = 'postgres'
-password = 'tft!'
-host = '127.0.0.1'
+dbname = os.getenv("DB_NAME")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
 port = '5432'
-dbname = 'tftourneys'
 table_name = 'tbl_liquipedia_tournaments'
 
 

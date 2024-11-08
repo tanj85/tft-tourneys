@@ -7,6 +7,7 @@ from pathlib import Path
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 handler = TimedRotatingFileHandler("logs/periodic/periodic.log", when="midnight", interval=1, utc=True)
@@ -43,6 +44,13 @@ def updateLive(liveTourneyIds=None):
                 liveTourneyTimer = checkNewLiveTourneysTime  # Reset timer safely
 
             try:
+                try:
+                    response = requests.post("http://127.0.0.1:8080/tournaments/")
+                    # print(response.json())
+                    logger.info(response.json())
+                except Exception as e:
+                    # print(f"Couldn't get response: {e}")
+                    logger.info(f"Couldn't get response: {e}")
                 response = requests.get("http://127.0.0.1:8080/tournaments/?live=true")
                 response.raise_for_status()
                 liveTourneyIds = [x["tournament_id"] for x in response.json()]
@@ -54,10 +62,22 @@ def updateLive(liveTourneyIds=None):
                 liveTourneyIds = []
 
         scraped = 0
+        scrape_log = "started_scrape|"
         for tourneyId in liveTourneyIds:
-            if shutdown_event.is_set():
-                break  # Stop processing if a shutdown is triggered
-            scraped += scrape_tourney.scrape_tourney(tourneyId)
+            try:
+                logger.info(f"starting scrape for tournament {tourneyId}")
+                if shutdown_event.is_set():
+                    break  # Stop processing if a shutdown is triggered
+            
+
+                scraped += scrape_tourney.scrape_tourney(tourneyId)
+                scrape_log += f"{tourneyId} scraped:[{scraped}] |"
+                logger.info(f"starting scrape for tournament {tourneyId} and got {scraped} entries")
+            except Exception as e:
+                logger.info(f"Error scraping tournament {tourneyId}: {e}")
+        
+
+        logger.info(scrape_log)
 
         if scraped > 0:
             try:

@@ -53,10 +53,25 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
           //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
           // }
           // If scores are tied, compare by games played
-          return (
-            getPlayerCumulativeScore(playerB, dayIndex, tournament) -
-            getPlayerCumulativeScore(playerA, dayIndex, tournament)
-          );
+          const cumulativeDiff = getPlayerCumulativeScore(playerB, dayIndex, tournament) -
+                                  getPlayerCumulativeScore(playerA, dayIndex, tournament)
+          
+          if (cumulativeDiff !== 0){
+            return (
+              getPlayerCumulativeScore(playerB, dayIndex, tournament) -
+              getPlayerCumulativeScore(playerA, dayIndex, tournament)
+            );
+          }
+
+          let placeNumDiff = getNumPerPlace(playerB, dayIndex, tournament).map((item, index) => 
+                              item - getNumPerPlace(playerA, dayIndex, tournament)[index]);
+
+          for (let i = 0; i < 7; i++){
+            if (placeNumDiff[i] !== 0){
+              return placeNumDiff[i];
+            }
+          }
+          return 0;
         }
       )
     : null;
@@ -89,6 +104,27 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
       total += standings ? standings[player] : 0;
     }
     return total;
+  }
+
+  function getNumPerPlace(
+    player: string,
+    dayIndex: number,
+    tournament: Tournament
+  ): number[] {
+    let ret = [0,0,0,0,0,0,0,0];
+    for (let i = 0; i < dayIndex + 1; i++) {
+      for (let j = 0; j < 8; j++) {
+        for (let k = 0; k < (tournament.days[i]?.games.length || 0); k++){
+          for (let l = 0; l < (tournament.days[i]?.games[k].lobbies.length || 0); l++){
+            let val = tournament.days[i]?.games[k].lobbies[l][player];
+            if (val){
+              ret[val-1]++;
+            }
+          }
+        }
+      }
+    }
+    return ret;
   }
 
   if ((!standings || standings.length === 0) && dayIndex === -1) {

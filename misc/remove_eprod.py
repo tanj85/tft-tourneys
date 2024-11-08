@@ -1,11 +1,12 @@
 import psycopg2
 from sqlalchemy import create_engine, text
+import os
 
 # Database connection parameters
-dbname = "tftourneys"
-user = "postgres"
-password = "tft!"
-host = "127.0.0.1"
+dbname = os.getenv("DB_NAME")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
 port = '5432'
 
 def remove_eprod():

@@ -1,10 +1,11 @@
-
+import os
 # Database credentials and connection details
-db_user = 'postgres'
-db_password = 'tft!'
-db_host = '127.0.0.1'
+
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
 db_port = '5432'
-db_name = 'tftourneys'
 table_name = 'tbl_placement_data'  # Ensure this is the correct table you intend to use
 
 # Create a connection to the PostgreSQL database
