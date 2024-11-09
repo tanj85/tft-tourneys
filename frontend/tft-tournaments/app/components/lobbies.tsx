@@ -3,11 +3,9 @@ import Button from "./button";
 import { useState } from "react";
 import { DiVim } from "react-icons/di";
 import PlayerList from "./players";
+import {Lobby} from "./../interfaces";
 
 export default function LobbiesForGame({ game, tournament }: any) {
-  interface Lobby {
-    [key: string]: number;
-  }
 
   return (
     <div>

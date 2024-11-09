@@ -1,4 +1,5 @@
 import { FaLessThanEqual } from "react-icons/fa6";
+import {GetTourneysParams} from "./../interfaces";
 
 const changeBusterInterval = 120;
 
@@ -189,42 +190,6 @@ export async function fetchFilteredTournaments({
   };
 }
 
-interface GetTourneysParams {
-  sortParams?: string[];
-  tier?: string;
-  region?: string;
-  set?: string;
-  dateLowerBound?: string;
-  dateUpperBound?: string;
-  nameSearchQuery?: string;
-  hasDetail?: string;
-  live?: boolean;
-}
-
-export interface FilterState {
-  region: string;
-  tier: string;
-  startDate: string;
-  endDate: string;
-  searchQuery: string;
-}
-
-export interface Tournament {
-  tournament_name: string;
-  tournament_id: number;
-  start_date: string;
-  end_date: string;
-  num_participants: number;
-  patch: string;
-  region: string;
-  tier: string;
-  liquipedia_link: string;
-  has_detail: boolean;
-}
-
-export interface TournamentResponse {
-  tournaments: Tournament[];
-}
 
 export const getTourneys = async ({
   sortParams = [],

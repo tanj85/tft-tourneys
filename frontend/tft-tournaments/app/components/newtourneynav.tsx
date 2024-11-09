@@ -7,39 +7,9 @@ import { formatDate } from "../data/utils";
 import Button from "./button";
 import StandingsForDay from "./standings";
 import { FaCircle } from "react-icons/fa6";
+import {Tournament} from "./../interfaces";
 // import { Console } from "console";
 
-interface Standings {
-  [key: string]: number;
-}
-
-interface Lobby {
-  [key: string]: number;
-}
-
-interface Game {
-  lobbies: Lobby[];
-}
-
-interface Day {
-  standings: Standings;
-  num_participants: number;
-  day: number;
-  sheet_index: number;
-  games: Game[];
-}
-
-interface Tournament {
-  name: string;
-  tier: string;
-  region: string;
-  start_date: string;
-  end_date: string;
-  link: string;
-  patch: string;
-  id: number;
-  days: (Day | null)[];
-}
 
 // const dayTabs = ["Day 1", "Day 2", "Day 3"];
 var tourneyTabs = ["Overview", "Results", "Standings"];
@@ -53,6 +23,7 @@ const NewTourneyNav = ({ tournament, isLive }: any) => {
   const patch = tournament.patch;
   const days = tournament.days;
   const tier = tournament.tier;
+  const rules = tournament.rules;
   const overview_info =
     tournament.overview_info !== undefined ? tournament.overview_info : "";
   // const participants = tournament.num_participants;

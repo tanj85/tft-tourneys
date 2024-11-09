@@ -1,19 +1,7 @@
 "use client";
 import { useEffect } from 'react';
 
-interface ScrollManagerProps {
-  searchParams?: {
-    query?: string;
-    page?: string;
-    sortParams?: string[];
-    tier?: string;
-    region?: string;
-    set?: string;
-    dateLowerBound?: string;
-    dateUpperBound?: string;
-    hasDetail?: string;
-  };
-}
+import {ScrollManagerProps} from "./../interfaces";
 
 const ScrollManager: React.FC<ScrollManagerProps> = ({ searchParams }) => {
   useEffect(() => {

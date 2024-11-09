@@ -2,40 +2,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PlayerModal from "./playermodal";
+import {Tournament} from "./../interfaces";
 
 export default function StandingsForDay({ tournament, dayIndex }: any) {
-  interface Standings {
-    [key: string]: number;
-  }
-
-  interface Lobby {
-    [key: string]: number;
-  }
-
-  interface Game {
-    lobbies: Lobby[];
-  }
-
-  interface Day {
-    standings: Standings;
-    num_participants: number;
-    day: number;
-    sheet_index: number;
-    games: Game[];
-  }
-
-  interface Tournament {
-    name: string;
-    tier: string;
-    region: string;
-    start_date: string;
-    end_date: string;
-    link: string;
-    patch: string;
-    id: number;
-    days: (Day | null)[];
-  }
-
   const standings = getStandingsForDay(tournament, dayIndex);
 
   const sortedStandings = standings
@@ -83,15 +52,6 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
     setModalContent(content);
     setIsModalOpen(true);
   };
-
-  function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
-    if (dayIndex === -1) {
-      return null;
-    }
-
-    const day = tournament.days[dayIndex];
-    return day ? day.standings : null;
-  }
 
   function getPlayerCumulativeScore(
     player: string,
@@ -197,4 +157,27 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
       />
     </div>
   );
+}
+
+
+export function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
+  if (dayIndex === -1) {
+    return null;
+  }
+
+  const day = tournament.days[dayIndex];
+  if (!day) {
+    return null;
+  }
+
+  let standings = { ...day.standings };
+
+  if (tournament.rules.includes("day_one_two_combined") && dayIndex === 1) {
+    const dayOneStandings = tournament.days[0]?.standings || {};
+    for (const player in dayOneStandings) {
+      standings[player] = (standings[player] || 0) + dayOneStandings[player];
+    }
+  }
+
+  return standings;
 }

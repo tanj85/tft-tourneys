@@ -14,65 +14,10 @@ import { PiSword } from "react-icons/pi";
 
 import { IoPodium, IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa6";
+import {Tournament, ModalProps, Stats, GameInfo, Day, Game, Lobby, PlayerStanding} from "./../interfaces";
+import {getStandingsForDay} from './standings';
 
-interface Standings {
-  [key: string]: number;
-}
 
-interface Stats {
-  [key: string]: number;
-}
-
-interface PlayerStanding {
-  player: string;
-  dayPlacement: number;
-  points: number;
-  num_players: number;
-  avp: number;
-}
-
-interface Lobby {
-  [key: string]: number;
-}
-
-interface Game {
-  lobbies: Lobby[];
-}
-
-interface Day {
-  standings: Standings;
-  num_participants: number;
-  day: number;
-  sheet_index: number;
-  games: Game[];
-}
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  tournament: any;
-  player: string;
-}
-
-interface GameInfo {
-  player: string;
-  day: number;
-  game: number;
-  lobby: number;
-  placement: number;
-}
-
-interface Tournament {
-  name: string;
-  tier: string;
-  region: string;
-  start_date: string;
-  end_date: string;
-  link: string;
-  patch: string;
-  id: number;
-  days: (Day | null)[];
-}
 
 const PlayerModal: React.FC<ModalProps> = ({
   isOpen,
@@ -134,11 +79,6 @@ const PlayerModal: React.FC<ModalProps> = ({
     });
   });
 
-  function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
-    const day = tournament.days[dayIndex];
-    return day ? day.standings : null;
-  }
-
   function getPlayerCumulativeScore(
     player: string,
     dayIndex: number,
@@ -176,7 +116,7 @@ const PlayerModal: React.FC<ModalProps> = ({
   const standings: PlayerStanding[] = [];
   tournament.days.forEach((day: Day, dayIndex: number) => {
     const num_games = day.games.length;
-    Object.entries(day.standings)
+    Object.entries(getStandingsForDay(tournament, dayIndex))
       .sort(
         (
           [playerA, standingA]: [string, any],

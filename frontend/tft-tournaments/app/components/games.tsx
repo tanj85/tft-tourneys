@@ -2,40 +2,10 @@ import Image from "next/image";
 import Button from "./button";
 import { useEffect, useState } from "react";
 import LobbiesForGame from "./lobbies";
+import {Game, Tournament} from "./../interfaces";
+
 
 export default function GamesForDay({ tournament, dayIndex }: any) {
-  interface Standings {
-    [key: string]: number;
-  }
-
-  interface Lobby {
-    [key: string]: number;
-  }
-
-  interface Game {
-    lobbies: Lobby[];
-  }
-
-  interface Day {
-    standings: Standings;
-    num_participants: number;
-    day: number;
-    sheet_index: number;
-    games: Game[];
-  }
-
-  interface Tournament {
-    name: string;
-    tier: string;
-    region: string;
-    start_date: string;
-    end_date: string;
-    link: string;
-    patch: string;
-    id: number;
-    days: (Day | null)[];
-  }
-
   function getGamesForDay(
     tournament: Tournament,
     dayIndex: number

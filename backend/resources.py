@@ -28,6 +28,7 @@ class Tourneys(Resource):
         "region",
         "has_detail",
         "live",
+        "rules",
     ]
     day_fields = ["day", "sheet_index"]
     field_types = {
@@ -45,6 +46,7 @@ class Tourneys(Resource):
         "day": str,
         "sheet_index": int,
         "live": bool,
+        "rules": List[str],
     }
 
     set_dict = {
@@ -172,6 +174,7 @@ class Tourneys(Resource):
             tourneys[row["tournament_id"]]["has_detail"] = False
             tourneys[row["tournament_id"]]["live"] = False 
             tourneys[row["tournament_id"]]["days"] = []
+            tourneys[row["tournament_id"]]["rules"] = []
 
         detailed_info = database.query_sql("SELECT * FROM tbl_tournament_info", True)
 
@@ -191,6 +194,22 @@ class Tourneys(Resource):
             for key in row.keys():
                 if len(tourneys[id]["days"]) > day-1:
                     tourneys[id]["days"][day - 1][key] = row[key]
+        
+        tourney_special_rules = database.query_sql("SELECT * FROM tbl_tournament_rules", True)
+
+        for row in tourney_special_rules:
+            if row["id"] not in tourneys:
+                tourneys[row["id"]] = {"rules": []}
+            else:
+                tourneys[row["id"]]["rules"] = []
+
+            for column, value in row.items():
+                if column == "id":
+                    continue
+                if isinstance(value, bool) and value: 
+                    tourneys[row["id"]]["rules"].append(column)
+                elif isinstance(value, str) and value.strip(): 
+                    tourneys[row["id"]]["rules"].append(value)
 
         # intialize standings for each game, changes modifies tourneys
         Tourneys.tourneys = tourneys

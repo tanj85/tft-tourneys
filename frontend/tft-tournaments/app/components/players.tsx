@@ -4,14 +4,11 @@ import React from "react";
 import PlayerModal from "./playermodal";
 
 import dynamic from "next/dynamic";
+import {Lobby} from "./../interfaces";
 
 const PlayerModalLazy = dynamic(() => import("../components/playermodal"), {
   loading: () => <p>Loading...</p>,
 });
-
-interface Lobby {
-  [key: string]: number;
-}
 
 const PlayerList: React.FC<{ lobby: Lobby; tournament: any }> = ({
   lobby,
