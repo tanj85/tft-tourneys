@@ -2,7 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PlayerModal from "./playermodal";
-import {Tournament} from "./../interfaces";
+import {Tournament,Standings} from "./../interfaces";
 
 export default function StandingsForDay({ tournament, dayIndex }: any) {
   const standings = getStandingsForDay(tournament, dayIndex);
@@ -160,14 +160,14 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
 }
 
 
-export function getStandingsForDay(tournament: Tournament, dayIndex: number): any {
+export function getStandingsForDay(tournament: Tournament, dayIndex: number): Standings {
   if (dayIndex === -1) {
-    return null;
+    return {};
   }
 
   const day = tournament.days[dayIndex];
   if (!day) {
-    return null;
+    return {};
   }
 
   let standings = { ...day.standings };
