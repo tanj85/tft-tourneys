@@ -233,6 +233,11 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
     # print(updated)
 
     for j in range(len(urls)):
+
+        if not urls[j]:
+            print(f"tourney {tournament_id} has no sheet link, skipping.")
+            continue
+
         if quick_insert and updated[j] == 1:
             print(f"skippa tourney {tournament_id}, day {days[j]}")
             continue
@@ -279,10 +284,7 @@ def scrape_tourney(tournament_id, engine = None, quick_insert = False):
 
     return scraped
 
-# if run this file directly
-if __name__ == '__main__':
-
-    # Database connection details
+def scrape_all():
 
     db_name = os.getenv("DB_NAME")
     db_user = os.getenv("DB_USER")
@@ -308,3 +310,9 @@ if __name__ == '__main__':
                 print(f"An error occurred while scraping tourney_id {tourney_id}: {e}")                                                                         
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
+# if run this file directly
+if __name__ == '__main__':
+
+    scrape_all()

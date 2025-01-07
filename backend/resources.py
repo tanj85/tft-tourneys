@@ -181,6 +181,7 @@ class Tourneys(Resource):
         for row in detailed_info:
             id = row["id"]
             day = row["day"]
+
             tourneys[id]["has_detail"] = True
             start_date = datetime.strptime(tourneys[id]["start_date"], "%Y-%m-%d")
             end_date = datetime.strptime(tourneys[id]["end_date"], "%Y-%m-%d") + timedelta(hours=31)
@@ -188,12 +189,27 @@ class Tourneys(Resource):
                 start_date <= current_time <= end_date
             )
 
-            while len(tourneys[id]["days"]) < day:
-                tourneys[id]["days"].append({"standings": {}, "games": []})
+            # scuffed check for if the tournament detailed data is nuked :p
+            if day == -1:
+                day = 3
 
-            for key in row.keys():
-                if len(tourneys[id]["days"]) > day-1:
-                    tourneys[id]["days"][day - 1][key] = row[key]
+                while len(tourneys[id]["days"]) < day:
+                    tourneys[id]["days"].append({"standings": {}, "games": []})
+
+                for day_num in range(day):
+
+                    for key in row.keys():
+                        if len(tourneys[id]["days"]) > day_num:
+                            tourneys[id]["days"][day_num][key] = row[key]
+            
+            else:
+
+                while len(tourneys[id]["days"]) < day:
+                    tourneys[id]["days"].append({"standings": {}, "games": []})
+
+                for key in row.keys():
+                    if len(tourneys[id]["days"]) > day-1:
+                        tourneys[id]["days"][day - 1][key] = row[key]
         
         tourney_special_rules = database.query_sql("SELECT * FROM tbl_tournament_rules", True)
 
