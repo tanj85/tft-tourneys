@@ -226,6 +226,8 @@ class Tourneys(Resource):
                     tourneys[row["id"]]["rules"].append(column)
                 elif isinstance(value, str) and value.strip(): 
                     tourneys[row["id"]]["rules"].append(value)
+                elif isinstance(value, int): 
+                    tourneys[row["id"]]["rules"].append(column + "-" + str(value))
 
         # intialize standings for each game, changes modifies tourneys
         Tourneys.tourneys = tourneys

@@ -15,7 +15,7 @@ import { PiSword } from "react-icons/pi";
 import { IoPodium, IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa6";
 import {Tournament, ModalProps, Stats, GameInfo, Day, Game, Lobby, PlayerStanding} from "./../interfaces";
-import {getStandingsForDay} from './standings';
+import {getStandingsForDay, sortStandings} from './standings';
 
 
 
@@ -116,54 +116,19 @@ const PlayerModal: React.FC<ModalProps> = ({
   const standings: PlayerStanding[] = [];
   tournament.days.forEach((day: Day, dayIndex: number) => {
     const num_games = day.games.length;
-    Object.entries(getStandingsForDay(tournament, dayIndex))
-      .sort(
-        (
-          [playerA, standingA]: [string, any],
-          [playerB, standingB]: [string, any]
-        ) => {
-          // First compare by score
-          if (standingB !== standingA) {
-            return standingB - standingA;
-          }
-          // if (dayIndex === 1){
-          //   console.log("A", playerA,getPlayerCumulativeScore(playerA, dayIndex, tournament), standingA, dayIndex);
-          //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
-          // }
-          // If scores are tied, compare by games played
-          const cumulativeDiff = getPlayerCumulativeScore(playerB, dayIndex, tournament) -
-                                  getPlayerCumulativeScore(playerA, dayIndex, tournament)
-          
-          if (cumulativeDiff !== 0){
-            return (
-              getPlayerCumulativeScore(playerB, dayIndex, tournament) -
-              getPlayerCumulativeScore(playerA, dayIndex, tournament)
-            );
-          }
-
-          let placeNumDiff = getNumPerPlace(playerB, dayIndex, tournament).map((item, index) => 
-                              item - getNumPerPlace(playerA, dayIndex, tournament)[index]);
-
-          for (let i = 0; i < 7; i++){
-            if (placeNumDiff[i] !== 0){
-              return placeNumDiff[i];
-            }
-          }
-          return 0;
-        }
-      )
-      .forEach(([p, points], index) => {
-        if (p === player) {
-          const playerStanding: PlayerStanding = {
-            player: player,
-            dayPlacement: index + 1,
-            points: points,
-            num_players: Object.keys(day.standings).length,
-            avp: (9 * num_games - points) / num_games,
-          };
-          standings.push(playerStanding);
-        }
-      });
+    sortStandings(getStandingsForDay(tournament, dayIndex), dayIndex, tournament)
+    .forEach(([p, points], index) => {
+      if (p === player) {
+        const playerStanding: PlayerStanding = {
+          player: player,
+          dayPlacement: index + 1,
+          points: points,
+          num_players: Object.keys(day.standings).length,
+          avp: (9 * num_games - points) / num_games,
+        };
+        standings.push(playerStanding);
+      }
+    });
   });
 
   // console.log(games);

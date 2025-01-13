@@ -8,42 +8,8 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   const standings = getStandingsForDay(tournament, dayIndex);
 
   const sortedStandings = standings
-    ? Object.entries(standings).sort(
-        (
-          [playerA, standingA]: [string, any],
-          [playerB, standingB]: [string, any]
-        ) => {
-          // First compare by score
-          if (standingB !== standingA) {
-            return standingB - standingA;
-          }
-          // if (dayIndex === 1){
-          //   console.log("A", playerA,getPlayerCumulativeScore(playerA, dayIndex, tournament), standingA, dayIndex);
-          //   console.log("B", playerB,getPlayerCumulativeScore(playerB, dayIndex, tournament), standingB, dayIndex);
-          // }
-          // If scores are tied, compare by games played
-          const cumulativeDiff = getPlayerCumulativeScore(playerB, dayIndex, tournament) -
-                                  getPlayerCumulativeScore(playerA, dayIndex, tournament)
-          
-          if (cumulativeDiff !== 0){
-            return (
-              getPlayerCumulativeScore(playerB, dayIndex, tournament) -
-              getPlayerCumulativeScore(playerA, dayIndex, tournament)
-            );
-          }
-
-          let placeNumDiff = getNumPerPlace(playerB, dayIndex, tournament).map((item, index) => 
-                              item - getNumPerPlace(playerA, dayIndex, tournament)[index]);
-
-          for (let i = 0; i < 7; i++){
-            if (placeNumDiff[i] !== 0){
-              return placeNumDiff[i];
-            }
-          }
-          return 0;
-        }
-      )
-    : null;
+  ? sortStandings(standings, dayIndex, tournament)
+  : null;
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<any>("");
@@ -52,40 +18,6 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
     setModalContent(content);
     setIsModalOpen(true);
   };
-
-  function getPlayerCumulativeScore(
-    player: string,
-    dayIndex: number,
-    tournament: Tournament
-  ): number {
-    let total = 0;
-    for (let i = 0; i < dayIndex + 1; i++) {
-      const standings = getStandingsForDay(tournament, i);
-      total += standings ? standings[player] : 0;
-    }
-    return total;
-  }
-
-  function getNumPerPlace(
-    player: string,
-    dayIndex: number,
-    tournament: Tournament
-  ): number[] {
-    let ret = [0,0,0,0,0,0,0,0];
-    for (let i = 0; i < dayIndex + 1; i++) {
-      for (let j = 0; j < 8; j++) {
-        for (let k = 0; k < (tournament.days[i]?.games.length || 0); k++){
-          for (let l = 0; l < (tournament.days[i]?.games[k].lobbies.length || 0); l++){
-            let val = tournament.days[i]?.games[k].lobbies[l][player];
-            if (val){
-              ret[val-1]++;
-            }
-          }
-        }
-      }
-    }
-    return ret;
-  }
 
   if ((!standings || standings.length === 0) && dayIndex === -1) {
     return (
@@ -159,6 +91,24 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   );
 }
 
+export function sortStandings(
+  standings: Record<string, any>,
+  dayIndex: number,
+  tournament: any
+): [string, any][] {
+  return Object.entries(standings).sort(
+    ([playerA, standingA], [playerB, standingB]) =>
+      compareStandings(
+        playerA,
+        standingA,
+        playerB,
+        standingB,
+        dayIndex,
+        tournament,
+        standings
+      )
+  );
+}
 
 export function getStandingsForDay(tournament: Tournament, dayIndex: number): Standings {
   if (dayIndex === -1) {
@@ -180,4 +130,176 @@ export function getStandingsForDay(tournament: Tournament, dayIndex: number): St
   }
 
   return standings;
+}
+
+export function compareStandings(
+  playerA: string,
+  standingA: any,
+  playerB: string,
+  standingB: any,
+  dayIndex: number,
+  tournament: any,
+  standings: any
+): number {
+  // Handle "day_three_checkmate" rule
+  if (
+    tournament.rules.includes("day_three_checkmate") &&
+    dayIndex === 2
+  ) {
+    const checkmate_val = tournament.rules
+        .find((rule: string) => rule.startsWith("checkmate_val-"))
+        ?.split("-")[1]
+        ?? "20";
+
+    const lastWinner = getLastCheckmateWinner(tournament, 2, parseInt(checkmate_val, 10));
+
+    if (playerA === lastWinner) return -1; // Player A gets first
+    if (playerB === lastWinner) return 1; // Player B gets first
+  }
+
+  // First compare by score
+  if (standingB !== standingA) {
+    return standingB - standingA;
+  }
+
+  // Compare by cumulative scores if tied
+  const cumulativeDiff =
+    getPlayerCumulativeScore(playerB, dayIndex, tournament) -
+    getPlayerCumulativeScore(playerA, dayIndex, tournament);
+
+  if (cumulativeDiff !== 0) {
+    return cumulativeDiff;
+  }
+
+  // Compare by games played
+  return compareGamesPlayed(playerA, playerB, dayIndex, tournament);
+}
+
+export function getLastCheckmateWinner(
+  tournament: Tournament,
+  dayIndex: any,
+  checkmateThreshold: number
+): string | null {
+
+  const dayResults = getPlayerResultsMapForDay(tournament, dayIndex);
+
+  if (!dayResults) return null;
+
+  for (const [player, results] of Array.from(dayResults.entries())) {
+    let cumulativeScore = 0;
+
+    for (const placement of results) {
+      if (cumulativeScore > checkmateThreshold && placement === 1) {
+        return player;
+      }
+
+      cumulativeScore += 9 - placement;
+    }
+  }
+
+  return null;
+}
+
+export function getPlayerResultsMapForDay(
+  tournament: Tournament,
+  dayIndex: number
+): Map<string, number[]> | null {
+  // Validate the day index
+  const day = tournament.days[dayIndex];
+  if (!day) return null; // If the day is null or undefined, return null
+
+  const resultsMap = new Map<string, number[]>();
+
+  // Iterate through the games and lobbies for the day
+  for (const game of day.games) {
+    for (const lobby of game.lobbies) {
+      for (const [player, placement] of Object.entries(lobby)) {
+        // Add the placement to the player's result list in the map
+        if (!resultsMap.has(player)) {
+          resultsMap.set(player, []);
+        }
+        resultsMap.get(player)!.push(placement);
+      }
+    }
+  }
+
+  return resultsMap;
+}
+
+export function getPlayerResultsForDay(
+  tournament: Tournament,
+  dayIndex: number,
+  player: string
+): number[] | null {
+  // Validate the day index
+  const day = tournament.days[dayIndex];
+  if (!day) return null; // If the day is null or undefined, return null
+
+  const results: number[] = [];
+
+  // Iterate through the games and lobbies for the day
+  for (const game of day.games) {
+    for (const lobby of game.lobbies) {
+      // Check if the player is in this lobby
+      if (lobby.hasOwnProperty(player)) {
+        results.push(lobby[player]); // Add the player's placement to the results
+      }
+    }
+  }
+
+  return results;
+}
+
+export function compareGamesPlayed(
+  playerA: string,
+  playerB: string,
+  dayIndex: number,
+  tournament: any
+): number {
+  const placeNumDiff = getNumPerPlace(playerB, dayIndex, tournament).map(
+    (item, index) =>
+      item - getNumPerPlace(playerA, dayIndex, tournament)[index]
+  );
+
+  for (let i = 0; i < 7; i++) {
+    if (placeNumDiff[i] !== 0) {
+      return placeNumDiff[i];
+    }
+  }
+
+  return 0;
+}
+
+export function getPlayerCumulativeScore(
+  player: string,
+  dayIndex: number,
+  tournament: Tournament
+): number {
+  let total = 0;
+  for (let i = 0; i < dayIndex + 1; i++) {
+    const standings = getStandingsForDay(tournament, i);
+    total += standings ? standings[player] : 0;
+  }
+  return total;
+}
+
+export function getNumPerPlace(
+  player: string,
+  dayIndex: number,
+  tournament: Tournament
+): number[] {
+  let ret = [0,0,0,0,0,0,0,0];
+  for (let i = 0; i < dayIndex + 1; i++) {
+    for (let j = 0; j < 8; j++) {
+      for (let k = 0; k < (tournament.days[i]?.games.length || 0); k++){
+        for (let l = 0; l < (tournament.days[i]?.games[k].lobbies.length || 0); l++){
+          let val = tournament.days[i]?.games[k].lobbies[l][player];
+          if (val){
+            ret[val-1]++;
+          }
+        }
+      }
+    }
+  }
+  return ret;
 }
