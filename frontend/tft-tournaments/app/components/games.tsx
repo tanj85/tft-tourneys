@@ -2,8 +2,7 @@ import Image from "next/image";
 import Button from "./button";
 import { useEffect, useState } from "react";
 import LobbiesForGame from "./lobbies";
-import {Game, Tournament} from "./../interfaces";
-
+import { Game, Tournament } from "./../interfaces";
 
 export default function GamesForDay({ tournament, dayIndex }: any) {
   function getGamesForDay(
@@ -16,7 +15,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
   }
 
   function isValidLobbies(game: Game, dayIndex: number) {
-    if (game === undefined){
+    if (game === undefined) {
       return false;
     }
     if (game.lobbies.length === 1 && Object.keys(game.lobbies[0]).length > 8) {
@@ -76,7 +75,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
   }
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <div className="text-sm gap-1 justify-center lg:justify-start flex-wrap lg:text-base flex lg:gap-2 mt-2 mx-2 -mb-1">
         {games.map((game: Game, index: number) => (
           <>
@@ -92,7 +91,7 @@ export default function GamesForDay({ tournament, dayIndex }: any) {
         ))}
       </div>
       {/* EACH GAME'S DATA */}
-      <div className="max-h-[33rem] min-w-[19rem] overflow-auto overscroll-none mt-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
+      <div className="min-w-[19rem] h-full overflow-auto overscroll-none mt-3 mb-3 mx-2 rounded bg-active-purple px-3 py-2 border border-active-purple-b">
         <div className="flex justify-center mb-2 relative">
           Game {activeGameIndex + 1}
           <div className="absolute left-0 bottom-0 text-not-white italic text-sm">

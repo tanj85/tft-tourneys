@@ -2,14 +2,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PlayerModal from "./playermodal";
-import {Tournament,Standings} from "./../interfaces";
+import { Tournament, Standings } from "./../interfaces";
 
 export default function StandingsForDay({ tournament, dayIndex }: any) {
   const standings = getStandingsForDay(tournament, dayIndex);
 
   const sortedStandings = standings
-  ? sortStandings(standings, dayIndex, tournament)
-  : null;
+    ? sortStandings(standings, dayIndex, tournament)
+    : null;
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<any>("");
@@ -42,8 +42,8 @@ export default function StandingsForDay({ tournament, dayIndex }: any) {
   }
 
   return (
-    <div className="h-[89%]">
-      <div className="bg-opacity-60 overflow-auto overscroll-none break-all max-h-[34rem] bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
+    <div className="flex flex-col h-full">
+      <div className="bg-opacity-60 overflow-auto overscroll-none break-all h-full bg-lightest-purple sm:m-4 m-2 rounded border-active-purple-b border">
         {/* {JSON.stringify(standings)} */}
 
         {sortedStandings?.map(([player, points]: any, index) => {
@@ -110,7 +110,10 @@ export function sortStandings(
   );
 }
 
-export function getStandingsForDay(tournament: Tournament, dayIndex: number): Standings {
+export function getStandingsForDay(
+  tournament: Tournament,
+  dayIndex: number
+): Standings {
   if (dayIndex === -1) {
     return {};
   }
@@ -142,16 +145,17 @@ export function compareStandings(
   standings: any
 ): number {
   // Handle "day_three_checkmate" rule
-  if (
-    tournament.rules.includes("day_three_checkmate") &&
-    dayIndex === 2
-  ) {
-    const checkmate_val = tournament.rules
+  if (tournament.rules.includes("day_three_checkmate") && dayIndex === 2) {
+    const checkmate_val =
+      tournament.rules
         .find((rule: string) => rule.startsWith("checkmate_val-"))
-        ?.split("-")[1]
-        ?? "20";
+        ?.split("-")[1] ?? "20";
 
-    const lastWinner = getLastCheckmateWinner(tournament, 2, parseInt(checkmate_val, 10));
+    const lastWinner = getLastCheckmateWinner(
+      tournament,
+      2,
+      parseInt(checkmate_val, 10)
+    );
 
     if (playerA === lastWinner) return -1; // Player A gets first
     if (playerB === lastWinner) return 1; // Player B gets first
@@ -180,7 +184,6 @@ export function getLastCheckmateWinner(
   dayIndex: any,
   checkmateThreshold: number
 ): string | null {
-
   const dayResults = getPlayerResultsMapForDay(tournament, dayIndex);
 
   if (!dayResults) return null;
@@ -257,8 +260,7 @@ export function compareGamesPlayed(
   tournament: any
 ): number {
   const placeNumDiff = getNumPerPlace(playerB, dayIndex, tournament).map(
-    (item, index) =>
-      item - getNumPerPlace(playerA, dayIndex, tournament)[index]
+    (item, index) => item - getNumPerPlace(playerA, dayIndex, tournament)[index]
   );
 
   for (let i = 0; i < 7; i++) {
@@ -288,14 +290,18 @@ export function getNumPerPlace(
   dayIndex: number,
   tournament: Tournament
 ): number[] {
-  let ret = [0,0,0,0,0,0,0,0];
+  let ret = [0, 0, 0, 0, 0, 0, 0, 0];
   for (let i = 0; i < dayIndex + 1; i++) {
     for (let j = 0; j < 8; j++) {
-      for (let k = 0; k < (tournament.days[i]?.games.length || 0); k++){
-        for (let l = 0; l < (tournament.days[i]?.games[k].lobbies.length || 0); l++){
+      for (let k = 0; k < (tournament.days[i]?.games.length || 0); k++) {
+        for (
+          let l = 0;
+          l < (tournament.days[i]?.games[k].lobbies.length || 0);
+          l++
+        ) {
           let val = tournament.days[i]?.games[k].lobbies[l][player];
-          if (val){
-            ret[val-1]++;
+          if (val) {
+            ret[val - 1]++;
           }
         }
       }

@@ -7,9 +7,8 @@ import { formatDate } from "../data/utils";
 import Button from "./button";
 import StandingsForDay from "./standings";
 import { FaCircle } from "react-icons/fa6";
-import {Tournament} from "./../interfaces";
+import { Tournament } from "./../interfaces";
 // import { Console } from "console";
-
 
 // const dayTabs = ["Day 1", "Day 2", "Day 3"];
 var tourneyTabs = ["Overview", "Results", "Standings"];
@@ -123,7 +122,7 @@ const NewTourneyNav = ({ tournament, isLive }: any) => {
         {/* RESULTS & OVERVIEW SECTION */}
         <div
           id="results-overview"
-          className="max-w-full h-[40rem] bg-darker-blue rounded-md bg-opacity-80 backdrop-blur"
+          className="h-full bg-darker-blue rounded-md bg-opacity-80 backdrop-blur flex flex-col"
         >
           <div
             id="results-overview-tabs"
@@ -249,7 +248,7 @@ const NewTourneyNav = ({ tournament, isLive }: any) => {
 
           {/* EACH DAY'S DATA */}
           {activeTab === "Results" && (
-            <div className="">
+            <div className="h-full">
               <GamesForDay tournament={tournament} dayIndex={activeDayIndex} />
             </div>
           )}
@@ -292,7 +291,7 @@ const NewTourneyNav = ({ tournament, isLive }: any) => {
       {/* STANDINGS SECTION DESKTOP */}
       <div
         id="standings"
-        className="text-sm lg:text-base hidden h-full sm:block grow max-w-[25rem] min-w-[17rem] h-[84vh] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
+        className="text-sm lg:text-base h-full hidden sm:flex sm:flex-col grow min-w-[17rem] bg-darker-blue bg-opacity-80 backdrop-blur rounded-md"
       >
         <div className="flex items-center gap-2 border-b border-idle-purple-b">
           <SectionLabel
@@ -329,7 +328,10 @@ const NewTourneyNav = ({ tournament, isLive }: any) => {
           <div className="text-not-white italic text-center">WIP</div>
         </div> */}
 
-        <StandingsForDay tournament={tournament} dayIndex={activeDayIndex} />
+        <div className="h-full flex flex-col overflow-auto">
+          {/* <div className="bg-blue-500 h-[20rem] w-[20rem]"></div> */}
+          <StandingsForDay tournament={tournament} dayIndex={activeDayIndex} />
+        </div>
       </div>
       {/* END STANDINGS SECTION */}
     </div>
