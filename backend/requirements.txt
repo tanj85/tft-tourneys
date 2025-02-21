@@ -1,5 +1,6 @@
-Flask==3.0.3
-Flask-RESTful==0.3.10
-Levenshtein==0.25.1
-psycopg2-binary==2.9.9
-python-dotenv==1.0.1
+flask
+flask-restful
+psycopg2-binary
+python-dotenv
+levenshtein
+requests
